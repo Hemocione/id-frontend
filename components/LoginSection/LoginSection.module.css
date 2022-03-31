@@ -1,5 +1,6 @@
 .title{
     color: #D1151A;
+    font-size: min(7vw, 50px);
 }
 .field{
     margin-bottom: 12px;
