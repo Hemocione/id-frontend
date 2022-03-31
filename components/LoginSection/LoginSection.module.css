@@ -1,3 +1,18 @@
 .title{
     color: #D1151A;
 }
+.field{
+    margin-bottom: 12px;
+}
+.emailField{
+    margin-top: 20px;
+}
+.loginSection{
+    margin: 0 auto;
+    padding: 10px;
+    display: inline-block;
+    text-align: left;
+}
+.mainContainer{
+    text-align: center;
+}
