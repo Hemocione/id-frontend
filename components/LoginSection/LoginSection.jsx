@@ -1,4 +1,5 @@
 import { TextField } from '@mui/material'
+import { SimpleButton } from '..'
 import styles from './LoginSection.module.css'
 
 const LoginSection = () => {
@@ -25,6 +26,7 @@ const LoginSection = () => {
                         variant="outlined" />
                 </div>
                 <p>Esqueceu a senha?</p>
+                <SimpleButton passStyle={{ width: '100%' }}>Entrar</SimpleButton>
             </div>
         </div>
     )
