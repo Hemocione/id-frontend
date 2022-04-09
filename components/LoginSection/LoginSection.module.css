@@ -17,3 +17,6 @@
 .mainContainer{
     text-align: center;
 }
+.errorText{
+    color:red;
+}
