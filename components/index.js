@@ -1,3 +1,5 @@
 export { default as LoginSection } from './LoginSection/LoginSection'
 export { default as Navbar } from './Navbar/Navbar'
 export { default as SimpleButton } from './SimpleButton/SimpleButton'
+export { default as MainBox } from './MainBox/MainBox'
+export { default as Background } from './Background/Background'

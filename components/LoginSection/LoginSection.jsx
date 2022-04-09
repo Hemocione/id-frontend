@@ -49,8 +49,8 @@ const LoginSection = () => {
     }
     const emailError = loginData.email != '' && !validateEmail(loginData.email)
     return (
-        <div className={styles.mainContainer}>
-            <div className={styles.loginSection}>
+        <div className={styles.loginSection}>
+            <div className={styles.loginContent}>
                 <h1 className={styles.title}>
                     Faça login!
                     <br></br>
@@ -86,7 +86,7 @@ const LoginSection = () => {
                         Entrar
                     </SimpleButton>}
             </div>
-        </div>
+        </div >
     )
 }
 

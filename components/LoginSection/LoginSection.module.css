@@ -1,22 +1,31 @@
-.title{
+.title {
     color: #D1151A;
-    font-size: min(7vw, 50px);
+    font-size: min(6vw, 30px);
 }
-.field{
+
+.field {
     margin-bottom: 12px;
 }
-.emailField{
+
+.emailField {
     margin-top: 20px;
 }
-.loginSection{
-    margin: 0 auto;
+
+.loginSection {
+    height: 100%;
+    flex: 1;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loginContent {
     padding: 10px;
-    display: inline-block;
+    width: 80%;
     text-align: left;
 }
-.mainContainer{
-    text-align: center;
-}
-.errorText{
-    color:red;
+
+.errorText {
+    color: red;
 }
