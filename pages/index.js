@@ -1,12 +1,20 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { LoginSection, Navbar } from '../components'
+import { useEffect } from 'react';
+import { LoginSection } from '../components'
 import styles from '../styles/Home.module.css'
 
 export default function Home() {
+  useEffect(() => {
+    const scriptExist = document.getElementById("recaptcha-key");
+    if (!scriptExist) {
+      const script = document.createElement("script")
+      script.id = "recaptcha-key"
+      script.src = `https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_SITE_KEY}`
+      script.onload = () => console.log('captcha loaded')
+      document.body.appendChild(script)
+    }
+  }, [])
   return (
     <div>
-      <Navbar></Navbar>
       <LoginSection></LoginSection>
     </div>
   )
