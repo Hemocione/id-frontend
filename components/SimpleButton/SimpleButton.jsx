@@ -1,7 +1,7 @@
 import styles from './SimpleButton.module.css'
 
-const SimpleButton = ({ handleClick, children, passStyle }) => (
-  <button onClick={handleClick} style={passStyle} className={styles.button} type='button'>
+const SimpleButton = ({ onClick, children, passStyle }) => (
+  <button onClick={onClick} style={passStyle} className={styles.button} type='button'>
     {children}
   </button>
 )
