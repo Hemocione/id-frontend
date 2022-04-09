@@ -1,7 +1,7 @@
 import { TextField } from '@mui/material'
 import { useState } from 'react'
 import { SimpleButton } from '..'
-import { validateEmail, postLogin } from '../../utils/api';
+import { validateEmail, postLogin, setCookie } from '../../utils/api';
 import { CircularProgress } from '@mui/material';
 import styles from './LoginSection.module.css'
 
@@ -26,8 +26,7 @@ const LoginSection = () => {
         postLogin({ ...loginData, captchaToken: captchaToken }).then((response) => {
             setLoading(false)
             if (response.status === 200) {
-                localStorage.setItem('login-token', response.data.token)
-                localStorage.setItem('user', response.data.user)
+                setCookie('login-token', response.data.token, 30, 'hemocione.com.br')
                 var url_string = window.location.href
                 var url = new URL(url_string);
                 var redirect = url.searchParams.get("redirect");

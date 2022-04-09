@@ -25,5 +25,12 @@ const postLogin = ({ email, password, captchaToken }) => {
         'g-recaptcha-response': captchaToken,
     }))
 }
+function setCookie(cname, cvalue, exdays, domain) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    let _domain = "domain=" + domain
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";" + _domain + ";" + ";path=/";
+}
 
-export { validateEmail, postLogin, }
+export { validateEmail, postLogin, setCookie }
