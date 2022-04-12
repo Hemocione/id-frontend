@@ -1,6 +1,7 @@
 .coloredStripe {
     height: 100%;
-    width: 38%;
-    position: absolute;
+    width: 50%;
+    position: fixed;
+    z-index: 0;
     background-color: #D1151A;
 }

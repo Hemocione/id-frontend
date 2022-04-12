@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { MainBox, Background } from '../components'
+import { MainBox, Background, Navbar } from '../components'
 import styles from '../styles/Home.module.css'
 
 export default function Home() {
@@ -16,6 +16,7 @@ export default function Home() {
   return (
     <div>
       <Background />
+      <Navbar />
       <MainBox />
     </div>
   )
