@@ -26,7 +26,7 @@ const LoginSection = () => {
         postLogin({ ...loginData, captchaToken: captchaToken }).then((response) => {
             setLoading(false)
             if (response.status === 200) {
-                setCookie('login-token', response.data.token, 30, 'hemocione.com.br')
+                setCookie('hemocioneIdToken', response.data.token, 30, 'hemocione.com.br')
                 var url_string = window.location.href
                 var url = new URL(url_string);
                 var redirect = url.searchParams.get("redirect");
@@ -75,6 +75,7 @@ const LoginSection = () => {
                         value={loginData.password}
                         id="password"
                         label="Senha"
+                        type="password"
                         variant="outlined" />
                 </div>
                 <p>Esqueceu a senha?</p>
