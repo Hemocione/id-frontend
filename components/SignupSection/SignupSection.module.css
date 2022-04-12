@@ -1,0 +1,28 @@
+.title {
+    color: #D1151A;
+    text-align: center;
+    font-size: min(6vw, 30px);
+}
+
+.field {
+    margin-bottom: 12px;
+}
+
+.emailField {
+    margin-top: 20px;
+}
+
+.loginSection {
+    background-color: white;
+}
+
+.loginContent {
+    padding: 40px;
+    width: 100%;
+    text-align: left;
+    margin: 0 auto;
+}
+
+.errorText {
+    color: red;
+}

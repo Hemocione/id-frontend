@@ -1,0 +1,10 @@
+.mainBox {
+    margin: auto;
+    margin-top: 50px;
+    background-color: white;
+    width: 80%;
+    overflow: auto;
+    position: relative;
+    z-index: 1;
+    box-shadow: 6px 6px 50px 3px rgba(0, 0, 0, 0.2), -6px -6px 50px 3px rgba(0, 0, 0, 0.19);
+}
