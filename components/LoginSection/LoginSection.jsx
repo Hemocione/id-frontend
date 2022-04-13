@@ -1,5 +1,6 @@
 import { TextField } from '@mui/material'
 import { useState } from 'react'
+import Image from 'next/image'
 import { SimpleButton } from '..'
 import { validateEmail, postLogin, setCookie } from '../../utils/api';
 import { CircularProgress } from '@mui/material';
@@ -51,11 +52,10 @@ const LoginSection = () => {
     return (
         <div className={styles.loginSection}>
             <div className={styles.loginContent}>
-                <h1 className={styles.title}>
-                    Faça login!
-                    <br></br>
-                    Ou sofra as consequências!
-                </h1>
+                <div className={styles.title}>
+                    <Image
+                        src='/vertical-cor-fb.svg' width={150} height={150} />
+                </div>
                 <p className={styles.errorText}>{errorText}</p>
                 <div className={`${styles.field} ${styles.emailField}`}>
                     <TextField

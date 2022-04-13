@@ -8,8 +8,15 @@ import styles from './SignupSection.module.css'
 const SignupSection = () => {
     const [errorText, setErrorText] = useState('')
     const [loading, setLoading] = useState(false)
-    const [loginData, setloginData] = useState({
+    const [signupData, setSignupData] = useState({
+        givenName: '',
+        surName: '',
+        bloodType: '',
+        document: '',
+        phone: '',
+        birthDate: '',
         email: '',
+        gender: '',
         password: '',
     })
 
@@ -23,7 +30,7 @@ const SignupSection = () => {
         });
     }
     const login = (captchaToken) => {
-        postLogin({ ...loginData, captchaToken: captchaToken }).then((response) => {
+        postLogin({ ...signupData, captchaToken: captchaToken }).then((response) => {
             setLoading(false)
             if (response.status === 200) {
                 setCookie('hemocioneIdToken', response.data.token, 30, 'hemocione.com.br')
@@ -41,13 +48,14 @@ const SignupSection = () => {
             setErrorText("Ocorreu um erro inesperado. Por favor, tente novamente.")
         })
     }
-    const handleEmailChange = (e) => {
-        setloginData({ ...loginData, email: e.target.value })
-    }
-    const handlePassChange = (e) => {
-        setloginData({ ...loginData, password: e.target.value })
-    }
-    const emailError = loginData.email != '' && !validateEmail(loginData.email)
+    const handleChange = (key) => (
+        (e) => {
+            const copyDict = { ...signupData }
+            copyDict[key] = e.target.value
+            setSignupData(copyDict)
+        }
+    )
+    const emailError = signupData.email != '' && !validateEmail(signupData.email)
     return (
         <div className={styles.loginSection}>
             <div className={styles.loginContent}>
@@ -60,8 +68,26 @@ const SignupSection = () => {
                 <div className={`${styles.field} ${styles.emailField}`}>
                     <TextField
                         fullWidth
-                        onChange={handleEmailChange}
-                        value={loginData.email}
+                        onChange={handleChange('givenName')}
+                        value={signupData.givenName}
+                        id="Primeiro nome"
+                        label="Primeiro nome"
+                        variant="outlined" />
+                </div>
+                <div className={`${styles.field} ${styles.emailField}`}>
+                    <TextField
+                        fullWidth
+                        onChange={handleChange('surName')}
+                        value={signupData.surName}
+                        id="Sobrenome"
+                        label="Sobrenome"
+                        variant="outlined" />
+                </div>
+                <div className={`${styles.field} ${styles.emailField}`}>
+                    <TextField
+                        fullWidth
+                        onChange={handleChange('email')}
+                        value={signupData.email}
                         error={emailError}
                         helperText={emailError && 'Email inválido'}
                         id="email"
@@ -71,8 +97,8 @@ const SignupSection = () => {
                 <div className={`${styles.field} ${styles.emailField}`}>
                     <TextField
                         fullWidth
-                        onChange={handleEmailChange}
-                        value={loginData.email}
+                        onChange={handleChange('document')}
+                        value={signupData.document}
                         error={emailError}
                         helperText={emailError && 'CPF inválido'}
                         id="CPF"
@@ -82,30 +108,8 @@ const SignupSection = () => {
                 <div className={`${styles.field} ${styles.emailField}`}>
                     <TextField
                         fullWidth
-                        onChange={handleEmailChange}
-                        value={loginData.email}
-                        error={emailError}
-                        helperText={emailError && 'Primeiro nome inválido'}
-                        id="Primeiro nome"
-                        label="Primeiro nome"
-                        variant="outlined" />
-                </div>
-                <div className={`${styles.field} ${styles.emailField}`}>
-                    <TextField
-                        fullWidth
-                        onChange={handleEmailChange}
-                        value={loginData.email}
-                        error={emailError}
-                        helperText={emailError && 'Sobrenome inválido'}
-                        id="Sobrenome"
-                        label="Sobrenome"
-                        variant="outlined" />
-                </div>
-                <div className={`${styles.field} ${styles.emailField}`}>
-                    <TextField
-                        fullWidth
-                        onChange={handleEmailChange}
-                        value={loginData.email}
+                        onChange={handleChange('bloodType')}
+                        value={signupData.bloodType}
                         error={emailError}
                         helperText={emailError && 'Tipo sanguineo inválido'}
                         id="Tipo sanguineo"
@@ -115,8 +119,8 @@ const SignupSection = () => {
                 <div className={`${styles.field} ${styles.emailField}`}>
                     <TextField
                         fullWidth
-                        onChange={handleEmailChange}
-                        value={loginData.email}
+                        onChange={handleChange('gender')}
+                        value={signupData.gender}
                         error={emailError}
                         helperText={emailError && 'Genero inválido'}
                         id="Genero"
@@ -126,8 +130,8 @@ const SignupSection = () => {
                 <div className={`${styles.field} ${styles.emailField}`}>
                     <TextField
                         fullWidth
-                        onChange={handleEmailChange}
-                        value={loginData.email}
+                        onChange={handleChange('phone')}
+                        value={signupData.phone}
                         error={emailError}
                         helperText={emailError && 'Telefone inválido'}
                         id="Telefone"
@@ -137,8 +141,8 @@ const SignupSection = () => {
                 <div className={styles.field}>
                     <TextField
                         fullWidth
-                        onChange={handlePassChange}
-                        value={loginData.password}
+                        onChange={handleChange('password')}
+                        value={signupData.password}
                         id="password"
                         label="Senha"
                         type="password"

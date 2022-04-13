@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { LoginBox, Background, Navbar } from '../components'
+import { Background, Navbar, LoginSection } from '../components'
 import styles from '../styles/Home.module.css'
 
 export default function Home() {
@@ -15,9 +15,8 @@ export default function Home() {
   }, [])
   return (
     <div>
-      <Background />
       <Navbar signup />
-      <LoginBox />
+      <LoginSection />
     </div>
   )
 }

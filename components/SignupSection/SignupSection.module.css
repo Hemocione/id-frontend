@@ -19,8 +19,15 @@
 .loginContent {
     padding: 40px;
     width: 100%;
+    max-width: 700px;
     text-align: left;
     margin: 0 auto;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    background-color: white;
+    width: 80%;
+    overflow: auto;
+    box-shadow: 6px 6px 50px 3px rgba(0, 0, 0, 0.2), -6px -6px 50px 3px rgba(0, 0, 0, 0.19);
 }
 
 .errorText {
