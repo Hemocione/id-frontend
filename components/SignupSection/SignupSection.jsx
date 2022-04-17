@@ -20,6 +20,7 @@ const SignupSection = () => {
         email: '',
         gender: '',
         password: '',
+        passConfirmation: '',
     })
 
     const handleClick = (e) => {
@@ -59,6 +60,7 @@ const SignupSection = () => {
     )
     const emailError = signupData.email != '' && !validateEmail(signupData.email)
     const cpfError = signupData.document != '' && !validateCPF(signupData.document)
+    const passConfError = signupData.passConfirmation != signupData.password
     return (
         <div className={styles.loginSection}>
             <div className={styles.loginContent}>
@@ -138,6 +140,18 @@ const SignupSection = () => {
                         value={signupData.password}
                         id="password"
                         label="Senha"
+                        type="password"
+                        variant="outlined" />
+                </div>
+                <div className={styles.field}>
+                    <TextField
+                        fullWidth
+                        onChange={handleChange('passConfirmation')}
+                        error={passConfError}
+                        helperText={passConfError && 'As senhas devem ser idênticas'}
+                        value={signupData.passConfirmation}
+                        id="password"
+                        label="Confirmar senha"
                         type="password"
                         variant="outlined" />
                 </div>
