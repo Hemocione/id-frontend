@@ -1,7 +1,7 @@
 import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
 import { useState } from 'react'
 import { SimpleButton } from '..'
-import { validateEmail, postLogin, setCookie } from '../../utils/api';
+import { validateEmail, validateCPF, postLogin, setCookie } from '../../utils/api';
 import { CircularProgress } from '@mui/material';
 import styles from './SignupSection.module.css'
 
@@ -58,6 +58,7 @@ const SignupSection = () => {
         }
     )
     const emailError = signupData.email != '' && !validateEmail(signupData.email)
+    const cpfError = signupData.document != '' && !validateCPF(signupData.document)
     return (
         <div className={styles.loginSection}>
             <div className={styles.loginContent}>
@@ -101,8 +102,8 @@ const SignupSection = () => {
                         fullWidth
                         onChange={handleChange('document')}
                         value={signupData.document}
-                        error={emailError}
-                        helperText={emailError && 'CPF inválido'}
+                        error={cpfError}
+                        helperText={cpfError && 'CPF inválido'}
                         id="CPF"
                         label="CPF"
                         variant="outlined" />
