@@ -1,9 +1,11 @@
-import { TextField } from '@mui/material'
+import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
 import { useState } from 'react'
 import { SimpleButton } from '..'
 import { validateEmail, postLogin, setCookie } from '../../utils/api';
 import { CircularProgress } from '@mui/material';
 import styles from './SignupSection.module.css'
+
+const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
 
 const SignupSection = () => {
     const [errorText, setErrorText] = useState('')
@@ -105,28 +107,18 @@ const SignupSection = () => {
                         label="CPF"
                         variant="outlined" />
                 </div>
-                <div className={`${styles.field} ${styles.emailField}`}>
-                    <TextField
-                        fullWidth
+                <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Tipo sanguíneo</InputLabel>
+                    <Select
+                        id="bloodType"
+                        placeholder='Tipo sanguíneo'
+                        label="Tipo sanguíneo"
                         onChange={handleChange('bloodType')}
-                        value={signupData.bloodType}
-                        error={emailError}
-                        helperText={emailError && 'Tipo sanguineo inválido'}
-                        id="Tipo sanguineo"
-                        label="Tipo sanguineo"
-                        variant="outlined" />
-                </div>
-                <div className={`${styles.field} ${styles.emailField}`}>
-                    <TextField
                         fullWidth
-                        onChange={handleChange('gender')}
-                        value={signupData.gender}
-                        error={emailError}
-                        helperText={emailError && 'Genero inválido'}
-                        id="Genero"
-                        label="Genero"
-                        variant="outlined" />
-                </div>
+                    >
+                        {bloodTypes.map((bp) => <MenuItem key={bp} value={bp}>{bp}</MenuItem>)}
+                    </Select>
+                </FormControl>
                 <div className={`${styles.field} ${styles.emailField}`}>
                     <TextField
                         fullWidth
