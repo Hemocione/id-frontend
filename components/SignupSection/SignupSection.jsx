@@ -1,7 +1,7 @@
 import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
 import { useState } from 'react'
 import { SimpleButton } from '..'
-import { validateEmail, validateCPF, postLogin, setCookie } from '../../utils/api';
+import { validateEmail, validateCPF, postLogin, setCookie, validatePhone } from '../../utils/api';
 import { CircularProgress } from '@mui/material';
 import styles from './SignupSection.module.css'
 
@@ -61,6 +61,7 @@ const SignupSection = () => {
     const emailError = signupData.email != '' && !validateEmail(signupData.email)
     const cpfError = signupData.document != '' && !validateCPF(signupData.document)
     const passConfError = signupData.passConfirmation != signupData.password
+    const phoneError = signupData.phone != '' && !validatePhone(signupData.phone)
     return (
         <div className={styles.loginSection}>
             <div className={styles.loginContent}>
@@ -127,8 +128,8 @@ const SignupSection = () => {
                         fullWidth
                         onChange={handleChange('phone')}
                         value={signupData.phone}
-                        error={emailError}
-                        helperText={emailError && 'Telefone inválido'}
+                        error={phoneError}
+                        helperText={phoneError && 'Telefone inválido (Inserir DDD)'}
                         id="Telefone"
                         label="Telefone"
                         variant="outlined" />
