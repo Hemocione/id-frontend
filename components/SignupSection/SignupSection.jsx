@@ -155,7 +155,7 @@ const SignupSection = () => {
                         <CircularProgress style={{ 'display': 'inline-block', 'color': 'rgb(224, 14, 22)' }} />
                     </div>
                     : <SimpleButton onClick={handleClick} passStyle={{ width: '100%' }}>
-                        Entrar
+                        Criar conta
                     </SimpleButton>}
             </div>
         </div >
