@@ -70,6 +70,9 @@ const postLogin = ({ email, password, captchaToken }) => {
         'g-recaptcha-response': captchaToken,
     }))
 }
+const postSignUp = (signUpData) => {
+    return (apiClient.post(`/users/register`, signUpData))
+}
 function setCookie(cname, cvalue, exdays, domain) {
     const d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -78,4 +81,4 @@ function setCookie(cname, cvalue, exdays, domain) {
     document.cookie = cname + "=" + cvalue + ";" + expires + ";" + _domain + ";" + ";path=/";
 }
 
-export { validateEmail, validateCPF, validatePhone, postLogin, setCookie }
+export { validateEmail, validateCPF, validatePhone, postLogin, postSignUp, setCookie }

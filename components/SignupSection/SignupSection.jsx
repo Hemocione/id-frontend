@@ -1,7 +1,7 @@
 import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
 import { useState } from 'react'
 import { SimpleButton } from '..'
-import { validateEmail, validateCPF, postLogin, setCookie, validatePhone } from '../../utils/api';
+import { validateEmail, validateCPF, postSignUp, validatePhone } from '../../utils/api';
 import { CircularProgress } from '@mui/material';
 import styles from './SignupSection.module.css'
 
@@ -28,21 +28,14 @@ const SignupSection = () => {
         setLoading(true);
         window.grecaptcha.ready(() => {
             window.grecaptcha.execute(process.env.NEXT_PUBLIC_SITE_KEY, { action: 'submit' }).then(captchaToken => {
-                login(captchaToken)
+                signUp(captchaToken)
             });
         });
     }
-    const login = (captchaToken) => {
-        postLogin({ ...signupData, captchaToken: captchaToken }).then((response) => {
+    const signUp = (captchaToken) => {
+        postSignUp({ ...signupData, 'g-recaptcha-response': captchaToken }).then((response) => {
             setLoading(false)
             if (response.status === 200) {
-                setCookie('hemocioneIdToken', response.data.token, 30, 'hemocione.com.br')
-                var url_string = window.location.href
-                var url = new URL(url_string);
-                var redirect = url.searchParams.get("redirect");
-                window.location.href = redirect
-                    ? redirect
-                    : process.env.NEXT_PUBLIC_MAIN_FRONTEND_URL
                 return
             }
             setErrorText(response.data.message);
