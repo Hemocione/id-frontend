@@ -156,7 +156,7 @@ const SignupSection = () => {
                         type="password"
                         variant="outlined" />
                 </div>
-                <Link href={redirect ? `/?redirect=${redirect}` : 'login'}>
+                <Link href={redirect ? `/?redirect=${redirect}` : '/'}>
                     Já possui conta? Faça login agora
                 </Link>
                 <p> </p>
