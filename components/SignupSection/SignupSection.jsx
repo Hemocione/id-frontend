@@ -4,10 +4,13 @@ import { SimpleButton } from '..'
 import { validateEmail, validateCPF, postSignUp, validatePhone } from '../../utils/api';
 import { CircularProgress } from '@mui/material';
 import styles from './SignupSection.module.css'
+import { useRouter } from 'next/router';
 
 const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
 
 const SignupSection = () => {
+    const router = useRouter()
+    const { redirect } = router.query
     const [errorText, setErrorText] = useState('')
     const [loading, setLoading] = useState(false)
     const [signupData, setSignupData] = useState({
@@ -36,10 +39,12 @@ const SignupSection = () => {
         postSignUp({ ...signupData, 'g-recaptcha-response': captchaToken }).then((response) => {
             setLoading(false)
             if (response.status === 200) {
+                window.location.href = redirect || 'https://www.hemocione.com.br/'
                 return
             }
             setErrorText(response.data.message);
         }).catch((error) => {
+            console.log(error)
             setLoading(false)
             setErrorText("Ocorreu um erro inesperado. Por favor, tente novamente.")
         })

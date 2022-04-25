@@ -5,8 +5,11 @@ import { SimpleButton } from '..'
 import { validateEmail, postLogin, setCookie } from '../../utils/api';
 import { CircularProgress } from '@mui/material';
 import styles from './LoginSection.module.css'
+import { useRouter } from 'next/router';
 
 const LoginSection = () => {
+    const router = useRouter()
+    const { redirect } = router.query
     const [errorText, setErrorText] = useState('')
     const [loading, setLoading] = useState(false)
     const [loginData, setloginData] = useState({
@@ -28,17 +31,13 @@ const LoginSection = () => {
             setLoading(false)
             if (response.status === 200) {
                 setCookie('hemocioneIdToken', response.data.token, 30, 'hemocione.com.br')
-                var url_string = window.location.href
-                var url = new URL(url_string);
-                var redirect = url.searchParams.get("redirect");
-                window.location.href = redirect
-                    ? redirect
-                    : process.env.NEXT_PUBLIC_MAIN_FRONTEND_URL
+                window.location.href = redirect || 'https://www.hemocione.com.br/'
                 return
             }
             setErrorText(response.data.message);
         }).catch((error) => {
             setLoading(false)
+            console.log(error)
             setErrorText("Ocorreu um erro inesperado. Por favor, tente novamente.")
         })
     }
