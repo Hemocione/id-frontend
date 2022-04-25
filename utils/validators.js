@@ -49,3 +49,5 @@ const validateCPF = (cpf) => {
         return false;
     return true;
 }
+
+export { validateCPF, validatePhone, validateEmail }
