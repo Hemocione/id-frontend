@@ -2,7 +2,8 @@ import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/mater
 import { useState } from 'react'
 import { SimpleButton } from '..'
 import Link from 'next/link'
-import { validateEmail, validateCPF, postSignUp, validatePhone } from '../../utils/api';
+import { validateEmail, validateCPF, validatePhone } from '../../utils/validators'
+import { postSignUp, } from '../../utils/api';
 import { CircularProgress } from '@mui/material';
 import styles from './SignupSection.module.css'
 import { useRouter } from 'next/router';

@@ -2,7 +2,8 @@ import { TextField } from '@mui/material'
 import { useState } from 'react'
 import Image from 'next/image'
 import { SimpleButton } from '..'
-import { validateEmail, postLogin, setCookie } from '../../utils/api';
+import { validateEmail } from '../../utils/validators'
+import { postLogin, setCookie } from '../../utils/api';
 import { CircularProgress } from '@mui/material';
 import styles from './LoginSection.module.css'
 import { useRouter } from 'next/router';

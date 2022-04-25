@@ -3,6 +3,7 @@ import { Background, Navbar, LoginSection } from '../components'
 import styles from '../styles/Home.module.css'
 
 export default function Home() {
+
   useEffect(() => {
     const scriptExist = document.getElementById("recaptcha-key");
     if (!scriptExist) {
