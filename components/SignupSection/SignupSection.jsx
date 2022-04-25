@@ -1,6 +1,7 @@
 import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
 import { useState } from 'react'
 import { SimpleButton } from '..'
+import Link from 'next/link'
 import { validateEmail, validateCPF, postSignUp, validatePhone } from '../../utils/api';
 import { CircularProgress } from '@mui/material';
 import styles from './SignupSection.module.css'
@@ -154,7 +155,10 @@ const SignupSection = () => {
                         type="password"
                         variant="outlined" />
                 </div>
-                <p>Esqueceu a senha?</p>
+                <Link href={redirect ? `/?redirect=${redirect}` : 'login'}>
+                    Já possui conta? Faça login agora
+                </Link>
+                <p> </p>
                 {loading
                     ? <div style={{ 'textAlign': 'center', width: '100%' }}>
                         <CircularProgress style={{ 'display': 'inline-block', 'color': 'rgb(224, 14, 22)' }} />
