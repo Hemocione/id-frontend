@@ -31,8 +31,9 @@ const LoginSection = () => {
         postLogin({ ...loginData, captchaToken: captchaToken }).then((response) => {
             setLoading(false)
             if (response.status === 200) {
-                setCookie('hemocioneIdToken', response.data.token, 30, 'hemocione.com.br')
-                window.location.href = redirect || 'https://www.hemocione.com.br/'
+                let dev = process.env.NEXT_PUBLIC_DEV == 'true'
+                setCookie(`${dev ? 'DEV' : ''}hemocioneIdToken`, response.data.token, 30, 'hemocione.com.br')
+                //window.location.href = redirect || 'https://www.hemocione.com.br/'
                 return
             }
             setErrorText(response.data.message);
