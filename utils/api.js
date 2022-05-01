@@ -50,5 +50,8 @@ function getCookie(cname) {
     }
     return undefined
 }
+function deleteCookie(name) {
+    document.cookie = name + '=; Max-Age=-99999999;';
+}
 
-export { postLogin, postSignUp, postValidate, setCookie, getCookie }
+export { postLogin, postSignUp, postValidate, setCookie, getCookie, deleteCookie }
