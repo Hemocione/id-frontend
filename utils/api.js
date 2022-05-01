@@ -21,6 +21,12 @@ const postLogin = ({ email, password, captchaToken }) => {
 const postSignUp = (signUpData) => {
     return (apiClient.post(`/users/register`, signUpData))
 }
+const postValidate = ({ token }) => {
+    return (apiClient.post(`/users/validate-token`, {
+        'authUser': token,
+    }))
+}
+
 function setCookie(cname, cvalue, exdays, domain) {
     const d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -45,4 +51,4 @@ function getCookie(cname) {
     return undefined
 }
 
-export { postLogin, postSignUp, setCookie, getCookie }
+export { postLogin, postSignUp, postValidate, setCookie, getCookie }
