@@ -1,4 +1,7 @@
 import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useState } from 'react'
 import { SimpleButton } from '..'
 import Link from 'next/link'
@@ -21,7 +24,7 @@ const SignupSection = () => {
         bloodType: '',
         document: '',
         phone: '',
-        birthDate: '',
+        birthDate: undefined,
         email: '',
         gender: '',
         password: '',
@@ -58,6 +61,12 @@ const SignupSection = () => {
             setSignupData(copyDict)
         }
     )
+    const handleBday = value => {
+        const copyDict = { ...signupData }
+        console.log(value)
+        copyDict['birthDate'] = value
+        setSignupData(copyDict)
+    }
     const emailError = signupData.email != '' && !validateEmail(signupData.email)
     const cpfError = signupData.document != '' && !validateCPF(signupData.document)
     const passConfError = signupData.passConfirmation != signupData.password
@@ -71,7 +80,7 @@ const SignupSection = () => {
                     Ou sofra as consequências!
                 </h1>
                 <p className={styles.errorText}>{errorText}</p>
-                <div className={`${styles.field} ${styles.emailField}`}>
+                <FormControl fullWidth sx={{ 'margin-bottom': '15px' }}>
                     <TextField
                         fullWidth
                         onChange={handleChange('givenName')}
@@ -79,8 +88,8 @@ const SignupSection = () => {
                         id="Primeiro nome"
                         label="Primeiro nome"
                         variant="outlined" />
-                </div>
-                <div className={`${styles.field} ${styles.emailField}`}>
+                </FormControl>
+                <FormControl fullWidth sx={{ 'margin-bottom': '15px' }}>
                     <TextField
                         fullWidth
                         onChange={handleChange('surName')}
@@ -88,8 +97,8 @@ const SignupSection = () => {
                         id="Sobrenome"
                         label="Sobrenome"
                         variant="outlined" />
-                </div>
-                <div className={`${styles.field} ${styles.emailField}`}>
+                </FormControl>
+                <FormControl fullWidth sx={{ 'margin-bottom': '15px' }}>
                     <TextField
                         fullWidth
                         onChange={handleChange('email')}
@@ -99,8 +108,8 @@ const SignupSection = () => {
                         id="email"
                         label="Email"
                         variant="outlined" />
-                </div>
-                <div className={`${styles.field} ${styles.emailField}`}>
+                </FormControl>
+                <FormControl fullWidth sx={{ 'margin-bottom': '15px' }}>
                     <TextField
                         fullWidth
                         onChange={handleChange('document')}
@@ -110,8 +119,8 @@ const SignupSection = () => {
                         id="CPF"
                         label="CPF"
                         variant="outlined" />
-                </div>
-                <FormControl fullWidth>
+                </FormControl>
+                <FormControl fullWidth sx={{ 'margin-bottom': '15px' }}>
                     <InputLabel id="demo-simple-select-label">Tipo sanguíneo</InputLabel>
                     <Select
                         id="bloodType"
@@ -123,7 +132,19 @@ const SignupSection = () => {
                         {bloodTypes.map((bp) => <MenuItem key={bp} value={bp}>{bp}</MenuItem>)}
                     </Select>
                 </FormControl>
-                <div className={`${styles.field} ${styles.emailField}`}>
+                <FormControl fullWidth sx={{ 'margin-bottom': '15px' }}>
+                    <LocalizationProvider
+                        fullWidth
+                        dateAdapter={AdapterDateFns}>
+                        <DatePicker
+                            label="Data de nascimento"
+                            value={signupData.birthDate}
+                            onChange={handleBday}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
+                    </LocalizationProvider>
+                </FormControl>
+                <FormControl fullWidth sx={{ 'margin-bottom': '15px' }}>
                     <TextField
                         fullWidth
                         onChange={handleChange('phone')}
@@ -133,8 +154,8 @@ const SignupSection = () => {
                         id="Telefone"
                         label="Telefone"
                         variant="outlined" />
-                </div>
-                <div className={styles.field}>
+                </FormControl>
+                <FormControl fullWidth sx={{ 'margin-bottom': '15px' }}>
                     <TextField
                         fullWidth
                         onChange={handleChange('password')}
@@ -143,8 +164,8 @@ const SignupSection = () => {
                         label="Senha"
                         type="password"
                         variant="outlined" />
-                </div>
-                <div className={styles.field}>
+                </FormControl>
+                <FormControl fullWidth sx={{ 'margin-bottom': '15px' }}>
                     <TextField
                         fullWidth
                         onChange={handleChange('passConfirmation')}
@@ -155,7 +176,7 @@ const SignupSection = () => {
                         label="Confirmar senha"
                         type="password"
                         variant="outlined" />
-                </div>
+                </FormControl>
                 <Link href={redirect ? `/?redirect=${redirect}` : '/'}>
                     Já possui conta? Faça login agora
                 </Link>
