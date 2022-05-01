@@ -69,7 +69,9 @@ const SignupSection = () => {
     }
     const emailError = signupData.email != '' && !validateEmail(signupData.email)
     const cpfError = signupData.document != '' && !validateCPF(signupData.document)
-    const passConfError = signupData.passConfirmation != signupData.password
+    const passError = signupData.password != '' && signupData.password.length < 7
+    const passConfError = signupData.passConfirmation != ''
+        && signupData.passConfirmation != signupData.password
     const phoneError = signupData.phone != '' && !validatePhone(signupData.phone)
     return (
         <div className={styles.loginSection}>
@@ -160,6 +162,8 @@ const SignupSection = () => {
                         fullWidth
                         onChange={handleChange('password')}
                         value={signupData.password}
+                        error={passError}
+                        helperText={passError && 'A senha deve ter pelo menos 7 caracteres'}
                         id="password"
                         label="Senha"
                         type="password"
