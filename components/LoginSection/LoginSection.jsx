@@ -24,16 +24,17 @@ const LoginSection = () => {
         window.grecaptcha.ready(() => {
             window.grecaptcha.execute(process.env.NEXT_PUBLIC_SITE_KEY, { action: 'submit' }).then(captchaToken => {
                 login(captchaToken)
-            });
+            }).catch((error) => {
+                console.log('Captcha erro')
+            })
         });
     }
     const login = (captchaToken) => {
         postLogin({ ...loginData, captchaToken: captchaToken }).then((response) => {
             setLoading(false)
             if (response.status === 200) {
-                let dev = process.env.NEXT_PUBLIC_DEV == 'true'
-                setCookie(`${dev ? 'DEV' : ''}hemocioneIdToken`, response.data.token, 30, 'hemocione.com.br')
-                //window.location.href = redirect || 'https://www.hemocione.com.br/'
+                setCookie(process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY, response.data.token, 30, 'hemocione.com.br')
+                window.location.href = redirect || 'https://www.hemocione.com.br/'
                 return
             }
             setErrorText(response.data.message);
