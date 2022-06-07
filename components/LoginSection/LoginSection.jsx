@@ -8,6 +8,7 @@ import { setCookie } from '../../utils/cookie'
 import { CircularProgress } from '@mui/material';
 import styles from './LoginSection.module.css'
 import { useRouter } from 'next/router';
+import Link from 'next/link'
 
 const LoginSection = () => {
     const router = useRouter()
@@ -42,7 +43,7 @@ const LoginSection = () => {
         }).catch((error) => {
             setLoading(false)
             console.log(error)
-            setErrorText("Ocorreu um erro inesperado. Por favor, tente novamente.")
+            setErrorText(error.message || "Ocorreu um erro inesperado. Por favor, tente novamente.")
         })
     }
     const handleEmailChange = (e) => {
@@ -57,9 +58,8 @@ const LoginSection = () => {
             <div className={styles.loginContent}>
                 <div className={styles.title}>
                     <Image
-                        src='/vertical-cor-fb.svg' width={150} height={150} />
+                        src='/vertical-cor-fb.svg' width={150} height={150} alt="Hemocione Logo" />
                 </div>
-                <p className={styles.errorText}>{errorText}</p>
                 <div className={`${styles.field} ${styles.emailField}`}>
                     <TextField
                         fullWidth
@@ -81,7 +81,16 @@ const LoginSection = () => {
                         type="password"
                         variant="outlined" />
                 </div>
-                <p>Esqueceu a senha?</p>
+                <p style={{ textAlign: 'center' }}>
+                    Ainda não possui conta?
+                    <b style={{
+                            color: 'rgb(200, 4, 10)'
+                        }}>
+                        <Link href={redirect ? `signup/?redirect=${redirect}` : 'signup'} passHref>
+                            {" Cadastre-se Agora!"}
+                        </Link>
+                    </b>
+                </p>
                 {loading
                     ? <div style={{ 'textAlign': 'center', width: '100%' }}>
                         <CircularProgress style={{ 'display': 'inline-block', 'color': 'rgb(224, 14, 22)' }} />

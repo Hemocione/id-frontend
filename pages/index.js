@@ -30,7 +30,7 @@ export default function Home() {
     }
   }, [])
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100vw' }}>
       <Navbar />
       <LoginSection />
     </div>

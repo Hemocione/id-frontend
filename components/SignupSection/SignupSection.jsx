@@ -10,6 +10,7 @@ import { postSignUp, } from '../../utils/api';
 import { CircularProgress } from '@mui/material';
 import styles from './SignupSection.module.css'
 import { useRouter } from 'next/router';
+import Image from 'next/image'
 
 const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
 
@@ -76,11 +77,10 @@ const SignupSection = () => {
     return (
         <div className={styles.loginSection}>
             <div className={styles.loginContent}>
-                <h1 className={styles.title}>
-                    Faça Cadastro!
-                    <br></br>
-                    Ou sofra as consequências!
-                </h1>
+                <div className={styles.title}>
+                    <Image
+                        src='/vertical-cor-fb.svg' width={150} height={150} alt="Hemocione Logo" />
+                </div>
                 <p className={styles.errorText}>{errorText}</p>
                 <FormControl fullWidth sx={{ 'margin-bottom': '15px' }}>
                     <TextField
