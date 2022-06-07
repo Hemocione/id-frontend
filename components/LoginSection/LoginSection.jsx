@@ -3,7 +3,8 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { SimpleButton } from '..'
 import { validateEmail } from '../../utils/validators'
-import { postLogin, setCookie } from '../../utils/api';
+import { postLogin } from '../../utils/api';
+import { setCookie } from '../../utils/cookie'
 import { CircularProgress } from '@mui/material';
 import styles from './LoginSection.module.css'
 import { useRouter } from 'next/router';

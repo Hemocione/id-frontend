@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { deleteCookie } from '../utils/api'
+import { deleteCookie } from '../utils/cookie'
 import { Navbar } from "../components";
 
 export default function Signup() {

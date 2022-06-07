@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Background, Navbar, LoginSection } from '../components'
-import { getCookie, postValidate } from '../utils/api'
+import { postValidate } from '../utils/api'
+import { getCookie } from '../utils/cookie'
 import { useRouter } from 'next/router';
 import styles from '../styles/Home.module.css'
 
