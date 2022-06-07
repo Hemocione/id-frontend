@@ -181,10 +181,16 @@ const SignupSection = () => {
                         type="password"
                         variant="outlined" />
                 </FormControl>
-                <Link href={redirect ? `/?redirect=${redirect}` : '/'}>
-                    Já possui conta? Faça login agora
-                </Link>
-                <p> </p>
+                <p style={{ textAlign: 'center' }}>
+                    Já possui conta?
+                    <b style={{
+                            color: 'rgb(200, 4, 10)'
+                        }}>
+                        <Link href={redirect ? `/?redirect=${redirect}` : '/'} passHref>
+                            {" Faça login agora!"}
+                        </Link>
+                    </b>
+                </p>
                 {loading
                     ? <div style={{ 'textAlign': 'center', width: '100%' }}>
                         <CircularProgress style={{ 'display': 'inline-block', 'color': 'rgb(224, 14, 22)' }} />

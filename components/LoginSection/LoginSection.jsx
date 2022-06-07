@@ -87,7 +87,7 @@ const LoginSection = () => {
                             color: 'rgb(200, 4, 10)'
                         }}>
                         <Link href={redirect ? `signup/?redirect=${redirect}` : 'signup'} passHref>
-                            {" Cadastre-se Agora!"}
+                            {" Cadastre-se agora!"}
                         </Link>
                     </b>
                 </p>
