@@ -1,9 +1,8 @@
 import { useEffect } from 'react';
-import { Background, Navbar, LoginSection } from '../components'
+import { Navbar, LoginSection } from '../components'
 import { postValidate } from '../utils/api'
 import { getCookie } from '../utils/cookie'
 import { useRouter } from 'next/router';
-import styles from '../styles/Home.module.css'
 
 export default function Home() {
   const router = useRouter()
@@ -32,7 +31,7 @@ export default function Home() {
   }, [])
   return (
     <div>
-      <Navbar signup />
+      <Navbar />
       <LoginSection />
     </div>
   )
