@@ -1,9 +1,10 @@
 import styles from './SimpleButton.module.css'
+import { Button } from '@mui/material';
 
 const SimpleButton = ({ onClick, children, passStyle }) => (
-  <button onClick={onClick} style={passStyle} className={styles.button} type='button'>
+  <Button type="submit" onClick={onClick} style={passStyle} className={styles.button}>
     {children}
-  </button>
+  </Button>
 )
 
 export default SimpleButton

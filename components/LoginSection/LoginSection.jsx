@@ -20,7 +20,7 @@ const LoginSection = () => {
         password: '',
     })
 
-    const handleClick = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
         window.grecaptcha.ready(() => {
@@ -55,50 +55,52 @@ const LoginSection = () => {
     const emailError = loginData.email != '' && !validateEmail(loginData.email)
     return (
         <div className={styles.loginSection}>
-            <div className={styles.loginContent}>
-                <div className={styles.title}>
-                    <Image
-                        src='/vertical-cor-fb.svg' width={150} height={150} alt="Hemocione Logo" />
-                </div>
-                <div className={`${styles.field} ${styles.emailField}`}>
-                    <TextField
-                        fullWidth
-                        onChange={handleEmailChange}
-                        value={loginData.email}
-                        error={emailError}
-                        helperText={emailError && 'Email inválido'}
-                        id="email"
-                        label="Email"
-                        variant="outlined" />
-                </div>
-                <div className={styles.field}>
-                    <TextField
-                        fullWidth
-                        onChange={handlePassChange}
-                        value={loginData.password}
-                        id="password"
-                        label="Senha"
-                        type="password"
-                        variant="outlined" />
-                </div>
-                <p style={{ textAlign: 'center' }}>
-                    Ainda não possui conta?
-                    <b style={{
+            <form onSubmit={handleSubmit}>
+                <div className={styles.loginContent}>
+                    <div className={styles.title}>
+                        <Image
+                            src='/vertical-cor-fb.svg' width={150} height={150} alt="Hemocione Logo" />
+                    </div>
+                    <div className={`${styles.field} ${styles.emailField}`}>
+                        <TextField
+                            fullWidth
+                            onChange={handleEmailChange}
+                            value={loginData.email}
+                            error={emailError}
+                            helperText={emailError && 'Email inválido'}
+                            id="email"
+                            label="Email"
+                            variant="outlined" />
+                    </div>
+                    <div className={styles.field}>
+                        <TextField
+                            fullWidth
+                            onChange={handlePassChange}
+                            value={loginData.password}
+                            id="password"
+                            label="Senha"
+                            type="password"
+                            variant="outlined" />
+                    </div>
+                    <p style={{ textAlign: 'center' }}>
+                        Ainda não possui conta?
+                        <b style={{
                             color: 'rgb(200, 4, 10)'
                         }}>
-                        <Link href={redirect ? `signup/?redirect=${redirect}` : 'signup'} passHref>
-                            {" Cadastre-se agora!"}
-                        </Link>
-                    </b>
-                </p>
-                {loading
-                    ? <div style={{ 'textAlign': 'center', width: '100%' }}>
-                        <CircularProgress style={{ 'display': 'inline-block', 'color': 'rgb(224, 14, 22)' }} />
-                    </div>
-                    : <SimpleButton onClick={handleClick} passStyle={{ width: '100%' }}>
-                        Entrar
-                    </SimpleButton>}
-            </div>
+                            <Link href={redirect ? `signup/?redirect=${redirect}` : 'signup'} passHref>
+                                {" Cadastre-se agora!"}
+                            </Link>
+                        </b>
+                    </p>
+                    {loading
+                        ? <div style={{ 'textAlign': 'center', width: '100%' }}>
+                            <CircularProgress style={{ 'display': 'inline-block', 'color': 'rgb(224, 14, 22)' }} />
+                        </div>
+                        : <SimpleButton onClick={handleSubmit} passStyle={{ width: '100%' }}>
+                            Entrar
+                        </SimpleButton>}
+                </div>
+            </form>
         </div >
     )
 }
