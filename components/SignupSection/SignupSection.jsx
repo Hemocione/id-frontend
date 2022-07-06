@@ -55,7 +55,7 @@ const SignupSection = () => {
         }).catch((error) => {
             console.log(error)
             setLoading(false)
-            setErrorText("Ocorreu um erro inesperado. Por favor, tente novamente.")
+            setErrorText(error.response.data.message || "Ocorreu um erro inesperado. Por favor, tente novamente.")
         })
     }
     const handleChange = (key) => (

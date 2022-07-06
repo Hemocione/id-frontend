@@ -43,7 +43,7 @@ const LoginSection = () => {
         }).catch((error) => {
             setLoading(false)
             console.log(error)
-            setErrorText(error.message || "Ocorreu um erro inesperado. Por favor, tente novamente.")
+            setErrorText(error.response.data.message || "Ocorreu um erro inesperado. Por favor, tente novamente.")
         })
     }
     const handleEmailChange = (e) => {
