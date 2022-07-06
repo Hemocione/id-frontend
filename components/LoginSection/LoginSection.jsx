@@ -61,6 +61,7 @@ const LoginSection = () => {
                         <Image
                             src='/vertical-cor-fb.svg' width={150} height={150} alt="Hemocione Logo" />
                     </div>
+                    <p className={styles.errorText}>{errorText}</p>
                     <div className={`${styles.field} ${styles.emailField}`}>
                         <TextField
                             fullWidth
