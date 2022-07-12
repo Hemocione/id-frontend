@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { SimpleButton } from '..'
 import Link from 'next/link'
 import { validateEmail, validateCPF, validatePhone } from '../../utils/validators'
-import { postSignUp, } from '../../utils/api';
+import { signUp, } from '../../utils/api';
 import { CircularProgress } from '@mui/material';
 import styles from './SignupSection.module.css'
 import { useRouter } from 'next/router';
@@ -45,7 +45,7 @@ const SignupSection = () => {
         });
     }
     const signUp = (captchaToken) => {
-        postSignUp({ ...signupData, 'g-recaptcha-response': captchaToken }).then((response) => {
+        signUp({ ...signupData, 'g-recaptcha-response': captchaToken }).then((response) => {
             setLoading(false)
             if (response.status === 200) {
                 window.location.href = redirect || 'https://www.hemocione.com.br/'

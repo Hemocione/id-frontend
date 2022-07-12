@@ -3,7 +3,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { SimpleButton } from '..'
 import { validateEmail } from '../../utils/validators'
-import { postLogin } from '../../utils/api';
+import { login } from '../../utils/api';
 import { setCookie } from '../../utils/cookie'
 import { CircularProgress } from '@mui/material';
 import styles from './LoginSection.module.css'
@@ -32,7 +32,7 @@ const LoginSection = () => {
         });
     }
     const login = (captchaToken) => {
-        postLogin({ ...loginData, captchaToken: captchaToken }).then((response) => {
+        login({ ...loginData, captchaToken: captchaToken }).then((response) => {
             setLoading(false)
             if (response.status === 200) {
                 setCookie(process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY, response.data.token, 30, 'hemocione.com.br')

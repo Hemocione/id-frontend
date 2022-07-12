@@ -11,20 +11,20 @@ const apiClient = axios.create(
     }
 )
 
-const postLogin = ({ email, password, captchaToken }) => {
+const login = ({ email, password, captchaToken }) => {
     return (apiClient.post(`/users/login`, {
         'email': email,
         'password': password,
         'g-recaptcha-response': captchaToken,
     }))
 }
-const postSignUp = (signUpData) => {
+const signUp = (signUpData) => {
     return (apiClient.post(`/users/register`, signUpData))
 }
-const postValidate = ({ token }) => {
-    return (apiClient.post(`/users/validate-token`, {
-        'authUser': token,
-    }))
+const validateUserToken = ({ token }) => {
+    return (apiClient.get(`/users/validate-token`, { headers: {
+        'Authorization': token,
+    }}))
 }
 
-export { postLogin, postSignUp, postValidate }
+export { login, signUp, validateUserToken }

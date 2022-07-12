@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Navbar, LoginSection } from '../components'
-import { postValidate } from '../utils/api'
+import { validateUserToken } from '../utils/api'
 import { getCookie } from '../utils/cookie'
 import { useRouter } from 'next/router';
 
@@ -11,7 +11,7 @@ export default function Home() {
   useEffect(() => {
     let curId = getCookie(process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY)
     if (curId) {
-      postValidate(curId).then((res) => {
+      validateUserToken(curId).then((res) => {
         if (response.status === 200) {
           window.location.href = redirect || 'https://www.hemocione.com.br/'
         }
