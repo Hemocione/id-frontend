@@ -26,8 +26,9 @@ const LoginSection = () => {
         window.grecaptcha.ready(() => {
             window.grecaptcha.execute(process.env.NEXT_PUBLIC_SITE_KEY, { action: 'submit' }).then(captchaToken => {
                 login(captchaToken)
-            }).catch((error) => {
-                console.log('Captcha erro')
+            }).catch((_) => {
+                setLoading(false)
+                setErrorText('Captcha Inválido! Você é um robô?')
             })
         });
     }
@@ -42,7 +43,6 @@ const LoginSection = () => {
             setErrorText(response.data.message);
         }).catch((error) => {
             setLoading(false)
-            console.log(error)
             setErrorText(error.response.data.message || "Ocorreu um erro inesperado. Por favor, tente novamente.")
         })
     }
