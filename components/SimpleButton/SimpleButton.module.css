@@ -1,16 +1,16 @@
 .button {
   height: 3em;
-  background-color: #D1151A;
+  background-color: #D1151A !important;
   font-size: 1em;
   width: 8em;
-  color: #FFFFFF;
+  color: #FFFFFF !important;
   border: none;
   border-radius: 5px;
   align-self: center;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.42, 0, 0.58, 1);
+  transition: all 0.3s cubic-bezier(0.42, 0, 0.58, 1) !important;
 }
 
 .button:hover {
-  background-color: #91151A;
+  background-color: #91151A !important;
 }
