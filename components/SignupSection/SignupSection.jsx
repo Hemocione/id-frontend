@@ -40,11 +40,14 @@ const SignupSection = () => {
         setLoading(true);
         window.grecaptcha.ready(() => {
             window.grecaptcha.execute(process.env.NEXT_PUBLIC_SITE_KEY, { action: 'submit' }).then(captchaToken => {
-                signUp(captchaToken)
+                apiSignUp(captchaToken)
+            }).catch((_) => {
+                setLoading(false)
+                setErrorText('Captcha Inválido! Você é um robô?')
             });
         });
     }
-    const signUp = (captchaToken) => {
+    const apiSignUp = (captchaToken) => {
         signUp({ ...signupData, 'g-recaptcha-response': captchaToken }).then((response) => {
             setLoading(false)
             if (response.status === 200) {

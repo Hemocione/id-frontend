@@ -25,14 +25,16 @@ const LoginSection = () => {
         setLoading(true);
         window.grecaptcha.ready(() => {
             window.grecaptcha.execute(process.env.NEXT_PUBLIC_SITE_KEY, { action: 'submit' }).then(captchaToken => {
-                login(captchaToken)
+                console.log(captchaToken)
+                apiLogin(captchaToken)
             }).catch((_) => {
                 setLoading(false)
                 setErrorText('Captcha Inválido! Você é um robô?')
             })
         });
     }
-    const login = (captchaToken) => {
+
+    const apiLogin = (captchaToken) => {
         login({ ...loginData, captchaToken: captchaToken }).then((response) => {
             setLoading(false)
             if (response.status === 200) {
@@ -46,13 +48,17 @@ const LoginSection = () => {
             setErrorText(error.response.data.message || "Ocorreu um erro inesperado. Por favor, tente novamente.")
         })
     }
+
     const handleEmailChange = (e) => {
         setloginData({ ...loginData, email: e.target.value })
     }
+
     const handlePassChange = (e) => {
         setloginData({ ...loginData, password: e.target.value })
     }
+
     const emailError = loginData.email != '' && !validateEmail(loginData.email)
+
     return (
         <div className={styles.loginSection}>
             <form onSubmit={handleSubmit}>
