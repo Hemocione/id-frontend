@@ -51,7 +51,8 @@ const SignupSection = () => {
         signUp({ ...signupData, 'g-recaptcha-response': captchaToken }).then((response) => {
             setLoading(false)
             if (response.status === 200) {
-                window.location.href = redirect || 'https://www.hemocione.com.br/'
+                const locationRedirect = redirect || 'https://www.hemocione.com.br/'
+                router.push(locationRedirect)
                 return
             }
             setErrorText(response.data.message);

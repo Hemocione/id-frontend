@@ -39,7 +39,8 @@ const LoginSection = () => {
             setLoading(false)
             if (response.status === 200) {
                 setCookie(process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY, response.data.token, 30, 'hemocione.com.br')
-                window.location.href = redirect || 'https://www.hemocione.com.br/'
+                const locationRedirect = redirect || 'https://www.hemocione.com.br/'
+                router.push(locationRedirect)
                 return
             }
             setErrorText(response.data.message);

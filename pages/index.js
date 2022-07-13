@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Navbar, LoginSection } from '../components'
 import { validateUserToken } from '../utils/api'
-import { getCookie } from '../utils/cookie'
+import { deleteCookie, getCookie } from '../utils/cookie'
 import { useRouter } from 'next/router';
 
 export default function Home() {
@@ -9,12 +9,17 @@ export default function Home() {
   const { redirect } = router.query
 
   useEffect(() => {
-    let curId = getCookie(process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY)
-    if (curId) {
-      validateUserToken(curId).then((res) => {
-        if (response.status === 200) {
-          window.location.href = redirect || 'https://www.hemocione.com.br/'
+    let userToken = getCookie(process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY)
+    if (userToken) {
+      validateUserToken(userToken).then((res) => {
+        if (res.status === 200) {
+          const redirectLocation = redirect || 'https://www.hemocione.com.br/'
+          router.push(redirectLocation)
+          return
         }
+        deleteCookie(process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY)
+      }).catch((_) => {
+        deleteCookie(process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY)
       })
     }
   })
