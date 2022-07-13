@@ -11,6 +11,7 @@ import { CircularProgress } from '@mui/material';
 import styles from './SignupSection.module.css'
 import { useRouter } from 'next/router';
 import Image from 'next/image'
+import { setCookie } from '../../utils/cookie'
 
 const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
 const genders = ['M', 'F', 'O']
@@ -50,8 +51,9 @@ const SignupSection = () => {
     const apiSignUp = (captchaToken) => {
         signUp({ ...signupData, 'g-recaptcha-response': captchaToken }).then((response) => {
             setLoading(false)
-            if (response.status === 200) {
-                const locationRedirect = redirect || 'https://www.hemocione.com.br/'
+            if (response.status === 201) {
+                setCookie(process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY, response.data.token, 15, 'hemocione.com.br')
+                const locationRedirect = redirect || process.env.NEXT_PUBLIC_MAIN_SITE || 'https://www.hemocione.com.br/'
                 router.push(locationRedirect)
                 return
             }

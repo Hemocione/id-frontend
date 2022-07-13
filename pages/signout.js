@@ -10,7 +10,7 @@ export default function SignOut() {
     
     useEffect(() => {
         deleteCookie(process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY)
-        const redirectLocation = redirect || process.env.NEXT_PUBLIC_MAIN_FRONTEND_URL || 'https://www.hemocione.com.br/'
+        const redirectLocation = redirect || process.env.NEXT_PUBLIC_MAIN_SITE || process.env.NEXT_PUBLIC_MAIN_FRONTEND_URL || 'https://www.hemocione.com.br/'
         router.push(redirectLocation)
     })
 

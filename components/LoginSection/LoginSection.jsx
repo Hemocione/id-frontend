@@ -38,8 +38,8 @@ const LoginSection = () => {
         login({ ...loginData, captchaToken: captchaToken }).then((response) => {
             setLoading(false)
             if (response.status === 200) {
-                setCookie(process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY, response.data.token, 30, 'hemocione.com.br')
-                const locationRedirect = redirect || 'https://www.hemocione.com.br/'
+                setCookie(process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY, response.data.token, 15, 'hemocione.com.br')
+                const locationRedirect = redirect || process.env.NEXT_PUBLIC_MAIN_SITE || 'https://www.hemocione.com.br/'
                 router.push(locationRedirect)
                 return
             }

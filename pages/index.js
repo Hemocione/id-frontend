@@ -13,7 +13,7 @@ export default function Home() {
     if (userToken) {
       validateUserToken(userToken).then((res) => {
         if (res.status === 200) {
-          const redirectLocation = redirect || 'https://www.hemocione.com.br/'
+          const redirectLocation = redirect || process.env.NEXT_PUBLIC_MAIN_SITE || 'https://www.hemocione.com.br/'
           router.push(redirectLocation)
           return
         }
