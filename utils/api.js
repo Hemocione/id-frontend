@@ -23,7 +23,7 @@ const signUp = (signUpData) => {
 }
 const validateUserToken = ({ token }) => {
     return (apiClient.get(`/users/validate-token`, { headers: {
-        'Authorization': token,
+        'Authorization': 'Bearer ' + token,
     }}))
 }
 
