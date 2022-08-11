@@ -11,7 +11,7 @@ export default function Home() {
   useEffect(() => {
     let userToken = getCookie(process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY)
     if (userToken) {
-      validateUserToken(userToken).then((res) => {
+      validateUserToken({ token: userToken }).then((res) => {
         if (res.status === 200) {
           const redirectLocation = redirect || process.env.NEXT_PUBLIC_MAIN_SITE || 'https://www.hemocione.com.br/'
           router.push(redirectLocation)
