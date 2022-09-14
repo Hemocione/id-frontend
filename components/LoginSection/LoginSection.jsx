@@ -109,7 +109,7 @@ const LoginSection = () => {
                         </SimpleButton>}
                 </div>
             </form>
-        </div >
+        </div>
     )
 }
 
