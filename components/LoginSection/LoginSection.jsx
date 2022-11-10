@@ -104,7 +104,7 @@ const LoginSection = () => {
                         ? <div style={{ 'textAlign': 'center', width: '100%' }}>
                             <CircularProgress style={{ 'display': 'inline-block', 'color': 'rgb(224, 14, 22)' }} />
                         </div>
-                        : <SimpleButton onClick={handleSubmit} passStyle={{ width: '100%' }}>
+                        : <SimpleButton disabled={!(loginData.email.length && loginData.password.length)} onClick={handleSubmit} passStyle={{ width: '100%' }}>
                             Entrar
                         </SimpleButton>}
                 </div>
