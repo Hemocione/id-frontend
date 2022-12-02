@@ -5,7 +5,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useState } from 'react'
 import { SimpleButton } from '..'
 import Link from 'next/link'
-import { validateEmail, validateCPF, validatePhone } from '../../utils/validators'
+import { validateEmail, validatePhone } from '../../utils/validators'
 import { signUp, } from '../../utils/api';
 import { CircularProgress } from '@mui/material';
 import styles from './SignupSection.module.css'
@@ -27,7 +27,6 @@ const SignupSection = () => {
         surName: '',
         bloodType: '',
         gender: '',
-        document: '',
         phone: '',
         birthDate: undefined,
         email: '',
@@ -73,12 +72,10 @@ const SignupSection = () => {
     )
     const handleBday = value => {
         const copyDict = { ...signupData }
-        console.log(value)
         copyDict['birthDate'] = value
         setSignupData(copyDict)
     }
     const emailError = signupData.email != '' && !validateEmail(signupData.email)
-    const cpfError = signupData.document != '' && !validateCPF(signupData.document)
     const passError = signupData.password != '' && signupData.password.length < 7
     const passConfError = signupData.passConfirmation != ''
         && signupData.passConfirmation != signupData.password
@@ -119,17 +116,6 @@ const SignupSection = () => {
                             helperText={emailError && 'Email inválido'}
                             id="email"
                             label="Email"
-                            variant="outlined" />
-                    </FormControl>
-                    <FormControl fullWidth sx={{ 'margin-bottom': '15px' }}>
-                        <TextField
-                            fullWidth
-                            onChange={handleChange('document')}
-                            value={signupData.document}
-                            error={cpfError}
-                            helperText={cpfError && 'CPF inválido'}
-                            id="CPF"
-                            label="CPF"
                             variant="outlined" />
                     </FormControl>
                     <FormControl fullWidth sx={{ 'margin-bottom': '15px' }}>
