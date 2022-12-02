@@ -156,6 +156,7 @@ const SignupSection = () => {
                                 label="Data de nascimento"
                                 value={signupData.birthDate}
                                 onChange={handleBday}
+                                inputFormat="dd/MM/yyyy"
                                 renderInput={(params) => <TextField {...params} />}
                             />
                         </LocalizationProvider>
