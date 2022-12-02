@@ -75,6 +75,12 @@ const SignupSection = () => {
         copyDict['birthDate'] = value
         setSignupData(copyDict)
     }
+
+    const handlePhone = value => {
+        const copyDict = { ...signupData }
+        copyDict['phone'] = value.trim().replace(/\D/g, "");
+        setSignupData(copyDict)
+    }
     const emailError = signupData.email != '' && !validateEmail(signupData.email)
     const passError = signupData.password != '' && signupData.password.length < 7
     const passConfError = signupData.passConfirmation != ''
@@ -157,7 +163,7 @@ const SignupSection = () => {
                     <FormControl fullWidth sx={{ 'margin-bottom': '15px' }}>
                         <TextField
                             fullWidth
-                            onChange={handleChange('phone')}
+                            onChange={handlePhone}
                             value={signupData.phone}
                             error={phoneError}
                             helperText={phoneError && 'Telefone inválido (Inserir DDD)'}
