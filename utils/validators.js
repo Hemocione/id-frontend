@@ -7,7 +7,7 @@ const validateEmail = (email) => {
 }
 const validatePhone = (phone) => {
     const trimmedPhone = String(phone).trim().replace(/\D/g, '');
-    return trimmedPhone.length <= 13 || trimmedPhone.length === 11 // include DDD and/or country code
+    return trimmedPhone.length === 13 || trimmedPhone.length === 11 // include DDD and/or country code
 }
 
 const validateCPF = (cpf) => {
