@@ -14,3 +14,8 @@
 .button:hover {
   background-color: #91151A !important;
 }
+
+.button:disabled {
+  filter: grayscale(25%);
+  opacity: .5;
+}

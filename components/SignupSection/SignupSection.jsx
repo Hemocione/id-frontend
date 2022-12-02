@@ -78,7 +78,7 @@ const SignupSection = () => {
 
     const handlePhone = value => {
         const copyDict = { ...signupData }
-        copyDict['phone'] = value.trim().replace(/\D/g, "");
+        copyDict['phone'] = String(value).trim().replace(/\D/g, "");
         setSignupData(copyDict)
     }
     const emailError = signupData.email != '' && !validateEmail(signupData.email)
@@ -86,6 +86,20 @@ const SignupSection = () => {
     const passConfError = signupData.passConfirmation != ''
         && signupData.passConfirmation != signupData.password
     const phoneError = signupData.phone != '' && !validatePhone(signupData.phone)
+
+    const disabledButton = signupData.givenName == '' ||
+                           signupData.surName == '' ||
+                           signupData.bloodType == '' ||
+                           signupData.email == '' ||
+                           signupData.password == '' ||
+                           signupData.passConfirmation == '' ||
+                           signupData.gender == '' ||
+                           signupData.birthDate == undefined ||
+                           passConfError ||
+                           passError ||
+                           emailError ||
+                           phoneError
+
     return (
         <div className={styles.loginSection}>
             <div className={styles.loginContent}>
@@ -210,7 +224,7 @@ const SignupSection = () => {
                         ? <div style={{ 'textAlign': 'center', width: '100%' }}>
                             <CircularProgress style={{ 'display': 'inline-block', 'color': 'rgb(224, 14, 22)' }} />
                         </div>
-                        : <SimpleButton onClick={handleSubmit} passStyle={{ width: '100%' }}>
+                        : <SimpleButton disabled={disabledButton} onClick={handleSubmit} passStyle={{ width: '100%' }}>
                             Criar conta
                         </SimpleButton>}
                 </form>
