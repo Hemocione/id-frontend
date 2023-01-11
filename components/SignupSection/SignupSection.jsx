@@ -1,4 +1,13 @@
-import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
+import {
+    FormGroup,
+    FormControl,
+    FormControlLabel,
+    Checkbox,
+    InputLabel,
+    MenuItem,
+    Select,
+    TextField
+} from '@mui/material'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -29,12 +38,15 @@ const SignupSection = () => {
         gender: '',
         document: '',
         phone: '',
-        birthDate: undefined,
+        birthDate: '',
         email: '',
         gender: '',
         password: '',
         passConfirmation: '',
     })
+    const [acceptedTerms, setAcceptedTerms] = useState(false)
+    const [acceptedPrivacyPolicy, setAcceptedPrivacyPolicy] = useState(false)
+    const [allowFormSubmission, setAllowFormSubmission] = useState(false)
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -69,6 +81,7 @@ const SignupSection = () => {
             const copyDict = { ...signupData }
             copyDict[key] = e.target.value
             setSignupData(copyDict)
+            handleFormSubmissionPermission()
         }
     )
     const handleBday = value => {
@@ -77,6 +90,30 @@ const SignupSection = () => {
         copyDict['birthDate'] = value
         setSignupData(copyDict)
     }
+    function handleTermsCheckBox() {
+        setAcceptedTerms(!acceptedTerms)
+        handleFormSubmissionPermission()
+    }
+    function handlePolicyPrivacyCheckbox() {
+        setAcceptedPrivacyPolicy(!acceptedPrivacyPolicy)
+        handleFormSubmissionPermission()
+    }
+    function handleFormSubmissionPermission() {
+        console.log({ acceptedTerms, acceptedPrivacyPolicy });
+        setAllowFormSubmission(
+            signupData.givenName.trim() &&
+            signupData.surName.trim() &&
+            signupData.bloodType.trim() &&
+            signupData.gender.trim() &&
+            signupData.document.trim() &&
+            signupData.phone.trim() &&
+            signupData.birthDate &&
+            signupData.email.trim() &&
+            signupData.password &&
+            signupData.passConfirmation
+        )
+    }
+
     const emailError = signupData.email != '' && !validateEmail(signupData.email)
     const cpfError = signupData.document != '' && !validateCPF(signupData.document)
     const passError = signupData.password != '' && signupData.password.length < 7
@@ -91,7 +128,7 @@ const SignupSection = () => {
                         src='/vertical-cor-fb.svg' width={150} height={150} alt="Hemocione Logo" />
                 </div>
                 <p className={styles.errorText}>{errorText}</p>
-                <form onSubmit={handleSubmit}>
+                <FormGroup onSubmit={handleSubmit}>
                     <FormControl fullWidth sx={{ 'margin-bottom': '15px' }}>
                         <TextField
                             fullWidth
@@ -203,6 +240,28 @@ const SignupSection = () => {
                             type="password"
                             variant="outlined" />
                     </FormControl>
+                    <FormControlLabel control={
+                        <Checkbox
+                        checked={acceptedTerms}
+                        onChange={handleTermsCheckBox}
+                            sx={{
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: 20,
+                                    color: '#D1151A'
+                                },
+                            }} />}
+                        label="Eu concordo com os <a src='https://google.com'>Termos de Uso</a>" />
+                    <FormControlLabel control={
+                        <Checkbox
+                        checked={acceptedPrivacyPolicy}
+                        onChange={handlePolicyPrivacyCheckbox}
+                            sx={{
+                                '& .MuiSvgIcon-root': {
+                                    fontSize: 20,
+                                    color: '#D1151A'
+                                },
+                            }} />}
+                        label="Eu concordo com a <a src='https://google.com'>Política de Privacidade</a>" />
                     <p style={{ textAlign: 'center' }}>
                         Já possui conta?
                         <b style={{
@@ -217,10 +276,10 @@ const SignupSection = () => {
                         ? <div style={{ 'textAlign': 'center', width: '100%' }}>
                             <CircularProgress style={{ 'display': 'inline-block', 'color': 'rgb(224, 14, 22)' }} />
                         </div>
-                        : <SimpleButton onClick={handleSubmit} passStyle={{ width: '100%' }}>
+                        : <SimpleButton disabled={!allowFormSubmission} onClick={handleSubmit} passStyle={{ width: '100%' }}>
                             Criar conta
                         </SimpleButton>}
-                </form>
+                </FormGroup>
             </div>
         </div >
     )
