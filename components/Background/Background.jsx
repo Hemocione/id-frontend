@@ -1,6 +1,4 @@
-import styles from './Background.module.css'
+import styles from "./Background.module.css";
 
-const Background = () => (
-    <div className={styles.coloredStripe} />
-)
-export default Background
+const Background = () => <div className={styles.coloredStripe} />;
+export default Background;
