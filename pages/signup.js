@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Navbar, SignupSection } from "../components";
+import { SignupSection } from "../components";
 
 export default function Signup() {
   useEffect(() => {
@@ -12,10 +12,5 @@ export default function Signup() {
       document.body.appendChild(script);
     }
   }, []);
-  return (
-    <div>
-      <Navbar />
-      <SignupSection />
-    </div>
-  );
+  return <SignupSection />;
 }

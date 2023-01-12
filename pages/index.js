@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Navbar, LoginSection } from "../components";
+import { LoginSection } from "../components";
 import { validateUserToken } from "../utils/api";
 import { deleteCookie, getCookie } from "../utils/cookie";
 import { useRouter } from "next/router";
@@ -39,17 +39,5 @@ export default function Home() {
       document.body.appendChild(script);
     }
   }, []);
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        width: "100vw",
-      }}
-    >
-      <Navbar />
-      <LoginSection />
-    </div>
-  );
+  return <LoginSection />;
 }
