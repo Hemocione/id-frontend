@@ -6,11 +6,8 @@ const validateEmail = (email) => {
         )
 }
 const validatePhone = (phone) => {
-    return String(phone)
-        .toLowerCase()
-        .match(
-            /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im
-        )
+    const trimmedPhone = String(phone).trim().replace(/\D/g, '');
+    return trimmedPhone.length === 13 || trimmedPhone.length === 11 // include DDD and/or country code
 }
 
 const validateCPF = (cpf) => {
