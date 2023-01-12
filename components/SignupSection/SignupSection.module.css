@@ -14,6 +14,7 @@
 
 .loginSection {
     background-color: white;
+    width: 100%;
 }
 
 .loginContent {
@@ -32,4 +33,23 @@
 
 .errorText {
     color: red;
+    margin-bottom: 0;
+}
+
+.checkBoxRow {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 4px;
+}
+
+.legalDocumentLink {
+    color:#D1151A;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.legalDocumentLink:hover {
+    opacity: 0.8;
 }

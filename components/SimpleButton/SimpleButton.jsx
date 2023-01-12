@@ -1,10 +1,18 @@
-import { Button } from '@mui/material'
-import styles from './SimpleButton.module.css'
+import { LoadingButton } from "@mui/lab";
+import styles from "./SimpleButton.module.css";
 
-const SimpleButton = ({ disabled, onClick, children, passStyle }) => (
-  <Button disabled={disabled} type="submit" onClick={onClick} style={passStyle} className={styles.button}>
+const SimpleButton = ({ disabled, onClick, children, passStyle, loading }) => (
+  <LoadingButton
+    loading={loading}
+    disabled={disabled}
+    type="submit"
+    onClick={onClick}
+    style={passStyle}
+    className={styles.button}
+    variant="outlined"
+  >
     {children}
-  </Button>
-)
+  </LoadingButton>
+);
 
-export default SimpleButton
+export default SimpleButton;
