@@ -16,12 +16,15 @@ import { SimpleButton } from "..";
 import Link from "next/link";
 import { validateEmail, validatePhone } from "../../utils/validators";
 import { signUp } from "../../utils/api";
-import { CircularProgress } from "@mui/material";
 import styles from "./SignupSection.module.css";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { setCookie } from "../../utils/cookie";
 
+const {
+  NEXT_PUBLIC_LEGAL_PRIVACY_POLICY_URL,
+  NEXT_PUBLIC_LEGAL_TERMS_OF_USE_URL,
+} = process.env;
 const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const genders = ["M", "F", "O"];
 const genderMapping = {
@@ -145,9 +148,8 @@ const SignupSection = () => {
             alt="Hemocione Logo"
           />
         </div>
-        <p className={styles.errorText}>{errorText}</p>
         <FormGroup onSubmit={handleSubmit}>
-          <FormControl fullWidth sx={{ "margin-bottom": "15px" }}>
+          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
             <TextField
               fullWidth
               onChange={handleChange("givenName")}
@@ -157,7 +159,7 @@ const SignupSection = () => {
               variant="outlined"
             />
           </FormControl>
-          <FormControl fullWidth sx={{ "margin-bottom": "15px" }}>
+          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
             <TextField
               fullWidth
               onChange={handleChange("surName")}
@@ -167,7 +169,7 @@ const SignupSection = () => {
               variant="outlined"
             />
           </FormControl>
-          <FormControl fullWidth sx={{ "margin-bottom": "15px" }}>
+          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
             <TextField
               fullWidth
               onChange={handleChange("email")}
@@ -179,7 +181,7 @@ const SignupSection = () => {
               variant="outlined"
             />
           </FormControl>
-          <FormControl fullWidth sx={{ "margin-bottom": "15px" }}>
+          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
             <InputLabel id="demo-simple-select-label">
               Tipo sanguíneo
             </InputLabel>
@@ -197,7 +199,7 @@ const SignupSection = () => {
               ))}
             </Select>
           </FormControl>
-          <FormControl fullWidth sx={{ "margin-bottom": "15px" }}>
+          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
             <InputLabel id="demo-simple-select-label">Gênero</InputLabel>
             <Select
               id="gender"
@@ -213,7 +215,7 @@ const SignupSection = () => {
               ))}
             </Select>
           </FormControl>
-          <FormControl fullWidth sx={{ "margin-bottom": "15px" }}>
+          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
             <LocalizationProvider fullWidth dateAdapter={AdapterDateFns}>
               <DatePicker
                 label="Data de nascimento"
@@ -224,7 +226,7 @@ const SignupSection = () => {
               />
             </LocalizationProvider>
           </FormControl>
-          <FormControl fullWidth sx={{ "margin-bottom": "15px" }}>
+          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
             <TextField
               fullWidth
               onChange={handleChange("phone")}
@@ -239,7 +241,7 @@ const SignupSection = () => {
               variant="outlined"
             />
           </FormControl>
-          <FormControl fullWidth sx={{ "margin-bottom": "15px" }}>
+          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
             <TextField
               fullWidth
               onChange={handleChange("password")}
@@ -254,7 +256,7 @@ const SignupSection = () => {
               variant="outlined"
             />
           </FormControl>
-          <FormControl fullWidth sx={{ "margin-bottom": "15px" }}>
+          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
             <TextField
               fullWidth
               onChange={handleChange("passConfirmation")}
@@ -277,17 +279,49 @@ const SignupSection = () => {
                 },
               }}
             />
+            <span>
+              Eu declaro que aceito os{" "}
+              <a
+                href={NEXT_PUBLIC_LEGAL_TERMS_OF_USE_URL}
+                rel="noreferrer"
+                target="_blank"
+                className={styles.legalDocumentLink}
+              >
+                Termos de Uso
+              </a>
+            </span>
           </div>
-          <Checkbox
-            checked={acceptedPrivacyPolicy}
-            onChange={handlePolicyPrivacyCheckbox}
-            sx={{
-              "& .MuiSvgIcon-root": {
-                color: "#D1151A",
-              },
-            }}
-          />
-          <p style={{ textAlign: "center" }}>
+          <div className={styles.checkBoxRow}>
+            <Checkbox
+              checked={acceptedPrivacyPolicy}
+              onChange={handlePolicyPrivacyCheckbox}
+              sx={{
+                "& .MuiSvgIcon-root": {
+                  color: "#D1151A",
+                },
+              }}
+            />
+            <span>
+              Eu declaro que aceito a{" "}
+              <a
+                href={NEXT_PUBLIC_LEGAL_PRIVACY_POLICY_URL}
+                rel="noreferrer"
+                target="_blank"
+                className={styles.legalDocumentLink}
+              >
+                Política de Privacidade
+              </a>
+            </span>
+          </div>
+          <SimpleButton
+            loading={loading}
+            disabled={disabledButton}
+            onClick={handleSubmit}
+            passStyle={{ width: "100%", margin: "16px auto" }}
+          >
+            {loading ? "" : "Criar conta"}
+          </SimpleButton>
+          <p style={{ textAlign: "center", margin: 0 }}>
             Já possui conta?
             <b
               style={{
@@ -299,21 +333,7 @@ const SignupSection = () => {
               </Link>
             </b>
           </p>
-          {loading ? (
-            <div style={{ textAlign: "center", width: "100%" }}>
-              <CircularProgress
-                style={{ display: "inline-block", color: "rgb(224, 14, 22)" }}
-              />
-            </div>
-          ) : (
-            <SimpleButton
-              disabled={disabledButton}
-              onClick={handleSubmit}
-              passStyle={{ width: "100%" }}
-            >
-              Criar conta
-            </SimpleButton>
-          )}
+          <p className={styles.errorText}>{errorText}</p>
         </FormGroup>
       </div>
     </div>

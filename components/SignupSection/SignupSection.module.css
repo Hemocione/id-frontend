@@ -32,11 +32,22 @@
 
 .errorText {
     color: red;
+    margin-bottom: 0;
 }
 
 .checkBoxRow {
     width: 100%;
     display: flex;
-    align-items: flex-start;
-    gap: 16px
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.legalDocumentLink {
+    color:#D1151A;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.legalDocumentLink:hover {
+    opacity: 0.8;
 }
