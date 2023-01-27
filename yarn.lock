@@ -424,19 +424,33 @@
     "prop-types" "^15.8.1"
     "react-is" "^18.2.0"
 
+"@mui/base@5.0.0-alpha.115":
+  "integrity" "sha512-OGQ84whT/yNYd6xKCGGS6MxqEfjVjk5esXM7HP6bB2Rim7QICUapxZt4nm8q39fpT08rNDkv3xPVqDDwRdRg1g=="
+  "resolved" "https://registry.npmjs.org/@mui/base/-/base-5.0.0-alpha.115.tgz"
+  "version" "5.0.0-alpha.115"
+  dependencies:
+    "@babel/runtime" "^7.20.7"
+    "@emotion/is-prop-valid" "^1.2.0"
+    "@mui/types" "^7.2.3"
+    "@mui/utils" "^5.11.2"
+    "@popperjs/core" "^2.11.6"
+    "clsx" "^1.2.1"
+    "prop-types" "^15.8.1"
+    "react-is" "^18.2.0"
+
 "@mui/core-downloads-tracker@^5.11.4":
   "integrity" "sha512-jWVwGM3vG4O0sXcW0VcIl+njCWbGCBF5vvjRpuKJajrz51AD7D6+fP1SkInZXVk5pRHf6Bnk/Yj9Of9gXxb/hA=="
   "resolved" "https://registry.npmjs.org/@mui/core-downloads-tracker/-/core-downloads-tracker-5.11.4.tgz"
   "version" "5.11.4"
 
 "@mui/lab@^5.0.0-alpha.115":
-  "integrity" "sha512-3u9gRiTboC1tj1Vf8Fse1EaIaJaBwE5M/9NTr4Yp/7seFpIFgL5t/2auM+r9mohqzHT6wP6HWvPAB+OZ9q0/yg=="
-  "resolved" "https://registry.npmjs.org/@mui/lab/-/lab-5.0.0-alpha.115.tgz"
-  "version" "5.0.0-alpha.115"
+  "integrity" "sha512-g+EN4jnoy6bwf3U/4q+L9gAVXoOky+T+VEDWzOP3BZLVghO63X0oaBx12TPOCnGDJKm0crFsIiyQQmYQkaGJqA=="
+  "resolved" "https://registry.npmjs.org/@mui/lab/-/lab-5.0.0-alpha.117.tgz"
+  "version" "5.0.0-alpha.117"
   dependencies:
     "@babel/runtime" "^7.20.7"
-    "@mui/base" "5.0.0-alpha.113"
-    "@mui/system" "^5.11.4"
+    "@mui/base" "5.0.0-alpha.115"
+    "@mui/system" "^5.11.5"
     "@mui/types" "^7.2.3"
     "@mui/utils" "^5.11.2"
     "clsx" "^1.2.1"
@@ -480,10 +494,10 @@
     "csstype" "^3.1.1"
     "prop-types" "^15.8.1"
 
-"@mui/system@^5.11.4", "@mui/system@^5.2.3":
-  "integrity" "sha512-fE2Ts33V5zh7ouciwXgMm/a6sLvjIj9OMeojuHNYY7BStTxparC/Fp9CNUZNJwt76U6ZJC59aYScFSRQKbW08g=="
-  "resolved" "https://registry.npmjs.org/@mui/system/-/system-5.11.4.tgz"
-  "version" "5.11.4"
+"@mui/system@^5.11.4", "@mui/system@^5.11.5", "@mui/system@^5.2.3":
+  "integrity" "sha512-KNVsJ0sgRRp2XBqhh4wPS5aacteqjwxgiYTVwVnll2fgkgunZKo3DsDiGMrFlCg25ZHA3Ax58txWGE9w58zp0w=="
+  "resolved" "https://registry.npmjs.org/@mui/system/-/system-5.11.5.tgz"
+  "version" "5.11.5"
   dependencies:
     "@babel/runtime" "^7.20.7"
     "@mui/private-theming" "^5.11.2"

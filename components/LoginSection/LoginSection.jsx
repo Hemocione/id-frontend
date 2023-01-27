@@ -127,6 +127,15 @@ const LoginSection = () => {
               </Link>
             </b>
           </p>
+          <p style={{ textAlign: 'center' }}>
+            <b style={{
+              color: 'rgb(200, 4, 10)'
+            }}>
+              <Link href={redirect ? `recover/?redirect=${redirect}` : 'recover'} passHref>
+                {" Esqueci minha senha"}
+              </Link>
+            </b>
+          </p>
           {loading ? (
             <div style={{ textAlign: "center", width: "100%" }}>
               <CircularProgress

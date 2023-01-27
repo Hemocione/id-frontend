@@ -14,7 +14,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useState } from "react";
 import { SimpleButton } from "..";
 import Link from "next/link";
-import { validateEmail, validatePhone } from "../../utils/validators";
+import { validateEmail, validateCPF, validatePhone, validatePassword } from '../../utils/validators'
 import { signUp } from "../../utils/api";
 import styles from "./SignupSection.module.css";
 import { useRouter } from "next/router";
@@ -69,7 +69,7 @@ const SignupSection = () => {
     });
   };
   const apiSignUp = (captchaToken) => {
-    signUp({ ...signupData, "g-recaptcha-response": captchaToken })
+    signUp(signupData, captchaToken)
       .then((response) => {
         setLoading(false);
         if (response.status === 201) {

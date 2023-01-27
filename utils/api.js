@@ -10,21 +10,42 @@ const apiClient = axios.create({
 });
 
 const login = ({ email, password, captchaToken }) => {
-  return apiClient.post(`/users/login`, {
-    email: email,
-    password: password,
-    "g-recaptcha-response": captchaToken,
-  });
-};
-const signUp = (signUpData) => {
-  return apiClient.post(`/users/register`, signUpData);
-};
+    return (apiClient.post(`/users/login`, {
+        'email': email,
+        'password': password,
+        'g-recaptcha-response': captchaToken,
+    }))
+}
+const signUp = (signUpData, captchaToken) => {
+    return (apiClient.post(`/users/register`, {
+        ...signUpData,
+        'g-recaptcha-response': captchaToken
+    }))
+}
 const validateUserToken = ({ token }) => {
-  return apiClient.get(`/users/validate-token`, {
-    headers: {
-      Authorization: "Bearer " + token,
-    },
-  });
-};
+    return (apiClient.get(`/users/validate-token`, {
+        headers: {
+            'Authorization': 'Bearer ' + token,
+        }
+    }))
+}
 
-export { login, signUp, validateUserToken };
+const recoverPassword = (email, captchaToken) => {
+    let response = apiClient.post(`/users/recover-password`, {
+        'email': email,
+        'g-recaptcha-response': captchaToken,
+    })
+    return response
+}
+
+const resetPassword = ({ newPassword, captchaToken, recoverToken }) => {
+    return (apiClient.post(`/users/reset-password`, {
+        'newPassword': newPassword,
+        'g-recaptcha-response': captchaToken,
+    }, {
+        headers: {
+            'Authorization': 'Bearer ' + recoverToken,
+        }
+    }))
+}
+export { login, signUp, validateUserToken, recoverPassword, resetPassword }
