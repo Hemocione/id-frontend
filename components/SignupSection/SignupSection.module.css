@@ -4,6 +4,11 @@
     font-size: min(6vw, 30px);
 }
 
+.subtitle {
+    color: #D1151A;
+    font-size: min(4vw, 20px);
+}
+
 .field {
     margin-bottom: 12px;
 }
@@ -51,5 +56,33 @@
 }
 
 .legalDocumentLink:hover {
+    opacity: 0.8;
+}
+
+.bloodTypeRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 20px 0;
+    width: 100%;
+}
+
+.bloodType {
+    background-color: #ffeaea;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.selectedBloodType {
+    background-color: #ffeaea;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #D1151A;
+    font-weight: bold;
+}
+
+.bloodType:hover {
     opacity: 0.8;
 }

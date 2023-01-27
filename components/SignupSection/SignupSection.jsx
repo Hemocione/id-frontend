@@ -1,7 +1,6 @@
 import {
   FormGroup,
   FormControl,
-  FormControlLabel,
   Checkbox,
   InputLabel,
   MenuItem,
@@ -49,6 +48,18 @@ const SignupSection = () => {
     gender: "",
     password: "",
     passConfirmation: "",
+    address: {
+      cep: "",
+      state: "",
+      city: "",
+      neighborhood: "",
+      street: "",
+      number: "",
+      coordinates: {
+        longitude: "",
+        latitude: "",
+      },
+    },
   });
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [acceptedPrivacyPolicy, setAcceptedPrivacyPolicy] = useState(false);
@@ -98,6 +109,7 @@ const SignupSection = () => {
       });
   };
   const handleChange = (key) => (e) => {
+    console.log(key, e.target.value);
     const copyDict = { ...signupData };
     copyDict[key] = e.target.value;
     setSignupData(copyDict);
@@ -147,9 +159,10 @@ const SignupSection = () => {
             height={150}
             alt="Hemocione Logo"
           />
+          <h2 className={styles.title}>Crie sua conta agora!</h2>
         </div>
         <FormGroup onSubmit={handleSubmit}>
-          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+          <FormControl fullWidth sx={{ margin: "15px 0" }}>
             <TextField
               fullWidth
               onChange={handleChange("givenName")}
@@ -182,22 +195,24 @@ const SignupSection = () => {
             />
           </FormControl>
           <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-            <InputLabel id="demo-simple-select-label">
-              Tipo sanguíneo
-            </InputLabel>
-            <Select
-              id="bloodType"
-              placeholder="Tipo sanguíneo"
-              label="Tipo sanguíneo"
-              onChange={handleChange("bloodType")}
-              fullWidth
-            >
-              {bloodTypes.map((bp) => (
-                <MenuItem key={bp} value={bp}>
-                  {bp}
-                </MenuItem>
+            <div className={styles.bloodTypeRow}>
+              {bloodTypes.map((bt) => (
+                <span
+                  className={
+                    signupData.bloodType === bt
+                      ? styles.selectedBloodType
+                      : styles.bloodType
+                  }
+                  onClick={(_) => {
+                    console.log(signupData.bloodType, bt);
+                    handleChange("bloodType")({ target: { value: bt } });
+                  }}
+                  key={bt}
+                >
+                  {bt}
+                </span>
               ))}
-            </Select>
+            </div>
           </FormControl>
           <FormControl fullWidth sx={{ marginBottom: "15px" }}>
             <InputLabel id="demo-simple-select-label">Gênero</InputLabel>
