@@ -6,7 +6,11 @@ import Link from "next/link";
 const Navbar = () => {
   return (
     <nav className={styles.header}>
-      <Link href={process.env.NEXT_PUBLIC_MAIN_FRONTEND_URL} passHref>
+      <Link
+        href={process.env.NEXT_PUBLIC_MAIN_FRONTEND_URL}
+        className={styles.headerLink}
+        passHref
+      >
         <Image
           alt="Hemocione"
           width={300}

@@ -1,11 +1,19 @@
 import "../styles/globals.css";
 import Head from "next/head";
 import { Navbar } from "../components";
+import { Lato } from "@next/font/google";
+
+const lato = Lato({ subsets: ["latin"], weight: ["400", "700", "900"] });
 
 function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
+        <style jsx global>{`
+          html {
+            font-family: ${lato.style.fontFamily};
+          }
+        `}</style>
         <title>Hemocione</title>
       </Head>
       <div

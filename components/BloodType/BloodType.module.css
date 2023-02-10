@@ -1,0 +1,38 @@
+.defaultButton {
+  cursor: pointer;
+  aspect-ratio: 10/9;
+  flex: 1;
+  background-color: transparent;
+  border-radius: 12px;
+  border: 2px solid var(--black-40);
+  color: var(--black-40);
+  font-weight: 700;
+  font-size: 100%;
+}
+
+.defaultButton:hover {
+  background-color: var(--black-40);
+  color: var(--black-80);
+}
+
+.activeButton {
+  cursor: pointer;
+  aspect-ratio: 10/9;
+  flex: 1;
+  background-color: transparent;
+  border-radius: 12px;
+  border: 2px solid var(--red-dark);
+  color: var(--red-dark);
+  font-weight: 700;
+  font-size: 100%;
+}
+
+.activeButton .defaultButton {
+  font-size: 1em;
+}
+
+@media screen and (max-width: 768px) {
+  .activeButton .defaultButton {
+    border-radius: 4px;
+  }
+}

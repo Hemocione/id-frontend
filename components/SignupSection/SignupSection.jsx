@@ -13,12 +13,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useState } from "react";
 import { SimpleButton } from "..";
 import Link from "next/link";
-import {
-  validateEmail,
-  validateCPF,
-  validatePhone,
-  validatePassword,
-} from "../../utils/validators";
+import { validateEmail, validatePhone } from "../../utils/validators";
 import { signUp } from "../../utils/api";
 import styles from "./SignupSection.module.css";
 import { useRouter } from "next/router";
@@ -26,6 +21,7 @@ import Image from "next/image";
 import { setCookie } from "../../utils/cookie";
 import { getCepData } from "../../utils/brasilApi";
 import { debounce } from "lodash";
+import { BloodType } from "..";
 
 const {
   NEXT_PUBLIC_LEGAL_PRIVACY_POLICY_URL,
@@ -242,22 +238,19 @@ const SignupSection = () => {
           </FormControl>
           <hr className={styles.divider} />
           <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+            <h4 className={styles.subsectionTitle}>
+              Qual seu tipo sanguíneo?{" "}
+            </h4>
             <div className={styles.bloodTypeRow}>
               {bloodTypes.map((bt) => (
-                <span
-                  className={
-                    signupData.bloodType === bt
-                      ? styles.selectedBloodType
-                      : styles.bloodType
-                  }
+                <BloodType
+                  key={bt}
+                  value={bt}
+                  active={signupData.bloodType === bt}
                   onClick={(_) => {
-                    console.log(signupData.bloodType, bt);
                     handleChange("bloodType")({ target: { value: bt } });
                   }}
-                  key={bt}
-                >
-                  {bt}
-                </span>
+                />
               ))}
             </div>
           </FormControl>
@@ -307,6 +300,12 @@ const SignupSection = () => {
             />
           </FormControl>
           <hr className={styles.divider} />
+          <h4 className={styles.subsectionTitle}>
+            Qual o seu endereço?{" "}
+            <span className={styles.subsectionTitleExplanation}>
+              Precisamos saber disso para recomendar bancos de próximos a você!
+            </span>
+          </h4>
           <div className={styles.twoColumns}>
             <FormControl fullWidth sx={{ marginBottom: "15px" }}>
               <TextField
