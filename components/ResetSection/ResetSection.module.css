@@ -1,43 +1,44 @@
 .title {
-    color: #D1151A;
-    text-align: center;
-    font-size: min(6vw, 30px);
+  color: #d1151a;
+  text-align: center;
+  font-size: min(6vw, 30px);
 }
 
 .finalMessage {
-    color: #D1151A;
-    text-align: center;
-    font-size: min(6vw, 30px);
-    margin-bottom: 30px;
+  color: #d1151a;
+  text-align: center;
+  font-size: min(6vw, 30px);
+  margin-bottom: 30px;
 }
 
 .field {
-    margin-bottom: 12px;
+  margin-bottom: 12px;
 }
 
 .emailField {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 
 .recoverSection {
-    background-color: white;
-    max-width: 600px;
-    width: 100%;
+  background-color: white;
+  max-width: 600px;
+  width: 100%;
 }
 
 .recoverContent {
-    padding: 40px;
-    width: 100%;
-    text-align: left;
-    margin: 0 auto;
-    margin-top: 50px;
-    margin-bottom: 50px;
-    background-color: white;
-    width: 80%;
-    overflow: auto;
-    box-shadow: 6px 6px 50px 3px rgba(0, 0, 0, 0.2), -6px -6px 50px 3px rgba(0, 0, 0, 0.19);
+  padding: 40px;
+  width: 100%;
+  text-align: left;
+  margin: 0 auto;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  background-color: white;
+  width: 80%;
+  overflow: auto;
+  box-shadow: 6px 6px 50px 3px rgba(0, 0, 0, 0.2),
+    -6px -6px 50px 3px rgba(0, 0, 0, 0.19);
 }
 
 .errorText {
-    color: red;
+  color: red;
 }

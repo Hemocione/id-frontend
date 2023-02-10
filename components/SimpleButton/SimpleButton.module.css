@@ -1,9 +1,9 @@
 .button {
   height: 3em;
-  background-color: #D1151A !important;
+  background-color: #d1151a !important;
   font-size: 1em;
   width: 8em;
-  color: #FFFFFF !important;
+  color: #ffffff !important;
   border: none;
   border-radius: 5px;
   align-self: center;
@@ -12,10 +12,10 @@
 }
 
 .button:hover {
-  background-color: #91151A !important;
+  background-color: #91151a !important;
 }
 
 .button:disabled {
   filter: grayscale(25%);
-  opacity: .5;
+  opacity: 0.5;
 }

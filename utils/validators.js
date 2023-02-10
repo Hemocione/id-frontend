@@ -7,8 +7,8 @@ const validateEmail = (email) => {
 };
 
 const validatePassword = (password) => {
-    return (password && password.length > 7)
-}
+  return password && password.length > 7;
+};
 
 const validatePhone = (phone) => {
   const trimmedPhone = String(phone).trim().replace(/\D/g, "");
@@ -48,4 +48,4 @@ const validateCPF = (cpf) => {
   return true;
 };
 
-export { validateCPF, validatePhone, validateEmail, validatePassword }
+export { validateCPF, validatePhone, validateEmail, validatePassword };

@@ -127,11 +127,16 @@ const LoginSection = () => {
               </Link>
             </b>
           </p>
-          <p style={{ textAlign: 'center' }}>
-            <b style={{
-              color: 'rgb(200, 4, 10)'
-            }}>
-              <Link href={redirect ? `recover/?redirect=${redirect}` : 'recover'} passHref>
+          <p style={{ textAlign: "center" }}>
+            <b
+              style={{
+                color: "rgb(200, 4, 10)",
+              }}
+            >
+              <Link
+                href={redirect ? `recover/?redirect=${redirect}` : "recover"}
+                passHref
+              >
                 {" Esqueci minha senha"}
               </Link>
             </b>

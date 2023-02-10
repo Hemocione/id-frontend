@@ -1,32 +1,32 @@
 .header {
-    z-index: 1;
-    position: sticky;
-    top: 0;
-    height: 105px;
-    width: 100%;
-    background: rgba(0, 0, 0);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  z-index: 1;
+  position: sticky;
+  top: 0;
+  height: 105px;
+  width: 100%;
+  background: rgba(0, 0, 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .headerTitle {
-    align-self: center;
-    max-height: 50px;
-    max-width: 40%;
+  align-self: center;
+  max-height: 50px;
+  max-width: 40%;
 }
 
 .headerTitle:hover {
-    opacity: 0.8;
-    cursor: pointer;
+  opacity: 0.8;
+  cursor: pointer;
 }
 
 .competitions {
-    color: #E00E16;
-    margin-left: 10px;
-    font-weight: bold;
+  color: #e00e16;
+  margin-left: 10px;
+  font-weight: bold;
 }
 
 .buttonBox {
-    margin-left: 15px;
+  margin-left: 15px;
 }

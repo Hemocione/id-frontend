@@ -14,7 +14,12 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useState } from "react";
 import { SimpleButton } from "..";
 import Link from "next/link";
-import { validateEmail, validateCPF, validatePhone, validatePassword } from '../../utils/validators'
+import {
+  validateEmail,
+  validateCPF,
+  validatePhone,
+  validatePassword,
+} from "../../utils/validators";
 import { signUp } from "../../utils/api";
 import styles from "./SignupSection.module.css";
 import { useRouter } from "next/router";
