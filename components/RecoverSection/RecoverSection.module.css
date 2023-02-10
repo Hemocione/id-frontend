@@ -4,6 +4,13 @@
   font-size: min(6vw, 30px);
 }
 
+.finalMessage {
+  color: #d1151a;
+  text-align: center;
+  font-size: min(6vw, 30px);
+  margin-bottom: 30px;
+}
+
 .field {
   margin-bottom: 12px;
 }
@@ -12,13 +19,13 @@
   margin-top: 20px;
 }
 
-.loginSection {
+.recoverSection {
   background-color: white;
   max-width: 600px;
   width: 100%;
 }
 
-.loginContent {
+.recoverContent {
   padding: 40px;
   width: 100%;
   text-align: left;
