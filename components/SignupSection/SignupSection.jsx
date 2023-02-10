@@ -87,7 +87,7 @@ const SignupSection = () => {
     signUp(signupData, captchaToken)
       .then((response) => {
         setLoading(false);
-        if (response.status === 200) {
+        if ([200, 201].includes(response.status) && response.data["token"]) {
           setCookie(
             process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY,
             response.data.token,
