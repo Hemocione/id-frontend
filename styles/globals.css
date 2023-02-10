@@ -3,7 +3,7 @@ body {
   padding: 0;
   margin: 0;
   background-color: #ffffff;
-  font-family: -apple-system, "Inter", BlinkMacSystemFont, Segoe UI, Roboto,
+  font-family: "Lato", -apple-system, "Inter", BlinkMacSystemFont, Segoe UI, Roboto,
     Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
@@ -32,3 +32,12 @@ ol,
 li {
   list-style: none;
 }
+
+:root {
+  --black-40: #CACCCF;
+  --black-80: #52575C;
+  --red-dark: #A80005;
+  --red-light: #D87C7F;
+}
+
+.grecaptcha-badge { opacity:0; visibility: hidden; }

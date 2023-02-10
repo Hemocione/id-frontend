@@ -4,6 +4,11 @@
   font-size: min(6vw, 30px);
 }
 
+.subtitle {
+    color: #D1151A;
+    font-size: min(4vw, 20px);
+}
+
 .field {
   margin-bottom: 12px;
 }
@@ -19,7 +24,6 @@
 
 .loginContent {
   padding: 40px;
-  width: 100%;
   max-width: 700px;
   text-align: left;
   margin: 0 auto;
@@ -53,4 +57,71 @@
 
 .legalDocumentLink:hover {
   opacity: 0.8;
+}
+
+.bloodTypeRow {
+    display: grid;
+    grid-auto-rows: 1fr;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    justify-items: stretch;
+    align-items: stretch;
+    gap: 20px;
+    width: 100%;
+    flex: 1 1 0px;
+}
+
+.bloodType {
+    background-color: #ffeaea;
+    padding: 5px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.selectedBloodType {
+    background-color: #ffeaea;
+    padding: 5px;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #D1151A;
+    font-weight: bold;
+}
+
+.bloodType:hover {
+    opacity: 0.8;
+}
+
+.twoColumns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.divider {
+    border: 1px solid #fdcbcb;
+    margin: 0;
+    margin-bottom: 16px;
+}
+
+.subsectionTitle {
+    color: var(--red-dark);
+    margin-bottom: 16px;
+}
+
+.subsectionTitleExplanation {
+    color: var(--red-light);
+    font-style: italic;
+    font-size: 0.5rem;
+}
+
+@media screen and (max-width: 768px) {
+    .bloodTypeRow {
+        grid-template-rows: 1fr 1fr;
+    }
+
+    .loginContent {
+        width: 100%;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
 }

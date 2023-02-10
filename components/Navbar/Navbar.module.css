@@ -10,6 +10,13 @@
   align-items: center;
 }
 
+.headerLink {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .headerTitle {
   align-self: center;
   max-height: 50px;

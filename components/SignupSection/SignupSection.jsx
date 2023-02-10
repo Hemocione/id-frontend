@@ -1,7 +1,6 @@
 import {
   FormGroup,
   FormControl,
-  FormControlLabel,
   Checkbox,
   InputLabel,
   MenuItem,
@@ -14,17 +13,15 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useState } from "react";
 import { SimpleButton } from "..";
 import Link from "next/link";
-import {
-  validateEmail,
-  validateCPF,
-  validatePhone,
-  validatePassword,
-} from "../../utils/validators";
+import { validateEmail, validatePhone } from "../../utils/validators";
 import { signUp } from "../../utils/api";
 import styles from "./SignupSection.module.css";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { setCookie } from "../../utils/cookie";
+import { getCepData } from "../../utils/brasilApi";
+import { debounce } from "lodash";
+import { BloodType } from "..";
 
 const {
   NEXT_PUBLIC_LEGAL_PRIVACY_POLICY_URL,
@@ -54,6 +51,19 @@ const SignupSection = () => {
     gender: "",
     password: "",
     passConfirmation: "",
+    address: {
+      cep: "",
+      state: "",
+      city: "",
+      neighborhood: "",
+      street: "",
+      number: "",
+      complement: "",
+      coordinates: {
+        longitude: "",
+        latitude: "",
+      },
+    },
   });
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [acceptedPrivacyPolicy, setAcceptedPrivacyPolicy] = useState(false);
@@ -77,7 +87,7 @@ const SignupSection = () => {
     signUp(signupData, captchaToken)
       .then((response) => {
         setLoading(false);
-        if (response.status === 200) {
+        if ([200, 201].includes(response.status) && response.data["token"]) {
           setCookie(
             process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY,
             response.data.token,
@@ -102,7 +112,38 @@ const SignupSection = () => {
         );
       });
   };
+
+  const handleCEPChange = async (e) => {
+    const cep = e.target.value;
+    const copyDict = { ...signupData };
+    copyDict.address.cep = cep;
+    setSignupData(copyDict);
+    // Início do destaque
+    const debouncedSearchAndUpdateAddress = debounce(async () => {
+      try {
+        const { data } = await getCepData(cep);
+        console.log(data);
+        if (data) {
+          const copyDict = { ...signupData };
+          copyDict.address = data;
+          setSignupData(copyDict);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }, 2000);
+    await debouncedSearchAndUpdateAddress();
+  };
+
+  const handleNumberChange = (e) => {
+    const number = e.target.value;
+    const copyDict = { ...signupData };
+    copyDict.address.number = number;
+    setSignupData(copyDict);
+  };
+
   const handleChange = (key) => (e) => {
+    console.log(key, e.target.value);
     const copyDict = { ...signupData };
     copyDict[key] = e.target.value;
     setSignupData(copyDict);
@@ -125,6 +166,8 @@ const SignupSection = () => {
     signupData.passConfirmation != "" &&
     signupData.passConfirmation != signupData.password;
   const phoneError = signupData.phone != "" && !validatePhone(signupData.phone);
+  const cepError =
+    signupData.address.cep != "" && signupData.address.cep.length < 8;
 
   const disabledButton =
     !signupData.givenName ||
@@ -135,6 +178,12 @@ const SignupSection = () => {
     !signupData.passConfirmation ||
     !signupData.gender ||
     !signupData.birthDate ||
+    !signupData.address.cep ||
+    !signupData.address.state ||
+    !signupData.address.city ||
+    !signupData.address.neighborhood ||
+    !signupData.address.street ||
+    !signupData.address.number ||
     passConfError ||
     passError ||
     emailError ||
@@ -152,9 +201,10 @@ const SignupSection = () => {
             height={150}
             alt="Hemocione Logo"
           />
+          <h2 className={styles.title}>Crie sua conta agora!</h2>
         </div>
         <FormGroup onSubmit={handleSubmit}>
-          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+          <FormControl fullWidth sx={{ margin: "15px 0" }}>
             <TextField
               fullWidth
               onChange={handleChange("givenName")}
@@ -186,51 +236,54 @@ const SignupSection = () => {
               variant="outlined"
             />
           </FormControl>
+          <hr className={styles.divider} />
           <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-            <InputLabel id="demo-simple-select-label">
-              Tipo sanguíneo
-            </InputLabel>
-            <Select
-              id="bloodType"
-              placeholder="Tipo sanguíneo"
-              label="Tipo sanguíneo"
-              onChange={handleChange("bloodType")}
-              fullWidth
-            >
-              {bloodTypes.map((bp) => (
-                <MenuItem key={bp} value={bp}>
-                  {bp}
-                </MenuItem>
+            <h4 className={styles.subsectionTitle}>
+              Qual seu tipo sanguíneo?{" "}
+            </h4>
+            <div className={styles.bloodTypeRow}>
+              {bloodTypes.map((bt) => (
+                <BloodType
+                  key={bt}
+                  value={bt}
+                  active={signupData.bloodType === bt}
+                  onClick={(_) => {
+                    handleChange("bloodType")({ target: { value: bt } });
+                  }}
+                />
               ))}
-            </Select>
+            </div>
           </FormControl>
-          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-            <InputLabel id="demo-simple-select-label">Gênero</InputLabel>
-            <Select
-              id="gender"
-              placeholder="Gênero"
-              label="Gênero"
-              onChange={handleChange("gender")}
-              fullWidth
-            >
-              {genders.map((g) => (
-                <MenuItem key={g} value={g}>
-                  {genderMapping[g]}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-            <LocalizationProvider fullWidth dateAdapter={AdapterDateFns}>
-              <DatePicker
-                label="Data de nascimento"
-                value={signupData.birthDate}
-                onChange={handleBday}
-                inputFormat="dd/MM/yyyy"
-                renderInput={(params) => <TextField {...params} />}
-              />
-            </LocalizationProvider>
-          </FormControl>
+          <hr className={styles.divider} />
+          <div className={styles.twoColumns}>
+            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+              <InputLabel id="demo-simple-select-label">Gênero</InputLabel>
+              <Select
+                id="gender"
+                placeholder="Gênero"
+                label="Gênero"
+                onChange={handleChange("gender")}
+                fullWidth
+              >
+                {genders.map((g) => (
+                  <MenuItem key={g} value={g}>
+                    {genderMapping[g]}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+              <LocalizationProvider fullWidth dateAdapter={AdapterDateFns}>
+                <DatePicker
+                  label="Data de nascimento"
+                  value={signupData.birthDate}
+                  onChange={handleBday}
+                  inputFormat="dd/MM/yyyy"
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+            </FormControl>
+          </div>
           <FormControl fullWidth sx={{ marginBottom: "15px" }}>
             <TextField
               fullWidth
@@ -246,6 +299,91 @@ const SignupSection = () => {
               variant="outlined"
             />
           </FormControl>
+          <hr className={styles.divider} />
+          <h4 className={styles.subsectionTitle}>
+            Qual o seu endereço?{" "}
+            <span className={styles.subsectionTitleExplanation}>
+              Precisamos saber disso para recomendar bancos de próximos a você!
+            </span>
+          </h4>
+          <div className={styles.twoColumns}>
+            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+              <TextField
+                fullWidth
+                onChange={handleCEPChange}
+                value={signupData.address.cep}
+                error={cepError}
+                helperText={
+                  cepError &&
+                  "Este CEP não é válido. Por favor, insira um CEP válido."
+                }
+                label="CEP"
+                id="cep"
+                variant="outlined"
+              />
+            </FormControl>
+            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+              <TextField
+                disabled
+                fullWidth
+                value={signupData.address.state}
+                label="Estado"
+                id="state"
+                variant="outlined"
+              />
+            </FormControl>
+            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+              <TextField
+                disabled
+                fullWidth
+                value={signupData.address.city}
+                label="Cidade"
+                id="city"
+                variant="outlined"
+              />
+            </FormControl>
+            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+              <TextField
+                disabled
+                fullWidth
+                value={signupData.address.neighborhood}
+                label="Bairro"
+                id="neighborhood"
+                variant="outlined"
+              />
+            </FormControl>
+            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+              <TextField
+                disabled
+                fullWidth
+                value={signupData.address.street}
+                label="Rua"
+                id="street"
+                variant="outlined"
+              />
+            </FormControl>
+            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+              <TextField
+                fullWidth
+                onChange={handleNumberChange}
+                value={signupData.address.number}
+                label="Número"
+                id="number"
+                variant="outlined"
+              />
+            </FormControl>
+            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+              <TextField
+                fullWidth
+                onChange={handleNumberChange}
+                value={signupData.address.complement}
+                label="Complemento"
+                id="complement"
+                variant="outlined"
+              />
+            </FormControl>
+          </div>
+          <hr className={styles.divider} />
           <FormControl fullWidth sx={{ marginBottom: "15px" }}>
             <TextField
               fullWidth
