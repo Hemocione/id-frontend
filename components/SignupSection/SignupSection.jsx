@@ -303,7 +303,8 @@ const SignupSection = () => {
           <h4 className={styles.subsectionTitle}>
             Qual o seu endereço?{" "}
             <span className={styles.subsectionTitleExplanation}>
-              Precisamos saber disso para recomendar bancos de próximos a você!
+              Precisamos saber disso para encontrar bancos de sangue próximos a
+              você!
             </span>
           </h4>
           <div className={styles.twoColumns}>
