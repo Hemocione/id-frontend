@@ -10,7 +10,7 @@ import {
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { SimpleButton } from "..";
 import Link from "next/link";
 import { validateEmail, validatePhone } from "../../utils/validators";
@@ -113,26 +113,34 @@ const SignupSection = () => {
       });
   };
 
+  const debouncedSearchAndUpdateAddress = useRef(
+    debounce(async (cep) => {
+      try {
+        const { data } = await getCepData(cep);
+        if (data) {
+          const copyDict = { ...signupData };
+          copyDict.address.cep = cep;
+          copyDict.address = data;
+          setSignupData(copyDict);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }, 800)
+  ).current;
+
+  useEffect(() => {
+    return () => {
+      debouncedSearchAndUpdateAddress.cancel();
+    };
+  }, [debouncedSearchAndUpdateAddress]);
+
   const handleCEPChange = async (e) => {
     const cep = e.target.value;
     const copyDict = { ...signupData };
     copyDict.address.cep = cep;
     setSignupData(copyDict);
-    // Início do destaque
-    const debouncedSearchAndUpdateAddress = debounce(async () => {
-      try {
-        const { data } = await getCepData(cep);
-        console.log(data);
-        if (data) {
-          const copyDict = { ...signupData };
-          copyDict.address = data;
-          setSignupData(copyDict);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }, 2000);
-    await debouncedSearchAndUpdateAddress();
+    if (cep) debouncedSearchAndUpdateAddress(cep);
   };
 
   const handleNumberChange = (e) => {
@@ -142,20 +150,30 @@ const SignupSection = () => {
     setSignupData(copyDict);
   };
 
+  const handleComplementChange = (e) => {
+    const complement = e.target.value;
+    const copyDict = { ...signupData };
+    copyDict.address.complement = complement;
+    setSignupData(copyDict);
+  };
+
   const handleChange = (key) => (e) => {
     console.log(key, e.target.value);
     const copyDict = { ...signupData };
     copyDict[key] = e.target.value;
     setSignupData(copyDict);
   };
+
   const handleBday = (value) => {
     const copyDict = { ...signupData };
-    copyDict["birthDate"] = value;
+    copyDict.birthDate = value;
     setSignupData(copyDict);
   };
+
   function handleTermsCheckBox() {
     setAcceptedTerms(!acceptedTerms);
   }
+
   function handlePolicyPrivacyCheckbox() {
     setAcceptedPrivacyPolicy(!acceptedPrivacyPolicy);
   }
@@ -376,7 +394,7 @@ const SignupSection = () => {
             <FormControl fullWidth sx={{ marginBottom: "15px" }}>
               <TextField
                 fullWidth
-                onChange={handleNumberChange}
+                onChange={handleComplementChange}
                 value={signupData.address.complement}
                 label="Complemento"
                 id="complement"
