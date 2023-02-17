@@ -22,11 +22,8 @@ import { setCookie } from "../../utils/cookie";
 import { getCepData } from "../../utils/brasilApi";
 import { BloodType } from "..";
 import useDebounce from "../../utils/useDebounce";
+import environment from "../../environment";
 
-const {
-  NEXT_PUBLIC_LEGAL_PRIVACY_POLICY_URL,
-  NEXT_PUBLIC_LEGAL_TERMS_OF_USE_URL,
-} = process.env;
 const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const genders = ["M", "F", "O"];
 const genderMapping = {
@@ -36,6 +33,7 @@ const genderMapping = {
 };
 
 const SignupSection = () => {
+  console.log(environment);
   const router = useRouter();
   const { redirect } = router.query;
   const [errorText, setErrorText] = useState("");
@@ -73,7 +71,7 @@ const SignupSection = () => {
     setLoading(true);
     window.grecaptcha.ready(() => {
       window.grecaptcha
-        .execute(process.env.NEXT_PUBLIC_SITE_KEY, { action: "submit" })
+        .execute(environment.publicSiteKey, { action: "submit" })
         .then((captchaToken) => {
           apiSignUp(captchaToken);
         })
@@ -89,14 +87,14 @@ const SignupSection = () => {
         setLoading(false);
         if ([200, 201].includes(response.status) && response.data["token"]) {
           setCookie(
-            process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY,
+            environment.tokenCookieKey,
             response.data.token,
             15,
             "hemocione.com.br"
           );
           const locationRedirect =
             redirect ||
-            process.env.NEXT_PUBLIC_MAIN_SITE ||
+            environment.mainFrontendUrl ||
             "https://www.hemocione.com.br/";
           router.push(locationRedirect);
           return;
@@ -107,7 +105,7 @@ const SignupSection = () => {
         console.error(error);
         setLoading(false);
         setErrorText(
-          error.response.data.message ||
+          error.response?.data?.message ||
             "Ocorreu um erro inesperado. Por favor, tente novamente."
         );
       });
@@ -439,7 +437,7 @@ const SignupSection = () => {
             <span>
               Eu declaro que aceito os{" "}
               <a
-                href={NEXT_PUBLIC_LEGAL_TERMS_OF_USE_URL}
+                href={environment.legal.termsOfUseUrl}
                 rel="noreferrer"
                 target="_blank"
                 className={styles.legalDocumentLink}
@@ -461,7 +459,7 @@ const SignupSection = () => {
             <span>
               Eu declaro que aceito a{" "}
               <a
-                href={NEXT_PUBLIC_LEGAL_PRIVACY_POLICY_URL}
+                href={environment.legal.privacyPolicyUrl}
                 rel="noreferrer"
                 target="_blank"
                 className={styles.legalDocumentLink}
