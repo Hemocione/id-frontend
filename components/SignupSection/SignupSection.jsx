@@ -10,7 +10,7 @@ import {
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { SimpleButton } from "..";
 import Link from "next/link";
 import { validateEmail, validatePhone } from "../../utils/validators";
@@ -20,8 +20,8 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import { setCookie } from "../../utils/cookie";
 import { getCepData } from "../../utils/brasilApi";
-import { debounce } from "lodash";
 import { BloodType } from "..";
+import useDebounce from "../../utils/useDebounce";
 
 const {
   NEXT_PUBLIC_LEGAL_PRIVACY_POLICY_URL,
@@ -104,7 +104,7 @@ const SignupSection = () => {
         setErrorText(response.data.message);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         setLoading(false);
         setErrorText(
           error.response.data.message ||
@@ -113,34 +113,30 @@ const SignupSection = () => {
       });
   };
 
-  const debouncedSearchAndUpdateAddress = useRef(
-    debounce(async (cep) => {
-      try {
-        const { data } = await getCepData(cep);
-        if (data) {
-          const copyDict = { ...signupData };
-          copyDict.address.cep = cep;
-          copyDict.address = data;
-          setSignupData(copyDict);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }, 800)
-  ).current;
+  const debouncedSearchAndUpdateAddress = useDebounce(async () => {
+    try {
+      if (signupData.address.cep.length < 8) return;
 
-  useEffect(() => {
-    return () => {
-      debouncedSearchAndUpdateAddress.cancel();
-    };
-  }, [debouncedSearchAndUpdateAddress]);
+      const cep = signupData.address.cep.replace(/\D/g, "");
+      const { data } = await getCepData(cep);
+      if (!data) return setErrorText("CEP inválido");
+
+      const copyDict = { ...signupData };
+      copyDict.address = data;
+      copyDict.address.cep = cep;
+      setSignupData(copyDict);
+    } catch (error) {
+      console.error(error);
+      setErrorText("CEP inválido");
+    }
+  }, 1000);
 
   const handleCEPChange = async (e) => {
     const cep = e.target.value;
     const copyDict = { ...signupData };
     copyDict.address.cep = cep;
     setSignupData(copyDict);
-    if (cep) debouncedSearchAndUpdateAddress(cep);
+    if (cep) debouncedSearchAndUpdateAddress();
   };
 
   const handleNumberChange = (e) => {
@@ -158,7 +154,6 @@ const SignupSection = () => {
   };
 
   const handleChange = (key) => (e) => {
-    console.log(key, e.target.value);
     const copyDict = { ...signupData };
     copyDict[key] = e.target.value;
     setSignupData(copyDict);
@@ -185,7 +180,7 @@ const SignupSection = () => {
     signupData.passConfirmation != signupData.password;
   const phoneError = signupData.phone != "" && !validatePhone(signupData.phone);
   const cepError =
-    signupData.address.cep != "" && signupData.address.cep.length < 8;
+    signupData.address.cep != "" && signupData.address.cep.length !== 8;
 
   const disabledButton =
     !signupData.givenName ||
@@ -336,7 +331,7 @@ const SignupSection = () => {
                   cepError &&
                   "Este CEP não é válido. Por favor, insira um CEP válido."
                 }
-                label="CEP"
+                label="CEP (apenas números)"
                 id="cep"
                 variant="outlined"
               />
