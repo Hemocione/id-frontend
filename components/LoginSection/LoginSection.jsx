@@ -9,6 +9,7 @@ import { CircularProgress } from "@mui/material";
 import styles from "./LoginSection.module.css";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import environment from "../../environment";
 
 const LoginSection = () => {
   const router = useRouter();
@@ -25,7 +26,7 @@ const LoginSection = () => {
     setLoading(true);
     window.grecaptcha.ready(() => {
       window.grecaptcha
-        .execute(process.env.NEXT_PUBLIC_SITE_KEY, { action: "submit" })
+        .execute(environment.publicSiteKey, { action: "submit" })
         .then((captchaToken) => {
           console.log(captchaToken);
           apiLogin(captchaToken);
@@ -43,7 +44,7 @@ const LoginSection = () => {
         setLoading(false);
         if (response.status === 200) {
           setCookie(
-            process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY,
+            environment.tokenCookieKey,
             response.data.token,
             15,
             "hemocione.com.br"

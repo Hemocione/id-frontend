@@ -3,13 +3,14 @@ import { LoginSection } from "../components";
 import { validateUserToken } from "../utils/api";
 import { deleteCookie, getCookie } from "../utils/cookie";
 import { useRouter } from "next/router";
+import environment from "../environment";
 
 export default function Home() {
   const router = useRouter();
   const { redirect } = router.query;
 
   useEffect(() => {
-    let userToken = getCookie(process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY);
+    let userToken = getCookie(environment.tokenCookieKey);
     if (userToken) {
       validateUserToken({ token: userToken })
         .then((res) => {
@@ -21,10 +22,10 @@ export default function Home() {
             router.push(redirectLocation);
             return;
           }
-          deleteCookie(process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY);
+          deleteCookie(environment.tokenCookieKey);
         })
         .catch((_) => {
-          deleteCookie(process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY);
+          deleteCookie(environment.tokenCookieKey);
         });
     }
   });
@@ -34,7 +35,7 @@ export default function Home() {
     if (!scriptExist) {
       const script = document.createElement("script");
       script.id = "recaptcha-key";
-      script.src = `https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_SITE_KEY}`;
+      script.src = `https://www.google.com/recaptcha/api.js?render=${environment.publicSiteKey}`;
       script.onload = () => console.log("captcha loaded");
       document.body.appendChild(script);
     }

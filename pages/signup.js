@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { SignupSection } from "../components";
+import environment from "../environment";
 
 export default function Signup() {
   useEffect(() => {
@@ -7,7 +8,7 @@ export default function Signup() {
     if (!scriptExist) {
       const script = document.createElement("script");
       script.id = "recaptcha-key";
-      script.src = `https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_SITE_KEY}`;
+      script.src = `https://www.google.com/recaptcha/api.js?render=${environment.publicSiteKey}`;
       script.onload = () => console.log("captcha loaded");
       document.body.appendChild(script);
     }

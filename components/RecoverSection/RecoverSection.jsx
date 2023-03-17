@@ -7,7 +7,7 @@ import { CircularProgress } from "@mui/material";
 import { recoverPassword } from "../../utils/api";
 import styles from "./RecoverSection.module.css";
 import { useRouter } from "next/router";
-import Link from "next/link";
+import environment from "../../environment";
 
 const LoginSection = () => {
   const router = useRouter();
@@ -27,7 +27,7 @@ const LoginSection = () => {
     setLoading(true);
     window.grecaptcha.ready(() => {
       window.grecaptcha
-        .execute(process.env.NEXT_PUBLIC_SITE_KEY, { action: "submit" })
+        .execute(environment.publicSiteKey, { action: "submit" })
         .then(async (captchaToken) => {
           await apiRecover(captchaToken);
         })

@@ -1,8 +1,8 @@
 import axios from "axios";
-const { NEXT_PUBLIC_BACKEND_URL } = process.env;
+import environment from "../environment";
 
 const apiClient = axios.create({
-  baseURL: NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080",
+  baseURL: environment.backendUrl || "http://localhost:8080",
   responseType: "json",
   headers: {
     "Content-Type": "application/json",

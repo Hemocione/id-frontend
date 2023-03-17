@@ -7,6 +7,7 @@ import { resetPassword } from "../../utils/api";
 import { CircularProgress } from "@mui/material";
 import styles from "./ResetSection.module.css";
 import { useRouter } from "next/router";
+import environment from "../../environment";
 
 const ResetSection = () => {
   const router = useRouter();
@@ -27,7 +28,7 @@ const ResetSection = () => {
     setLoading(true);
     window.grecaptcha.ready(() => {
       window.grecaptcha
-        .execute(process.env.NEXT_PUBLIC_SITE_KEY, { action: "submit" })
+        .execute(environment.publicSiteKey, { action: "submit" })
         .then((captchaToken) => {
           apiReset(captchaToken);
         })
