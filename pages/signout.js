@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { deleteCookie } from "../utils/cookie";
 import { CircularProgress } from "@mui/material";
-import environment from "../../environment";
+import environment from "../environment";
 
 export default function SignOut() {
   const router = useRouter();
