@@ -82,6 +82,10 @@ const SignupSection = () => {
     });
   };
   const apiSignUp = (captchaToken) => {
+    if (signupData.address.cep) {
+      signupData.address.postalCode = signupData.address.cep;
+    }
+
     signUp(signupData, captchaToken)
       .then((response) => {
         setLoading(false);
