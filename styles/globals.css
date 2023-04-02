@@ -36,6 +36,10 @@ li {
 :root {
   --black-40: #CACCCF;
   --black-80: #52575C;
+  --black-100: #25282B;
+  --black-101: #000;
+  --gray: #F3F2F1;
+  --red: #CC151A;
   --red-dark: #A80005;
   --red-light: #D87C7F;
 }
