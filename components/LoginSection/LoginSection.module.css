@@ -35,3 +35,12 @@
 .errorText {
   color: red;
 }
+
+@media screen and (max-width: 768px) {
+  .loginContent {
+      width: 100%;
+      margin-top: 0;
+      margin-bottom: 0;
+      box-shadow: none;
+  }
+}
