@@ -441,7 +441,7 @@ const SignupSection = () => {
             <span>
               Eu declaro que aceito os{" "}
               <a
-                href={environment.legal.termsOfUseUrl}
+                href={environment.legal.termsOfUse}
                 rel="noreferrer"
                 target="_blank"
                 className={styles.legalDocumentLink}
