@@ -175,12 +175,9 @@ const SignupSection = () => {
   };
 
   const handleChange = (key) => (e) => {
-    console.log(e.target.value);
     const copyDict = { ...signupData };
     copyDict[key] = e.target.value;
-    console.log(copyDict);
     setSignupData(copyDict);
-    console.log(signupData);
   };
 
   const handleBday = (value) => {
@@ -216,11 +213,6 @@ const SignupSection = () => {
     !signupData.gender ||
     !signupData.birthDate ||
     !signupData.address.cep ||
-    !signupData.address.state ||
-    !signupData.address.city ||
-    !signupData.address.neighborhood ||
-    !signupData.address.street ||
-    !signupData.address.number ||
     passConfError ||
     passError ||
     emailError ||
@@ -250,8 +242,8 @@ const SignupSection = () => {
               fullWidth
               onChange={handleChange("givenName")}
               value={signupData.givenName}
-              id="Primeiro nome"
-              label="Primeiro nome"
+              id="Nome"
+              label="Nome"
               variant="outlined"
               required
             />
@@ -301,14 +293,15 @@ const SignupSection = () => {
           <hr className={styles.divider} />
           <div className={styles.twoColumns}>
             <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-              <InputLabel id="demo-simple-select-label">Gênero</InputLabel>
+              <InputLabel id="demo-simple-select-label" required>
+                Gênero
+              </InputLabel>
               <Select
                 id="gender"
                 placeholder="Gênero"
                 label="Gênero"
                 onChange={handleChange("gender")}
                 fullWidth
-                required
               >
                 {genders.map((g) => (
                   <MenuItem key={g} value={g}>
@@ -328,7 +321,7 @@ const SignupSection = () => {
                 adapterLocale={ptBR}
               >
                 <DatePicker
-                  label="Data de nascimento"
+                  label="Data de nascimento *"
                   value={signupData.birthDate}
                   onChange={handleBday}
                   inputFormat="dd/MM/yyyy"
@@ -376,6 +369,7 @@ const SignupSection = () => {
                 label="CEP (apenas números)"
                 id="cep"
                 variant="outlined"
+                required
               />
             </FormControl>
             <FormControl fullWidth sx={{ marginBottom: "15px" }}>
@@ -453,6 +447,7 @@ const SignupSection = () => {
               label="Senha"
               type="password"
               variant="outlined"
+              required
             />
           </FormControl>
           <FormControl fullWidth sx={{ marginBottom: "15px" }}>
@@ -466,6 +461,7 @@ const SignupSection = () => {
               label="Confirmar senha"
               type="password"
               variant="outlined"
+              required
             />
           </FormControl>
           <div className={styles.checkBoxRow}>
@@ -518,8 +514,6 @@ const SignupSection = () => {
             onClick={handleSubmit}
             passStyle={{
               width: "100%",
-              position: "fixed",
-              bottom: 0,
               display: "var(--display-signup-button-bottom)",
               borderRadius: 0,
             }}
@@ -539,7 +533,7 @@ const SignupSection = () => {
             {loading ? "" : "Criar conta"}
           </SimpleButton>
           {leadId && uuid ? null : (
-            <p style={{ textAlign: "center", margin: 0 }}>
+            <p style={{ textAlign: "center", margin: 0, marginTop: "10px" }}>
               Já possui conta?
               <b
                 style={{

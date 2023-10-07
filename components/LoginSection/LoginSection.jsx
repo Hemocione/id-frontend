@@ -28,7 +28,6 @@ const LoginSection = () => {
       window.grecaptcha
         .execute(environment.publicSiteKey, { action: "submit" })
         .then((captchaToken) => {
-          console.log(captchaToken);
           apiLogin(captchaToken);
         })
         .catch((_) => {

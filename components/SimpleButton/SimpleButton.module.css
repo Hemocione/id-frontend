@@ -5,10 +5,10 @@
   width: 8em;
   color: #ffffff !important;
   border: none;
-  border-radius: 5px;
+  border-radius: 10px !important;
   align-self: center;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.42, 0, 0.58, 1) !important;
+  transition: all 0.3s cubic-bezier(0.42, 0, 0.58, 1);
 }
 
 .button:hover {
@@ -18,4 +18,11 @@
 .button:disabled {
   filter: grayscale(25%);
   opacity: 0.5;
+}
+
+@media screen and (max-width: 768px) {
+  .button {
+    height: 10vh;
+    width: 100%;
+  }
 }
