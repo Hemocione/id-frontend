@@ -7,8 +7,9 @@ const lato = Lato({ subsets: ["latin"], weight: ["400", "700", "900"] });
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { ptBR } from "@mui/material/locale";
 import { ptBR as datePickerPtBR } from "@mui/x-date-pickers/locales";
+import { ptBR as dataGridPtBR } from "@mui/x-data-grid";
 
-const theme = createTheme({}, ptBR, datePickerPtBR);
+const theme = createTheme({}, ptBR, datePickerPtBR, dataGridPtBR);
 
 function MyApp({ Component, pageProps }) {
   return (

@@ -8,6 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { ptBR } from "date-fns/locale";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useState } from "react";
@@ -24,6 +25,7 @@ import { BloodType } from "..";
 import useDebounce from "../../utils/useDebounce";
 import environment from "../../environment";
 import { getDigitalStandRedirectUrl } from "../../utils/digitalStand";
+import { ptBR as DatePickerLocale } from "@mui/x-date-pickers/locales";
 
 const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const genders = ["M", "F", "O"];
@@ -316,7 +318,15 @@ const SignupSection = () => {
               </Select>
             </FormControl>
             <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-              <LocalizationProvider fullWidth dateAdapter={AdapterDateFns}>
+              <LocalizationProvider
+                fullWidth
+                dateAdapter={AdapterDateFns}
+                localeText={
+                  DatePickerLocale.components.MuiLocalizationProvider
+                    .defaultProps.localeText
+                }
+                adapterLocale={ptBR}
+              >
                 <DatePicker
                   label="Data de nascimento"
                   value={signupData.birthDate}
