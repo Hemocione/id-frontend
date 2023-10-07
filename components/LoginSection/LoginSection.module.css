@@ -1,0 +1,46 @@
+.title {
+  color: #d1151a;
+  text-align: center;
+  font-size: min(6vw, 30px);
+}
+
+.field {
+  margin-bottom: 12px;
+}
+
+.emailField {
+  margin-top: 20px;
+}
+
+.loginSection {
+  background-color: white;
+  max-width: 600px;
+  width: 100%;
+}
+
+.loginContent {
+  padding: 40px;
+  width: 100%;
+  text-align: left;
+  margin: 0 auto;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  background-color: white;
+  width: 80%;
+  overflow: auto;
+  box-shadow: 6px 6px 50px 3px rgba(0, 0, 0, 0.2),
+    -6px -6px 50px 3px rgba(0, 0, 0, 0.19);
+}
+
+.errorText {
+  color: red;
+}
+
+@media screen and (max-width: 768px) {
+  .loginContent {
+      width: 100%;
+      margin-top: 0;
+      margin-bottom: 0;
+      box-shadow: none;
+  }
+}

@@ -1,0 +1,21 @@
+.button {
+  height: 3em;
+  background-color: #d1151a !important;
+  font-size: 1em;
+  width: 8em;
+  color: #ffffff !important;
+  border: none;
+  border-radius: 5px;
+  align-self: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.42, 0, 0.58, 1) !important;
+}
+
+.button:hover {
+  background-color: #91151a !important;
+}
+
+.button:disabled {
+  filter: grayscale(25%);
+  opacity: 0.5;
+}

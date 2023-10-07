@@ -1,0 +1,39 @@
+.header {
+  z-index: 1;
+  position: sticky;
+  top: 0;
+  height: 105px;
+  width: 100%;
+  background: rgba(0, 0, 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.headerLink {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.headerTitle {
+  align-self: center;
+  max-height: 50px;
+  max-width: 40%;
+}
+
+.headerTitle:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.competitions {
+  color: #e00e16;
+  margin-left: 10px;
+  font-weight: bold;
+}
+
+.buttonBox {
+  margin-left: 15px;
+}
