@@ -341,7 +341,7 @@ const SignupSection = () => {
             <TextField
               fullWidth
               onChange={handleChange("phone")}
-              value={signupData.phone || String(eventRef)}
+              value={eventRef ? String(eventRef) : signupData.phone}
               error={phoneError}
               helperText={
                 phoneError &&
