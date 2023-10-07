@@ -1,7 +1,7 @@
 import "../styles/globals.css";
 import Head from "next/head";
 // import { Navbar } from "../components";
-import { Lato } from "@next/font/google";
+import { Lato } from "next/font/google";
 
 const lato = Lato({ subsets: ["latin"], weight: ["400", "700", "900"] });
 import { createTheme, ThemeProvider } from "@mui/material/styles";

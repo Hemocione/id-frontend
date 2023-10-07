@@ -15,7 +15,6 @@
     "@mui/lab": "^5.0.0-alpha.115",
     "@mui/material": "^5.11.6",
     "@mui/x-date-pickers": "^5.0.0-alpha.2",
-    "@next/font": "^13.1.6",
     "axios": "^0.26.1",
     "date-fns": "^2.28.0",
     "lodash": "^4.17.21",
