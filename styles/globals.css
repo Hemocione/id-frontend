@@ -45,3 +45,15 @@ li {
 }
 
 .grecaptcha-badge { opacity:0; visibility: hidden; }
+
+:root {
+  --display-signup-button-bottom: none;
+  --display-signup-button-normal: default;
+}
+
+@media screen and (max-width: 768px) {
+  :root {
+    --display-signup-button-bottom: default;
+    --display-signup-button-normal: none;
+  }
+}

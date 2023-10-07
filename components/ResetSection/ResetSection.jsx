@@ -75,7 +75,7 @@ const ResetSection = () => {
         <div className={styles.recoverContent}>
           <div className={styles.title}>
             <Image
-              src="/vertical-cor-fb.svg"
+              src="/logo.svg"
               width={150}
               height={150}
               alt="Hemocione Logo"

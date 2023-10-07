@@ -16,11 +16,17 @@ const login = ({ email, password, captchaToken }) => {
     "g-recaptcha-response": captchaToken,
   });
 };
-const signUp = (signUpData, captchaToken) => {
-  return apiClient.post(`/users/register`, {
-    ...signUpData,
-    "g-recaptcha-response": captchaToken,
-  });
+const signUp = (signUpData, queryParams, captchaToken = "") => {
+  return apiClient.post(
+    `/users/register`,
+    {
+      ...signUpData,
+      "g-recaptcha-response": captchaToken,
+    },
+    {
+      params: queryParams,
+    }
+  );
 };
 const validateUserToken = ({ token }) => {
   return apiClient.get(`/users/validate-token`, {

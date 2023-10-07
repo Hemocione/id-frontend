@@ -2,6 +2,12 @@
   color: #d1151a;
   text-align: center;
   font-size: min(6vw, 30px);
+  padding: 15px 0 5px;
+  margin: 0
+}
+
+.titleHeader {
+  text-align: center;
 }
 
 .subtitle {
@@ -115,13 +121,13 @@
 }
 
 @media screen and (max-width: 768px) {
-    .bloodTypeRow {
-        grid-template-rows: 1fr 1fr;
-    }
+  .bloodTypeRow {
+      grid-template-rows: 1fr 1fr;
+  }
 
-    .loginContent {
-        width: 100%;
-        margin-top: 0;
-        margin-bottom: 0;
-    }
+  .loginContent {
+      width: 100%;
+      margin-top: 0;
+      margin-bottom: 0;
+  }
 }

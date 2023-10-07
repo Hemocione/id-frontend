@@ -23,6 +23,7 @@ import { getCepData } from "../../utils/brasilApi";
 import { BloodType } from "..";
 import useDebounce from "../../utils/useDebounce";
 import environment from "../../environment";
+import { getDigitalStandRedirectUrl } from "../../utils/digitalStand";
 
 const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const genders = ["M", "F", "O"];
@@ -33,16 +34,15 @@ const genderMapping = {
 };
 
 const SignupSection = () => {
-  console.log(environment);
   const router = useRouter();
-  const { redirect } = router.query;
+  const { redirect, leadId, uuid, eventRef } = router.query;
   const [errorText, setErrorText] = useState("");
   const [loading, setLoading] = useState(false);
   const [signupData, setSignupData] = useState({
     givenName: "",
     surName: "",
     bloodType: "",
-    gender: "",
+    gender: "O",
     phone: "",
     birthDate: undefined,
     email: "",
@@ -69,34 +69,51 @@ const SignupSection = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
-    window.grecaptcha.ready(() => {
-      window.grecaptcha
-        .execute(environment.publicSiteKey, { action: "submit" })
-        .then((captchaToken) => {
-          apiSignUp(captchaToken);
-        })
-        .catch((_) => {
-          setLoading(false);
-          setErrorText("Captcha Inválido! Você é um robô?");
-        });
-    });
+    apiSignUp();
+    // window.grecaptcha.ready(() => {
+    //   window.grecaptcha
+    //     .execute(environment.publicSiteKey, { action: "submit" })
+    //     .then((captchaToken) => {
+    //       apiSignUp(captchaToken);
+    //     })
+    //     .catch((_) => {
+    //       setLoading(false);
+    //       setErrorText("Captcha Inválido! Você é um robô?");
+    //     });
+    // });
   };
-  const apiSignUp = (captchaToken) => {
+  const apiSignUp = () => {
     if (signupData.address.cep) {
       signupData.address.postalCode = signupData.address.cep;
     }
 
-    signUp(signupData, captchaToken)
+    const options =
+      leadId && uuid ? { leadId: String(leadId), uuid: String(uuid) } : {};
+    const hydratedSignUpData = {
+      ...signupData,
+      phone: signupData.phone || eventRef,
+    };
+
+    signUp(hydratedSignUpData, options)
       .then((response) => {
         setLoading(false);
-        if ([200, 201].includes(response.status) && response.data["token"]) {
-          setCookie(
-            environment.tokenCookieKey,
-            response.data.token,
-            15,
-            "hemocione.com.br"
-          );
+        if ([200, 201].includes(response.status)) {
+          if (response.data["token"]) {
+            setCookie(
+              environment.tokenCookieKey,
+              response.data.token,
+              15,
+              "hemocione.com.br"
+            );
+          }
+
+          const digitalStandRedirect =
+            leadId && uuid
+              ? getDigitalStandRedirectUrl(String(leadId), String(uuid))
+              : null;
+
           const locationRedirect =
+            digitalStandRedirect ||
             redirect ||
             environment.mainFrontendUrl ||
             "https://www.hemocione.com.br/";
@@ -131,7 +148,7 @@ const SignupSection = () => {
       console.error(error);
       setErrorText("CEP inválido");
     }
-  }, 1000);
+  }, 700);
 
   const handleCEPChange = async (e) => {
     const cep = e.target.value;
@@ -156,9 +173,12 @@ const SignupSection = () => {
   };
 
   const handleChange = (key) => (e) => {
+    console.log(e.target.value);
     const copyDict = { ...signupData };
     copyDict[key] = e.target.value;
+    console.log(copyDict);
     setSignupData(copyDict);
+    console.log(signupData);
   };
 
   const handleBday = (value) => {
@@ -209,14 +229,18 @@ const SignupSection = () => {
   return (
     <div className={styles.loginSection}>
       <div className={styles.loginContent}>
-        <div className={styles.title}>
+        <div className={styles.titleHeader}>
           <Image
-            src="/vertical-cor-fb.svg"
+            src="/logo.svg"
             width={150}
             height={150}
             alt="Hemocione Logo"
           />
-          <h2 className={styles.title}>Crie sua conta agora!</h2>
+          <h2 className={styles.title}>Cadastre-se agora!</h2>
+          <span class={styles.subsectionTitleExplanation}>
+            Ao se cadastrar no Hemocione, estaremos sempre em sintonia para
+            informá-lo sobre eventos próximos a você!
+          </span>
         </div>
         <FormGroup onSubmit={handleSubmit}>
           <FormControl fullWidth sx={{ margin: "15px 0" }}>
@@ -227,6 +251,7 @@ const SignupSection = () => {
               id="Primeiro nome"
               label="Primeiro nome"
               variant="outlined"
+              required
             />
           </FormControl>
           <FormControl fullWidth sx={{ marginBottom: "15px" }}>
@@ -237,6 +262,7 @@ const SignupSection = () => {
               id="Sobrenome"
               label="Sobrenome"
               variant="outlined"
+              required
             />
           </FormControl>
           <FormControl fullWidth sx={{ marginBottom: "15px" }}>
@@ -249,6 +275,7 @@ const SignupSection = () => {
               id="email"
               label="Email"
               variant="outlined"
+              required
             />
           </FormControl>
           <hr className={styles.divider} />
@@ -279,6 +306,7 @@ const SignupSection = () => {
                 label="Gênero"
                 onChange={handleChange("gender")}
                 fullWidth
+                required
               >
                 {genders.map((g) => (
                   <MenuItem key={g} value={g}>
@@ -303,7 +331,7 @@ const SignupSection = () => {
             <TextField
               fullWidth
               onChange={handleChange("phone")}
-              value={signupData.phone}
+              value={signupData.phone || String(eventRef)}
               error={phoneError}
               helperText={
                 phoneError &&
@@ -312,14 +340,16 @@ const SignupSection = () => {
               id="Telefone"
               label="Telefone"
               variant="outlined"
+              disabled={eventRef ? true : false}
+              required
             />
           </FormControl>
           <hr className={styles.divider} />
           <h4 className={styles.subsectionTitle}>
             Qual o seu endereço?{" "}
             <span className={styles.subsectionTitleExplanation}>
-              Precisamos saber disso para encontrar bancos de sangue próximos a
-              você!
+              Precisamos saber disso para encontrar bancos de sangue e eventos
+              próximos a você!
             </span>
           </h4>
           <div className={styles.twoColumns}>
@@ -476,22 +506,42 @@ const SignupSection = () => {
             loading={loading}
             disabled={disabledButton}
             onClick={handleSubmit}
-            passStyle={{ width: "100%", margin: "16px auto" }}
+            passStyle={{
+              width: "100%",
+              position: "fixed",
+              bottom: 0,
+              display: "var(--display-signup-button-bottom)",
+              borderRadius: 0,
+            }}
           >
             {loading ? "" : "Criar conta"}
           </SimpleButton>
-          <p style={{ textAlign: "center", margin: 0 }}>
-            Já possui conta?
-            <b
-              style={{
-                color: "rgb(200, 4, 10)",
-              }}
-            >
-              <Link href={redirect ? `/?redirect=${redirect}` : "/"} passHref>
-                {" Faça login agora!"}
-              </Link>
-            </b>
-          </p>
+          <SimpleButton
+            loading={loading}
+            disabled={disabledButton}
+            onClick={handleSubmit}
+            passStyle={{
+              width: "100%",
+              margin: "16px auto",
+              display: "var(--display-signup-button-normal)",
+            }}
+          >
+            {loading ? "" : "Criar conta"}
+          </SimpleButton>
+          {leadId && uuid ? null : (
+            <p style={{ textAlign: "center", margin: 0 }}>
+              Já possui conta?
+              <b
+                style={{
+                  color: "rgb(200, 4, 10)",
+                }}
+              >
+                <Link href={redirect ? `/?redirect=${redirect}` : "/"} passHref>
+                  {" Faça login!"}
+                </Link>
+              </b>
+            </p>
+          )}
           <p className={styles.errorText}>{errorText}</p>
         </FormGroup>
       </div>
