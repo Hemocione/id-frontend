@@ -12,13 +12,14 @@ import environment from "../../environment";
 const LoginSection = () => {
   const router = useRouter();
   const { redirect } = router.query;
+  const encodedRedirect = redirect ? encodeURIComponent(redirect) : "";
   const [loading, setLoading] = useState(false);
   const [errorText, setErrorText] = useState("");
   const [sent, setSent] = useState(false);
   const [email, setEmail] = useState("");
 
   const handleReturn = (e) => {
-    let href = redirect ? `/?redirect=${redirect}` : "/";
+    let href = encodedRedirect ? `/?redirect=${encodedRedirect}` : "/";
     router.push(href);
   };
 
