@@ -14,6 +14,7 @@ import environment from "../../environment";
 const LoginSection = () => {
   const router = useRouter();
   const { redirect } = router.query;
+  const encodedRedirect = redirect ? encodeURIComponent(redirect) : "";
   const [errorText, setErrorText] = useState("");
   const [loading, setLoading] = useState(false);
   const [loginData, setloginData] = useState({
@@ -120,7 +121,7 @@ const LoginSection = () => {
               }}
             >
               <Link
-                href={redirect ? `signup/?redirect=${redirect}` : "signup"}
+                href={encodedRedirect ? `signup/?redirect=${encodedRedirect}` : "signup"}
                 passHref
               >
                 {" Cadastre-se agora!"}
@@ -134,7 +135,7 @@ const LoginSection = () => {
               }}
             >
               <Link
-                href={redirect ? `recover/?redirect=${redirect}` : "recover"}
+                href={encodedRedirect ? `recover/?redirect=${encodedRedirect}` : "recover"}
                 passHref
               >
                 {" Esqueci minha senha"}
