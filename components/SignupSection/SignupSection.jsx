@@ -38,6 +38,7 @@ const genderMapping = {
 const SignupSection = () => {
   const router = useRouter();
   const { redirect, leadId, uuid, eventRef } = router.query;
+  const encodedRedirect = redirect ? encodeURIComponent(redirect) : "";
   const [errorText, setErrorText] = useState("");
   const [loading, setLoading] = useState(false);
   const [signupData, setSignupData] = useState({
@@ -540,7 +541,7 @@ const SignupSection = () => {
                   color: "rgb(200, 4, 10)",
                 }}
               >
-                <Link href={redirect ? `/?redirect=${redirect}` : "/"} passHref>
+                <Link href={encodedRedirect ? `/?redirect=${encodedRedirect}` : "/"} passHref>
                   {" Faça login!"}
                 </Link>
               </b>
