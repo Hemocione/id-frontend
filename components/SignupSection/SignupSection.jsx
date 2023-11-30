@@ -166,12 +166,6 @@ const SignupSection = () => {
 
   const handleChange = (key) => (e) => {
     const copyDict = { ...signupData };
-    console.log({
-      value: e.target.value,
-      key,
-      copyDict,
-      access: copyDict[key],
-    });
     _.set(copyDict, key, e.target.value);
     setSignupData(copyDict);
   };
