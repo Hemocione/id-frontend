@@ -25,11 +25,11 @@ const LoginSection = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
+    apiLogin("");
     // window.grecaptcha.ready(() => {
     //   window.grecaptcha
     //     .execute(environment.publicSiteKey, { action: "submit" })
     //     .then((captchaToken) => {
-    //       apiLogin(captchaToken);
     //     })
     //     .catch((_) => {
     //       setLoading(false);
