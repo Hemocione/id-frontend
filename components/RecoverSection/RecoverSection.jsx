@@ -26,11 +26,11 @@ const LoginSection = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
+    apiRecover("");
     // window.grecaptcha.ready(() => {
     //   window.grecaptcha
     //     .execute(environment.publicSiteKey, { action: "submit" })
     //     .then(async (captchaToken) => {
-    //       await apiRecover(captchaToken);
     //     })
     //     .catch((_) => {
     //       setLoading(false);

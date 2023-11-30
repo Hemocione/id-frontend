@@ -26,11 +26,11 @@ const ResetSection = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
+    apiReset("");
     // window.grecaptcha.ready(() => {
     //   window.grecaptcha
     //     .execute(environment.publicSiteKey, { action: "submit" })
     //     .then((captchaToken) => {
-    //       apiReset(captchaToken);
     //     })
     //     .catch((_) => {
     //       setLoading(false);
