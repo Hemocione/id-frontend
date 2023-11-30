@@ -13,7 +13,11 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useState } from "react";
 import Link from "next/link";
-import { validateEmail, validatePhone } from "../../utils/validators";
+import {
+  validateEmail,
+  validatePhone,
+  validateCEP,
+} from "../../utils/validators";
 import { signUp } from "../../utils/api";
 import styles from "./SignupSection.module.css";
 import { useRouter } from "next/router";
@@ -87,15 +91,18 @@ const SignupSection = () => {
     // });
   };
   const apiSignUp = () => {
-    if (signupData.address.cep) {
-      signupData.address.postalCode = signupData.address.cep;
+    const data = _.cloneDeep(signupData);
+    if (data.address.cep) {
+      const hydratedPostalCode = data.address.cep.replace(/\D/g, "");
+      data.address.postalCode = hydratedPostalCode;
     }
 
     const options =
       leadId && uuid ? { leadId: String(leadId), uuid: String(uuid) } : {};
+    const hydratedPhone = (data.phone || eventRef).replace(/\D/g, "").trim();
     const hydratedSignUpData = {
-      ...signupData,
-      phone: signupData.phone || eventRef,
+      ...data,
+      phone: hydratedPhone,
     };
 
     signUp(hydratedSignUpData, options)
@@ -185,7 +192,7 @@ const SignupSection = () => {
     signupData.passConfirmation != signupData.password;
   const phoneError = signupData.phone != "" && !validatePhone(signupData.phone);
   const cepError =
-    signupData.address.cep != "" && signupData.address.cep.length !== 8;
+    signupData.address.cep != "" && !validateCEP(signupData.address.cep);
 
   const disabledButton =
     !signupData.givenName ||
