@@ -8,8 +8,14 @@ const apiClient = axios.create({
   },
 });
 
-const getCepData = (cep) => {
-  return apiClient.get(`/cep/v2/${cep}`);
+const getCepData = async (cep) => {
+  try {
+    const res = await apiClient.get(`/cep/v2/${cep}`);
+    return res;
+  } catch (error) {
+    const res = await apiClient.get(`/cep/v1/${cep}`);
+    return res;
+  }
 };
 
 export { getCepData };

@@ -15,6 +15,11 @@ const validatePhone = (phone) => {
   return trimmedPhone.length === 13 || trimmedPhone.length === 11; // include DDD and/or country code
 };
 
+const validateCEP = (cep) => {
+  const trimmedCEP = String(cep).trim().replace(/\D/g, "");
+  return trimmedCEP.length === 8;
+};
+
 const validateCPF = (cpf) => {
   cpf = cpf.replace(/[^\d]+/g, "");
   if (cpf == "") return false;
@@ -48,4 +53,10 @@ const validateCPF = (cpf) => {
   return true;
 };
 
-export { validateCPF, validatePhone, validateEmail, validatePassword };
+export {
+  validateCPF,
+  validatePhone,
+  validateEmail,
+  validatePassword,
+  validateCEP,
+};

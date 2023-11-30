@@ -12,20 +12,24 @@ import { ptBR } from "date-fns/locale";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useState } from "react";
-import { SimpleButton } from "..";
 import Link from "next/link";
-import { validateEmail, validatePhone } from "../../utils/validators";
+import {
+  validateEmail,
+  validatePhone,
+  validateCEP,
+} from "../../utils/validators";
 import { signUp } from "../../utils/api";
 import styles from "./SignupSection.module.css";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { setCookie } from "../../utils/cookie";
 import { getCepData } from "../../utils/brasilApi";
-import { BloodType } from "..";
 import useDebounce from "../../utils/useDebounce";
 import environment from "../../environment";
 import { getDigitalStandRedirectUrl } from "../../utils/digitalStand";
 import { ptBR as DatePickerLocale } from "@mui/x-date-pickers/locales";
+import { SimpleButton, CepMask, PhoneMask, BloodType } from "..";
+import _ from "lodash";
 
 const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const genders = ["M", "F", "O"];
@@ -41,15 +45,16 @@ const SignupSection = () => {
   const encodedRedirect = redirect ? encodeURIComponent(redirect) : "";
   const [errorText, setErrorText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [attemptToCEPSearch, setAttemptToCEPSearch] = useState(false);
+  const [computedAddress, setComputedAddress] = useState(false);
   const [signupData, setSignupData] = useState({
     givenName: "",
     surName: "",
     bloodType: "",
     gender: "O",
     phone: "",
-    birthDate: undefined,
+    birthDate: "",
     email: "",
-    gender: "",
     password: "",
     passConfirmation: "",
     address: {
@@ -86,15 +91,18 @@ const SignupSection = () => {
     // });
   };
   const apiSignUp = () => {
-    if (signupData.address.cep) {
-      signupData.address.postalCode = signupData.address.cep;
+    const data = _.cloneDeep(signupData);
+    if (data.address.cep) {
+      const hydratedPostalCode = data.address.cep.replace(/\D/g, "");
+      data.address.postalCode = hydratedPostalCode;
     }
 
     const options =
       leadId && uuid ? { leadId: String(leadId), uuid: String(uuid) } : {};
+    const hydratedPhone = (data.phone || eventRef).replace(/\D/g, "").trim();
     const hydratedSignUpData = {
-      ...signupData,
-      phone: signupData.phone || eventRef,
+      ...data,
+      phone: hydratedPhone,
     };
 
     signUp(hydratedSignUpData, options)
@@ -141,7 +149,7 @@ const SignupSection = () => {
 
       const cep = signupData.address.cep.replace(/\D/g, "");
       const { data } = await getCepData(cep);
-      if (!data) return setErrorText("CEP inválido");
+      if (!data) return; // API call worked but no data was returned - invalid CEP
 
       const copyDict = { ...signupData };
       copyDict.address = data;
@@ -149,7 +157,9 @@ const SignupSection = () => {
       setSignupData(copyDict);
     } catch (error) {
       console.error(error);
-      setErrorText("CEP inválido");
+      setAttemptToCEPSearch(true);
+    } finally {
+      setComputedAddress(true);
     }
   }, 700);
 
@@ -161,29 +171,9 @@ const SignupSection = () => {
     if (cep) debouncedSearchAndUpdateAddress();
   };
 
-  const handleNumberChange = (e) => {
-    const number = e.target.value;
-    const copyDict = { ...signupData };
-    copyDict.address.number = number;
-    setSignupData(copyDict);
-  };
-
-  const handleComplementChange = (e) => {
-    const complement = e.target.value;
-    const copyDict = { ...signupData };
-    copyDict.address.complement = complement;
-    setSignupData(copyDict);
-  };
-
   const handleChange = (key) => (e) => {
     const copyDict = { ...signupData };
-    copyDict[key] = e.target.value;
-    setSignupData(copyDict);
-  };
-
-  const handleBday = (value) => {
-    const copyDict = { ...signupData };
-    copyDict.birthDate = value;
+    _.set(copyDict, key, e.target.value);
     setSignupData(copyDict);
   };
 
@@ -202,7 +192,7 @@ const SignupSection = () => {
     signupData.passConfirmation != signupData.password;
   const phoneError = signupData.phone != "" && !validatePhone(signupData.phone);
   const cepError =
-    signupData.address.cep != "" && signupData.address.cep.length !== 8;
+    signupData.address.cep != "" && !validateCEP(signupData.address.cep);
 
   const disabledButton =
     !signupData.givenName ||
@@ -232,9 +222,8 @@ const SignupSection = () => {
             alt="Hemocione Logo"
           />
           <h2 className={styles.title}>Cadastre-se agora!</h2>
-          <span class={styles.subsectionTitleExplanation}>
-            Ao se cadastrar no Hemocione, estaremos sempre em sintonia para
-            informá-lo sobre eventos próximos a você!
+          <span className={styles.subsectionTitleExplanation}>
+            Faça parte da Rede Hemocione de doadores e ajude a salvar vidas!
           </span>
         </div>
         <FormGroup onSubmit={handleSubmit}>
@@ -256,6 +245,7 @@ const SignupSection = () => {
               value={signupData.surName}
               id="Sobrenome"
               label="Sobrenome"
+              name="surName"
               variant="outlined"
               required
             />
@@ -266,9 +256,9 @@ const SignupSection = () => {
               onChange={handleChange("email")}
               value={signupData.email}
               error={emailError}
-              helperText={emailError && "Email inválido"}
               id="email"
               label="Email"
+              name="email"
               variant="outlined"
               required
             />
@@ -294,14 +284,16 @@ const SignupSection = () => {
           <hr className={styles.divider} />
           <div className={styles.twoColumns}>
             <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-              <InputLabel id="demo-simple-select-label" required>
+              <InputLabel id="gender" required>
                 Gênero
               </InputLabel>
               <Select
+                labelId="gender"
                 id="gender"
                 placeholder="Gênero"
                 label="Gênero"
                 onChange={handleChange("gender")}
+                name="gender"
                 fullWidth
               >
                 {genders.map((g) => (
@@ -324,7 +316,10 @@ const SignupSection = () => {
                 <DatePicker
                   label="Data de nascimento *"
                   value={signupData.birthDate}
-                  onChange={handleBday}
+                  name="birthDate"
+                  onChange={(value) =>
+                    handleChange("birthDate")({ target: { value } })
+                  }
                   inputFormat="dd/MM/yyyy"
                   renderInput={(params) => <TextField {...params} />}
                 />
@@ -337,14 +332,14 @@ const SignupSection = () => {
               onChange={handleChange("phone")}
               value={eventRef ? String(eventRef) : signupData.phone}
               error={phoneError}
-              helperText={
-                phoneError &&
-                "Telefone inválido - Por favor insira apenas números e o seu DDD."
-              }
               id="Telefone"
               label="Telefone"
               variant="outlined"
+              name="phone"
               disabled={eventRef ? true : false}
+              InputProps={{
+                inputComponent: PhoneMask,
+              }}
               required
             />
           </FormControl>
@@ -352,8 +347,8 @@ const SignupSection = () => {
           <h4 className={styles.subsectionTitle}>
             Qual o seu endereço?{" "}
             <span className={styles.subsectionTitleExplanation}>
-              Precisamos saber disso para encontrar bancos de sangue e eventos
-              próximos a você!
+              Precisamos saber disso para encontrar bancos de sangue e campanhas
+              próximas a você!
             </span>
           </h4>
           <div className={styles.twoColumns}>
@@ -363,73 +358,83 @@ const SignupSection = () => {
                 onChange={handleCEPChange}
                 value={signupData.address.cep}
                 error={cepError}
-                helperText={
-                  cepError &&
-                  "Este CEP não é válido. Por favor, insira um CEP válido."
-                }
-                label="CEP (apenas números)"
+                label="CEP"
                 id="cep"
+                name="cep"
                 variant="outlined"
+                InputProps={{
+                  inputComponent: CepMask,
+                }}
                 required
               />
             </FormControl>
             <FormControl fullWidth sx={{ marginBottom: "15px" }}>
               <TextField
-                disabled
+                disabled={!attemptToCEPSearch}
                 fullWidth
+                onChange={handleChange("address.state")}
                 value={signupData.address.state}
                 label="Estado"
                 id="state"
+                name="state"
                 variant="outlined"
               />
             </FormControl>
             <FormControl fullWidth sx={{ marginBottom: "15px" }}>
               <TextField
-                disabled
+                disabled={!attemptToCEPSearch}
                 fullWidth
+                onChange={handleChange("address.city")}
                 value={signupData.address.city}
                 label="Cidade"
                 id="city"
+                name="city"
                 variant="outlined"
               />
             </FormControl>
             <FormControl fullWidth sx={{ marginBottom: "15px" }}>
               <TextField
-                disabled
+                disabled={!computedAddress}
                 fullWidth
+                onChange={handleChange("address.neighborhood")}
                 value={signupData.address.neighborhood}
                 label="Bairro"
                 id="neighborhood"
+                name="neighborhood"
                 variant="outlined"
               />
             </FormControl>
             <FormControl fullWidth sx={{ marginBottom: "15px" }}>
               <TextField
-                disabled
+                disabled={!computedAddress}
                 fullWidth
+                onChange={handleChange("address.street")}
                 value={signupData.address.street}
                 label="Rua"
                 id="street"
+                name="street"
                 variant="outlined"
               />
             </FormControl>
             <FormControl fullWidth sx={{ marginBottom: "15px" }}>
               <TextField
                 fullWidth
-                onChange={handleNumberChange}
+                onChange={handleChange("address.number")}
                 value={signupData.address.number}
                 label="Número"
                 id="number"
+                name="number"
                 variant="outlined"
               />
             </FormControl>
             <FormControl fullWidth sx={{ marginBottom: "15px" }}>
               <TextField
                 fullWidth
-                onChange={handleComplementChange}
+                onChange={handleChange("address.complement")}
                 value={signupData.address.complement}
                 label="Complemento"
                 id="complement"
+                name="complement"
                 variant="outlined"
               />
             </FormControl>
@@ -445,6 +450,7 @@ const SignupSection = () => {
                 passError && "A senha deve ter pelo menos 7 caracteres"
               }
               id="password"
+              name="password"
               label="Senha"
               type="password"
               variant="outlined"
@@ -456,9 +462,9 @@ const SignupSection = () => {
               fullWidth
               onChange={handleChange("passConfirmation")}
               error={passConfError}
-              helperText={passConfError && "As senhas devem ser idênticas"}
               value={signupData.passConfirmation}
-              id="password"
+              id="password-confirmation"
+              name="password-confirmation"
               label="Confirmar senha"
               type="password"
               variant="outlined"
@@ -541,7 +547,10 @@ const SignupSection = () => {
                   color: "rgb(200, 4, 10)",
                 }}
               >
-                <Link href={encodedRedirect ? `/?redirect=${encodedRedirect}` : "/"} passHref>
+                <Link
+                  href={encodedRedirect ? `/?redirect=${encodedRedirect}` : "/"}
+                  passHref
+                >
                   {" Faça login!"}
                 </Link>
               </b>
