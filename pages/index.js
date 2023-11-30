@@ -32,15 +32,15 @@ export default function Home() {
     // }
   });
 
-  useEffect(() => {
-    const scriptExist = document.getElementById("recaptcha-key");
-    if (!scriptExist) {
-      const script = document.createElement("script");
-      script.id = "recaptcha-key";
-      script.src = `https://www.google.com/recaptcha/api.js?render=${environment.publicSiteKey}`;
-      script.onload = () => console.log("captcha loaded");
-      document.body.appendChild(script);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const scriptExist = document.getElementById("recaptcha-key");
+  //   if (!scriptExist) {
+  //     const script = document.createElement("script");
+  //     script.id = "recaptcha-key";
+  //     script.src = `https://www.google.com/recaptcha/api.js?render=${environment.publicSiteKey}`;
+  //     script.onload = () => console.log("captcha loaded");
+  //     document.body.appendChild(script);
+  //   }
+  // }, []);
   return <LoginSection />;
 }

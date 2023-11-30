@@ -25,17 +25,17 @@ const LoginSection = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
-    window.grecaptcha.ready(() => {
-      window.grecaptcha
-        .execute(environment.publicSiteKey, { action: "submit" })
-        .then((captchaToken) => {
-          apiLogin(captchaToken);
-        })
-        .catch((_) => {
-          setLoading(false);
-          setErrorText("Captcha Inválido! Você é um robô?");
-        });
-    });
+    // window.grecaptcha.ready(() => {
+    //   window.grecaptcha
+    //     .execute(environment.publicSiteKey, { action: "submit" })
+    //     .then((captchaToken) => {
+    //       apiLogin(captchaToken);
+    //     })
+    //     .catch((_) => {
+    //       setLoading(false);
+    //       setErrorText("Captcha Inválido! Você é um robô?");
+    //     });
+    // });
   };
 
   const apiLogin = (captchaToken) => {
@@ -121,7 +121,11 @@ const LoginSection = () => {
               }}
             >
               <Link
-                href={encodedRedirect ? `signup/?redirect=${encodedRedirect}` : "signup"}
+                href={
+                  encodedRedirect
+                    ? `signup/?redirect=${encodedRedirect}`
+                    : "signup"
+                }
                 passHref
               >
                 {" Cadastre-se agora!"}
@@ -135,7 +139,11 @@ const LoginSection = () => {
               }}
             >
               <Link
-                href={encodedRedirect ? `recover/?redirect=${encodedRedirect}` : "recover"}
+                href={
+                  encodedRedirect
+                    ? `recover/?redirect=${encodedRedirect}`
+                    : "recover"
+                }
                 passHref
               >
                 {" Esqueci minha senha"}
