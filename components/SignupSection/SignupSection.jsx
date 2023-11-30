@@ -256,7 +256,6 @@ const SignupSection = () => {
               onChange={handleChange("email")}
               value={signupData.email}
               error={emailError}
-              helperText={emailError && "Email inválido"}
               id="email"
               label="Email"
               name="email"
@@ -333,7 +332,6 @@ const SignupSection = () => {
               onChange={handleChange("phone")}
               value={eventRef ? String(eventRef) : signupData.phone}
               error={phoneError}
-              helperText={phoneError && "Telefone inválido"}
               id="Telefone"
               label="Telefone"
               variant="outlined"
@@ -464,7 +462,6 @@ const SignupSection = () => {
               fullWidth
               onChange={handleChange("passConfirmation")}
               error={passConfError}
-              helperText={passConfError && "As senhas devem ser idênticas"}
               value={signupData.passConfirmation}
               id="password-confirmation"
               name="password-confirmation"
