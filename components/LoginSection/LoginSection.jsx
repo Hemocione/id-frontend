@@ -53,7 +53,8 @@ const LoginSection = () => {
             redirect ||
             process.env.NEXT_PUBLIC_MAIN_SITE ||
             "https://www.hemocione.com.br/";
-          router.push(locationRedirect, {
+          router.push({
+            url: locationRedirect,
             query: { token: response.data.token },
           });
           return;
