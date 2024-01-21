@@ -128,10 +128,12 @@ const SignupSection = () => {
             redirect ||
             environment.mainFrontendUrl ||
             "https://www.hemocione.com.br/";
-          router.push({
-            url: locationRedirect,
-            query: { token: response.data.token },
-          });
+
+          const url = new URL(locationRedirect);
+          url.searchParams.append("token", response.data.token);
+          const newLocationRedirect = url.toString();
+
+          router.push(newLocationRedirect);
           return;
         }
         setErrorText(response.data.message);
