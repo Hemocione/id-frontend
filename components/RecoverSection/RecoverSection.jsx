@@ -7,7 +7,6 @@ import { CircularProgress } from "@mui/material";
 import { recoverPassword } from "../../utils/api";
 import styles from "./RecoverSection.module.css";
 import { useRouter } from "next/router";
-import environment from "../../environment";
 
 const LoginSection = () => {
   const router = useRouter();
