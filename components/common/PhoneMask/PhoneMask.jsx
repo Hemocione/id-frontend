@@ -8,7 +8,7 @@ const PhoneMask = React.forwardRef(function PhoneMask(props, ref) {
       {...other}
       mask="(##) #####-####"
       definitions={{
-        "#": /[1-9]/,
+        "#": /[0-9]/,
       }}
       inputRef={ref}
       onAccept={(value) => onChange({ target: { name: props.name, value } })}
