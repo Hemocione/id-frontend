@@ -17,6 +17,7 @@ import {
   validateEmail,
   validatePhone,
   validateCEP,
+  validateCPF,
 } from "../../utils/validators";
 import { signUp } from "../../utils/api";
 import styles from "./SignupSection.module.css";
@@ -28,7 +29,7 @@ import useDebounce from "../../utils/useDebounce";
 import environment from "../../environment";
 import { getDigitalStandRedirectUrl } from "../../utils/digitalStand";
 import { ptBR as DatePickerLocale } from "@mui/x-date-pickers/locales";
-import { SimpleButton, CepMask, PhoneMask, BloodType } from "..";
+import { SimpleButton, CepMask, PhoneMask, BloodType, CpfMask } from "..";
 import _ from "lodash";
 
 const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
@@ -57,6 +58,7 @@ const SignupSection = () => {
     email: "",
     password: "",
     passConfirmation: "",
+    document: "",
     address: {
       cep: "",
       state: "",
@@ -196,6 +198,7 @@ const SignupSection = () => {
     signupData.passConfirmation != "" &&
     signupData.passConfirmation != signupData.password;
   const phoneError = signupData.phone != "" && !validatePhone(signupData.phone);
+  const cpfError = signupData.document != "" && !validateCPF(signupData.document);
   const cepError =
     signupData.address.cep != "" && !validateCEP(signupData.address.cep);
 
@@ -209,6 +212,8 @@ const SignupSection = () => {
     !signupData.gender ||
     !signupData.birthDate ||
     !signupData.address.cep ||
+    !signupData.document ||
+    cpfError ||
     passConfError ||
     passError ||
     emailError ||
@@ -265,6 +270,24 @@ const SignupSection = () => {
               label="Email"
               name="email"
               variant="outlined"
+              autocomplete="username"
+              required
+            />
+          </FormControl>
+          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+            <TextField
+              fullWidth
+              onChange={handleChange("document")}
+              value={eventRef ? String(eventRef) : signupData.document}
+              error={cpfError}
+              id="cpf"
+              label="CPF"
+              variant="outlined"
+              name="cpf"
+              disabled={eventRef ? true : false}
+              InputProps={{
+                inputComponent: CpfMask,
+              }}
               required
             />
           </FormControl>
@@ -427,8 +450,8 @@ const SignupSection = () => {
                 onChange={handleChange("address.number")}
                 value={signupData.address.number}
                 label="Número"
-                id="number"
-                name="number"
+                id="address-number"
+                name="address-number"
                 variant="outlined"
               />
             </FormControl>
