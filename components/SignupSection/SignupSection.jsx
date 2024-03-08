@@ -433,6 +433,7 @@ const SignupSection = () => {
                 id="state"
                 placeholder="Estado"
                 label="Estado"
+                value={signupData.address.state}
                 onChange={handleChange("address.state")}
                 name="state"
                 disabled={!attemptToCEPSearch}
