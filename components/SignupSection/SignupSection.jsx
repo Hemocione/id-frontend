@@ -24,7 +24,7 @@ import styles from "./SignupSection.module.css";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { setCookie } from "../../utils/cookie";
-import { getCepData } from "../../utils/brasilApi";
+import { getCepData, getCidadesFromEstado, getEstadosListWithLabel } from "../../utils/brasilApi";
 import useDebounce from "../../utils/useDebounce";
 import environment from "../../environment";
 import { getDigitalStandRedirectUrl } from "../../utils/digitalStand";
@@ -39,6 +39,13 @@ const genderMapping = {
   F: "Feminino",
   O: "Prefiro não informar",
 };
+const estadosWithLabel = getEstadosListWithLabel();
+const estados = estadosWithLabel.map((e) => e.value);
+const getEstadoLabel = (estado) => {
+  const estadoObj = estadosWithLabel.find((e) => e.value === estado);
+  return estadoObj?.label || estado;
+};
+
 
 const SignupSection = () => {
   const router = useRouter();
@@ -47,6 +54,8 @@ const SignupSection = () => {
   const [errorText, setErrorText] = useState("");
   const [loading, setLoading] = useState(false);
   const [attemptToCEPSearch, setAttemptToCEPSearch] = useState(false);
+  const [searchingCities, setSearchingCities] = useState(false);
+  const [cities, setCities] = useState([]);
   const [computedAddress, setComputedAddress] = useState(false);
   const [signupData, setSignupData] = useState({
     givenName: "",
@@ -170,6 +179,17 @@ const SignupSection = () => {
     }
   }, 700);
 
+  const debouncedSearchCities = useDebounce(async () => {
+    setSearchingCities(true);
+    try {
+      const cities = await getCidadesFromEstado(signupData.address.state);
+      setCities(cities);
+    } catch (error) {
+    } finally {
+      setSearchingCities(false);
+    }
+  }, 700);
+
   const handleCEPChange = async (e) => {
     const cep = e.target.value;
     const copyDict = { ...signupData };
@@ -182,6 +202,14 @@ const SignupSection = () => {
     const copyDict = { ...signupData };
     _.set(copyDict, key, e.target.value);
     setSignupData(copyDict);
+  };
+
+  const handleStateChange = async (e) => {
+    const estado = e.target.value;
+    const copyDict = { ...signupData };
+    copyDict.address.state = estado;
+    setSignupData(copyDict);
+    if (estado) debouncedSearchCities(estado);
   };
 
   function handleTermsCheckBox() {
@@ -270,7 +298,7 @@ const SignupSection = () => {
               label="Email"
               name="email"
               variant="outlined"
-              autocomplete="username"
+              autoComplete="username"
               required
             />
           </FormControl>
@@ -397,16 +425,25 @@ const SignupSection = () => {
               />
             </FormControl>
             <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-              <TextField
+              <InputLabel id="state" required>
+                Estado
+              </InputLabel>
+              <Select
+                labelId="state"
+                id="state"
+                placeholder="Estado"
+                label="Estado"
+                onChange={handleChange("address.state")}
+                name="state"
                 disabled={!attemptToCEPSearch}
                 fullWidth
-                onChange={handleChange("address.state")}
-                value={signupData.address.state}
-                label="Estado"
-                id="state"
-                name="state"
-                variant="outlined"
-              />
+              >
+                {estados.map((estado) => (
+                  <MenuItem key={estado} value={estado}>
+                    {getEstadoLabel(estado)}
+                  </MenuItem>
+                ))}
+              </Select>
             </FormControl>
             <FormControl fullWidth sx={{ marginBottom: "15px" }}>
               <TextField
@@ -414,6 +451,7 @@ const SignupSection = () => {
                 fullWidth
                 onChange={handleChange("address.city")}
                 value={signupData.address.city}
+                required
                 label="Cidade"
                 id="city"
                 name="city"
