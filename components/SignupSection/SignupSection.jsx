@@ -24,7 +24,8 @@ import styles from "./SignupSection.module.css";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { setCookie } from "../../utils/cookie";
-import { getCepData, getCidadesFromEstado, getEstadosListWithLabel } from "../../utils/brasilApi";
+import { getCidadesFromEstado, getEstadosListWithLabel } from "../../utils/brasilApi";
+import { getCepData } from "../../utils/address";
 import useDebounce from "../../utils/useDebounce";
 import environment from "../../environment";
 import { getDigitalStandRedirectUrl } from "../../utils/digitalStand";
@@ -454,6 +455,7 @@ const SignupSection = () => {
                 value={signupData.address.city}
                 required
                 label="Cidade"
+                placeholder="Cidade"
                 id="city"
                 name="city"
                 variant="outlined"
