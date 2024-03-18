@@ -13,6 +13,7 @@ const getCepData = async (cep) => {
   res.data = {
     cep: cep,
     neighborhood: res.data.bairro,
+    street: res.data.logradouro,
     city: res.data.localidade,
     state: res.data.uf,
   }
