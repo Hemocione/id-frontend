@@ -145,7 +145,7 @@ const SignupSection = () => {
           url.searchParams.append("token", response.data.token);
           const newLocationRedirect = url.toString();
 
-          router.push(newLocationRedirect);
+          window.open(newLocationRedirect, "_self");
           return;
         }
         setErrorText(response.data.message);
