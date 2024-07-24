@@ -1,4 +1,6 @@
-import { TextField } from "@mui/material";
+import { TextField, InputAdornment, IconButton } from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
 import Image from "next/image";
 import { SimpleButton } from "..";
@@ -16,6 +18,10 @@ const LoginSection = () => {
   const { redirect } = router.query;
   const encodedRedirect = redirect ? encodeURIComponent(redirect) : "";
   const [errorText, setErrorText] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const handleMouseDownPassword = () => setShowPassword(!showPassword);
+
   const [loading, setLoading] = useState(false);
   const [loginData, setloginData] = useState({
     email: "",
@@ -114,8 +120,21 @@ const LoginSection = () => {
               value={loginData.password}
               id="password"
               label="Senha"
-              type="password"
+              type={showPassword ? "text" : "password"}
               variant="outlined"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                    >
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
           </div>
           <p style={{ textAlign: "center" }}>
