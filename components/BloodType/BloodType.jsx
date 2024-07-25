@@ -1,16 +1,10 @@
 import styles from "./BloodType.module.css";
 
 const BloodType = ({ active, value, clickCall, disabled }) => {
-  const handleClick = (event) => {
-    if (disabled) return;
-
-    clickCall(event);
-  };
-
   return (
     <button
       disabled={disabled}
-      onClick={handleClick}
+      onClick={clickCall}
       className={active ? styles.activeButton : styles.defaultButton}
     >
       {value}

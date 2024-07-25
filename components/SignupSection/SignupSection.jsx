@@ -350,8 +350,8 @@ const SignupSection = () => {
                   key={bt}
                   value={bt}
                   active={signupData.bloodType === bt}
-                  disabled={unknownBloodType}
                   clickCall={(_) => {
+                    setUnknownBloodType(false); // Clear unknown blood type if a blood type is selected
                     handleChange("bloodType")({ target: { value: bt } });
                   }}
                 />
