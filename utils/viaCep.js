@@ -16,8 +16,8 @@ const getCepData = async (cep) => {
     street: res.data.logradouro,
     city: res.data.localidade,
     state: res.data.uf,
-  }
+  };
   return res;
-}
+};
 
 export { getCepData };
