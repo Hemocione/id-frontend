@@ -24,7 +24,10 @@ import styles from "./SignupSection.module.css";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { setCookie } from "../../utils/cookie";
-import { getCidadesFromEstado, getEstadosListWithLabel } from "../../utils/brasilApi";
+import {
+  getCidadesFromEstado,
+  getEstadosListWithLabel,
+} from "../../utils/brasilApi";
 import { getCepData } from "../../utils/address";
 import useDebounce from "../../utils/useDebounce";
 import environment from "../../environment";
@@ -47,7 +50,6 @@ const getEstadoLabel = (estado) => {
   return estadoObj?.label || estado;
 };
 
-
 const SignupSection = () => {
   const router = useRouter();
   const { redirect, leadId, uuid, eventRef } = router.query;
@@ -55,8 +57,9 @@ const SignupSection = () => {
   const [errorText, setErrorText] = useState("");
   const [loading, setLoading] = useState(false);
   const [attemptToCEPSearch, setAttemptToCEPSearch] = useState(false);
-  const [searchingCities, setSearchingCities] = useState(false);
-  const [cities, setCities] = useState([]);
+  const [_searchingCities, setSearchingCities] = useState(false);
+  const [_cities, setCities] = useState([]);
+  const [unknownBloodType, setUnknownBloodType] = useState(false);
   const [computedAddress, setComputedAddress] = useState(false);
   const [signupData, setSignupData] = useState({
     givenName: "",
@@ -107,6 +110,10 @@ const SignupSection = () => {
     if (data.address.cep) {
       const hydratedPostalCode = data.address.cep.replace(/\D/g, "");
       data.address.postalCode = hydratedPostalCode;
+    }
+
+    if (unknownBloodType) {
+      data.bloodType = "-";
     }
 
     const options =
@@ -221,20 +228,32 @@ const SignupSection = () => {
     setAcceptedPrivacyPolicy(!acceptedPrivacyPolicy);
   }
 
+  function handleUnknownBloodTypeCheckbox() {
+    if (!unknownBloodType) {
+      // Clear blood type if unknown is selected
+      handleChange("bloodType")({ target: { value: "" } });
+    }
+    setUnknownBloodType(!unknownBloodType);
+  }
+
   const emailError = signupData.email != "" && !validateEmail(signupData.email);
   const passError = signupData.password != "" && signupData.password.length < 7;
   const passConfError =
     signupData.passConfirmation != "" &&
     signupData.passConfirmation != signupData.password;
   const phoneError = signupData.phone != "" && !validatePhone(signupData.phone);
-  const cpfError = signupData.document != "" && !validateCPF(signupData.document);
+  const cpfError =
+    signupData.document != "" && !validateCPF(signupData.document);
+
   const cepError =
     signupData.address.cep != "" && !validateCEP(signupData.address.cep);
+
+  const validBloodSelection = unknownBloodType || signupData.bloodType;
 
   const disabledButton =
     !signupData.givenName ||
     !signupData.surName ||
-    !signupData.bloodType ||
+    !validBloodSelection ||
     !signupData.email ||
     !signupData.password ||
     !signupData.passConfirmation ||
@@ -331,11 +350,24 @@ const SignupSection = () => {
                   key={bt}
                   value={bt}
                   active={signupData.bloodType === bt}
-                  onClick={(_) => {
+                  disabled={unknownBloodType}
+                  clickCall={(_) => {
                     handleChange("bloodType")({ target: { value: bt } });
                   }}
                 />
               ))}
+            </div>
+            <div className={styles.bloodTypeUnknown}>
+              <Checkbox
+                checked={unknownBloodType}
+                onChange={handleUnknownBloodTypeCheckbox}
+                sx={{
+                  "& .MuiSvgIcon-root": {
+                    color: "#D1151A",
+                  },
+                }}
+              />
+              <span>Não sei meu tipo sanguíneo ou não quero informá-lo 😔</span>
             </div>
           </FormControl>
           <hr className={styles.divider} />

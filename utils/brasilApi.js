@@ -46,17 +46,19 @@ const getEstadosListWithLabel = () => {
     { value: "SC", label: "Santa Catarina" },
     { value: "SP", label: "São Paulo" },
     { value: "SE", label: "Sergipe" },
-    { value: "TO", label: "Tocantins" }
-  ]
-}
+    { value: "TO", label: "Tocantins" },
+  ];
+};
 
 const getCidadesFromEstado = async (estado) => {
   try {
-    const { data } = await apiClient.get(`/ibge/municipios/v1/${estado}?providers=dados-abertos-br,gov,wikipedia`);
-    return data.map(c => c.nome)
+    const { data } = await apiClient.get(
+      `/ibge/municipios/v1/${estado}?providers=dados-abertos-br,gov,wikipedia`
+    );
+    return data.map((c) => c.nome);
   } catch (error) {
-    return []
+    return [];
   }
-}
+};
 
 export { getCepData, getCidadesFromEstado, getEstadosListWithLabel };
