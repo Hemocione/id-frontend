@@ -24,7 +24,9 @@ function getCookie(cname) {
 }
 
 function deleteCookie(name) {
-  document.cookie = name + "=; Max-Age=-99999999;";
+  if (!getCookie(name)) return;
+  // delete cookie by setting the expiration date to a past date
+  document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
 
 export { setCookie, getCookie, deleteCookie };
