@@ -61,7 +61,9 @@ const LoginSection = () => {
             "https://www.hemocione.com.br/";
 
           const url = new URL(locationRedirect);
-          url.searchParams.append("token", response.data.token);
+          if (url.hostname.endsWith("hemocione.com.br")) {
+            url.searchParams.append("token", response.data.token);
+          }
           const newLocationRedirect = url.toString();
 
           window.open(newLocationRedirect, "_self");
