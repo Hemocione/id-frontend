@@ -60,7 +60,7 @@ const resetPassword = ({ newPassword, captchaToken, recoverToken }) => {
 };
 
 const acceptTerms = ({ token }) => {
-  return apiClient.post(`/users//accept-latest-legal-terms`, {}, {
+  return apiClient.post(`/users/accept-latest-legal-terms`, {}, {
     headers: {
       Authorization: "Bearer " + token,
     },
