@@ -632,7 +632,7 @@ const SignupSection = () => {
                 },
               }}
             />
-            <span style={{ fontSize: "0.7 rem" }}>
+            <span style={{ fontSize: "0.7rem" }}>
               Eu aceito receber comunicações de marketing, promoções e ofertas personalizadas do Hemocione e seus parceiros.
             </span>
           </div>
