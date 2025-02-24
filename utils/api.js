@@ -58,4 +58,13 @@ const resetPassword = ({ newPassword, captchaToken, recoverToken }) => {
     }
   );
 };
-export { login, signUp, validateUserToken, recoverPassword, resetPassword };
+
+const acceptTerms = ({ token }) => {
+  return apiClient.post(`/users/accept-latest-legal-terms`, {}, {
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
+}
+
+export { login, signUp, validateUserToken, recoverPassword, resetPassword, acceptTerms };

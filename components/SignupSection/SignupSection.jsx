@@ -88,6 +88,7 @@ const SignupSection = () => {
   });
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [acceptedPrivacyPolicy, setAcceptedPrivacyPolicy] = useState(false);
+  const [acceptedMarketingConsent, setAcceptedMarketingConsent] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -122,6 +123,7 @@ const SignupSection = () => {
     const hydratedSignUpData = {
       ...data,
       phone: hydratedPhone,
+      marketingConsent: acceptedMarketingConsent,
     };
 
     signUp(hydratedSignUpData, options)
@@ -226,6 +228,10 @@ const SignupSection = () => {
 
   function handlePolicyPrivacyCheckbox() {
     setAcceptedPrivacyPolicy(!acceptedPrivacyPolicy);
+  }
+
+  function handleMarketingConsentCheckbox() {
+    setAcceptedMarketingConsent(!acceptedMarketingConsent);
   }
 
   function handleUnknownBloodTypeCheckbox() {
@@ -616,6 +622,20 @@ const SignupSection = () => {
               </a>
             </span>
           </div>
+          <div className={styles.checkBoxRow}>
+            <Checkbox
+              checked={acceptedMarketingConsent}
+              onChange={handleMarketingConsentCheckbox}
+              sx={{
+                "& .MuiSvgIcon-root": {
+                  color: "#D1151A",
+                },
+              }}
+            />
+            <span style={{ fontSize: "0.7rem" }}>
+              Eu aceito receber comunicações de marketing, promoções e ofertas personalizadas do Hemocione e seus parceiros.
+            </span>
+          </div>
           <SimpleButton
             loading={loading}
             disabled={disabledButton}
@@ -624,6 +644,7 @@ const SignupSection = () => {
               width: "100%",
               display: "var(--display-signup-button-bottom)",
               borderRadius: 0,
+              marginTop: "16px",
             }}
           >
             {loading ? "" : "Criar conta"}
