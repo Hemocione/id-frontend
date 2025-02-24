@@ -47,13 +47,14 @@ const LoginSection = () => {
   };
   const [loggedInToken, setLoggedInToken] = useState(null); 
 
-  const finishLogin = () => {
-    if (!loggedInToken) {
+  const finishLogin = (token) => {
+    if (!loggedInToken && !token) {
       return;
     }
+    const userToken = token || loggedInToken;
     setCookie(
       environment.tokenCookieKey,
-      loggedInToken,
+      userToken,
       15,
       "hemocione.com.br"
     );
@@ -64,7 +65,7 @@ const LoginSection = () => {
 
     const url = new URL(locationRedirect);
     if (url.hostname.endsWith("hemocione.com.br")) {
-      url.searchParams.append("token", loggedInToken);
+      url.searchParams.append("token", userToken);
     }
     const newLocationRedirect = url.toString();
 
@@ -87,7 +88,7 @@ const LoginSection = () => {
           return;
         }
 
-        finishLogin();
+        finishLogin(response.data.token);
       })
       .catch((error) => {
         setLoading(false);
