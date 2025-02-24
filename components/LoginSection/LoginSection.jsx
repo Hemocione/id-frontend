@@ -53,7 +53,7 @@ const LoginSection = () => {
     }
     setCookie(
       environment.tokenCookieKey,
-      response.data.token,
+      loggedInToken,
       15,
       "hemocione.com.br"
     );
@@ -64,7 +64,7 @@ const LoginSection = () => {
 
     const url = new URL(locationRedirect);
     if (url.hostname.endsWith("hemocione.com.br")) {
-      url.searchParams.append("token", response.data.token);
+      url.searchParams.append("token", loggedInToken);
     }
     const newLocationRedirect = url.toString();
 
