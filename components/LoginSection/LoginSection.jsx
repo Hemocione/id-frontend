@@ -5,13 +5,14 @@ import { useState } from "react";
 import Image from "next/image";
 import { SimpleButton } from "..";
 import { validateEmail } from "../../utils/validators";
-import { login } from "../../utils/api";
+import { login, acceptTerms } from "../../utils/api";
 import { setCookie } from "../../utils/cookie";
 import { CircularProgress } from "@mui/material";
 import styles from "./LoginSection.module.css";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import environment from "../../environment";
+import Drawer from '@mui/material/Drawer';
 
 const LoginSection = () => {
   const router = useRouter();
@@ -27,6 +28,7 @@ const LoginSection = () => {
     email: "",
     password: "",
   });
+  const [termsAcceptanceDrawer, setTermsAcceptanceDrawer] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -43,38 +45,54 @@ const LoginSection = () => {
     //     });
     // });
   };
+  const [loggedInToken, setLoggedInToken] = useState(null); 
+
+  const finishLogin = () => {
+    if (!loggedInToken) {
+      return;
+    }
+    setCookie(
+      environment.tokenCookieKey,
+      response.data.token,
+      15,
+      "hemocione.com.br"
+    );
+    const locationRedirect =
+      redirect ||
+      process.env.NEXT_PUBLIC_MAIN_SITE ||
+      "https://www.hemocione.com.br/";
+
+    const url = new URL(locationRedirect);
+    if (url.hostname.endsWith("hemocione.com.br")) {
+      url.searchParams.append("token", response.data.token);
+    }
+    const newLocationRedirect = url.toString();
+
+    window.open(newLocationRedirect, "_self");
+  }
 
   const apiLogin = (captchaToken) => {
     login({ ...loginData, captchaToken: captchaToken })
       .then((response) => {
         setLoading(false);
-        if (response.status === 200) {
-          setCookie(
-            environment.tokenCookieKey,
-            response.data.token,
-            15,
-            "hemocione.com.br"
-          );
-          const locationRedirect =
-            redirect ||
-            process.env.NEXT_PUBLIC_MAIN_SITE ||
-            "https://www.hemocione.com.br/";
+        if (response.status !== 200) {
+          setErrorText(response.data.message);
+          return
+        }
 
-          const url = new URL(locationRedirect);
-          if (url.hostname.endsWith("hemocione.com.br")) {
-            url.searchParams.append("token", response.data.token);
-          }
-          const newLocationRedirect = url.toString();
+        setLoggedInToken(response.data.token);
 
-          window.open(newLocationRedirect, "_self");
+        if (response.data.requestNewTermsAcceptance) {
+          setTermsAcceptanceDrawer(true);
           return;
         }
-        setErrorText(response.data.message);
+
+        finishLogin();
       })
       .catch((error) => {
         setLoading(false);
         setErrorText(
-          error.response.data.message ||
+          error.response?.data?.message ||
             "Ocorreu um erro inesperado. Por favor, tente novamente."
         );
       });
@@ -89,6 +107,33 @@ const LoginSection = () => {
   };
 
   const emailError = loginData.email != "" && !validateEmail(loginData.email);
+  const [acceptingTerms, setAcceptingTerms] = useState(false);
+  const handleAcceptTerms = () => {
+    setAcceptingTerms(true);
+    if (!loggedInToken) {
+      return;
+    }
+
+    acceptTerms({ token: loggedInToken })
+      .then((response) => {
+        if (response.status !== 200) {
+          setErrorText(response.data?.message || "Erro ao aceitar os termos.");
+          return;
+        }
+
+        finishLogin();
+      })
+      .catch((error) => {
+        console.error(error);
+        setErrorText(
+          error.response?.data?.message ||
+            "Ocorreu um erro inesperado. Por favor, tente novamente."
+        );
+      }).finally(() => {
+        setAcceptingTerms(false);
+        setTermsAcceptanceDrawer(false);
+      });
+  };
 
   return (
     <div className={styles.loginSection}>
@@ -193,6 +238,35 @@ const LoginSection = () => {
           )}
         </div>
       </form>
+      <Drawer
+        anchor="bottom"
+        open={termsAcceptanceDrawer}
+      >
+        <div className={styles.termsDrawer}>
+          <h2>Atualização nos Termos e Políticas</h2>
+          <p>
+            Para continuar usando o Hemocione, você precisa revisar e aceitar os novos <a
+              href={environment.legal.termsOfUse}
+              rel="noreferrer"
+              target="_blank"
+              className={styles.legalDocumentLink}
+            >
+              Termos de Uso
+            </a> e <a
+              href={environment.legal.privacyPolicyUrl}
+              rel="noreferrer"
+              target="_blank"
+              className={styles.legalDocumentLink}
+            >
+              Política de Privacidade
+            </a>
+          </p>
+          <p>Leia atentamente antes de prosseguir.</p>
+          <SimpleButton loading={acceptingTerms} onClick={handleAcceptTerms} passStyle={{ width: '100%' }}>
+            Aceitar ambos e continuar
+          </SimpleButton>
+        </div>
+      </Drawer>
     </div>
   );
 };

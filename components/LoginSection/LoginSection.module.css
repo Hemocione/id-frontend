@@ -36,6 +36,16 @@
   color: red;
 }
 
+.termsDrawer {
+  padding: 1rem;
+}
+
+.legalDocumentLink {
+  color: #d1151a;
+  cursor: pointer;
+  font-weight: bold;
+}
+
 @media screen and (max-width: 768px) {
   .loginContent {
       width: 100%;
