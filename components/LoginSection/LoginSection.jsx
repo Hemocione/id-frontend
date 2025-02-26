@@ -64,7 +64,8 @@ const LoginSection = () => {
       "https://www.hemocione.com.br/";
 
     const url = new URL(locationRedirect);
-    if (url.hostname.endsWith("hemocione.com.br")) {
+    // always allow token to be passed to hemocione.com.br in production. in dev mode, allow it to be passed to localhost as well
+    if (url.hostname.endsWith("hemocione.com.br") || window.location.hostname.endsWith("id.d.hemocione.com.br")) {
       url.searchParams.append("token", userToken);
     }
     const newLocationRedirect = url.toString();
