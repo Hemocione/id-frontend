@@ -35,6 +35,7 @@ import { getDigitalStandRedirectUrl } from "../../utils/digitalStand";
 import { ptBR as DatePickerLocale } from "@mui/x-date-pickers/locales";
 import { SimpleButton, CepMask, PhoneMask, BloodType, CpfMask } from "..";
 import _ from "lodash";
+import { mobileUrls } from "../../utils/mobile";
 
 const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const genders = ["M", "F", "O"];
@@ -151,7 +152,7 @@ const SignupSection = () => {
             "https://app.hemocione.com.br/";
 
           const url = new URL(locationRedirect);
-          if (url.hostname.endsWith("hemocione.com.br") || window.location.hostname.endsWith("id.d.hemocione.com.br") || url.hostname === 'apphemocione:auth') {
+          if (url.hostname.endsWith("hemocione.com.br") || window.location.hostname.endsWith("id.d.hemocione.com.br") || mobileUrls.includes(url.toString())) {
             url.searchParams.append("token", response.data.token);
           }
           const newLocationRedirect = url.toString();

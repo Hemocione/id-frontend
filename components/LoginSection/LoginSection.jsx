@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import environment from "../../environment";
 import Drawer from '@mui/material/Drawer';
+import { mobileUrls } from "../../utils/mobile";
 
 const LoginSection = () => {
   const router = useRouter();
@@ -61,11 +62,11 @@ const LoginSection = () => {
     const locationRedirect =
       redirect ||
       process.env.NEXT_PUBLIC_MAIN_SITE ||
-      "https://www.hemocione.com.br/";
+      "https://app.hemocione.com.br/";
 
     const url = new URL(locationRedirect);
     // always allow token to be passed to hemocione.com.br in production. in dev mode, allow it to be passed to localhost as well
-    if (url.hostname.endsWith("hemocione.com.br") || window.location.hostname.endsWith("id.d.hemocione.com.br") || url.hostname === 'apphemocione:auth') {
+    if (url.hostname.endsWith("hemocione.com.br") || window.location.hostname.endsWith("id.d.hemocione.com.br") || mobileUrls.includes(url.toString())) {
       url.searchParams.append("token", userToken);
     }
     const newLocationRedirect = url.toString();
