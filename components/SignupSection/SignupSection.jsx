@@ -152,7 +152,7 @@ const SignupSection = () => {
             "https://app.hemocione.com.br/";
 
           const url = new URL(locationRedirect);
-          if (url.hostname.endsWith("hemocione.com.br") || window.location.hostname.endsWith("id.d.hemocione.com.br") || mobileUrls.includes(url.toString())) {
+          if (url.hostname.endsWith("hemocione.com.br") || window.location.hostname.endsWith("id.d.hemocione.com.br") || mobileUrls.some((mobileUrl) => url.toString().startsWith(mobileUrl))) {
             url.searchParams.append("token", response.data.token);
           }
           const newLocationRedirect = url.toString();
