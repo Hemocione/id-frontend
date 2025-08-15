@@ -445,8 +445,7 @@ const SignupSection = () => {
           <h4 className={styles.subsectionTitle}>
             Qual o seu endereço?{" "}
             <span className={styles.subsectionTitleExplanation}>
-              Precisamos saber disso para encontrar bancos de sangue e campanhas
-              próximas a você!
+              Precisamos disso para encontrar bancos de sangue próximos à sua região e avisar sobre campanhas de doação no futuro!
             </span>
           </h4>
           <div className={styles.twoColumns}>
