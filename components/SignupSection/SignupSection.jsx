@@ -289,9 +289,9 @@ const SignupSection = () => {
             alt="Hemocione Logo"
           />
           <h2 className={styles.title}>Cadastre-se agora!</h2>
-          <span className={styles.subsectionTitleExplanation}>
+          {/* <span className={styles.subsectionTitleExplanation}>
             Faça parte da Rede Hemocione de doadores e ajude a salvar vidas!
-          </span>
+          </span> */}
         </div>
         <FormGroup onSubmit={handleSubmit}>
           <FormControl fullWidth sx={{ margin: "15px 0" }}>
@@ -444,9 +444,9 @@ const SignupSection = () => {
           <hr className={styles.divider} />
           <h4 className={styles.subsectionTitle}>
             Qual o seu endereço?{" "}
-            <span className={styles.subsectionTitleExplanation}>
+            {/* <span className={styles.subsectionTitleExplanation}>
               Precisamos disso para encontrar bancos de sangue próximos à sua região e avisar sobre campanhas de doação no futuro!
-            </span>
+            </span> */}
           </h4>
           <div className={styles.twoColumns}>
             <FormControl fullWidth sx={{ marginBottom: "15px" }}>
