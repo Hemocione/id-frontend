@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { LoginSection } from "../components";
 // import { validateUserToken } from "../utils/api";
-// import { deleteCookie, getCookie } from "../utils/cookie";
+import { deleteCookie } from "../utils/cookie";
 import { useRouter } from "next/router";
 import environment from "../environment";
 
@@ -12,6 +12,10 @@ export default function Home() {
   // const { redirect } = router.query;
 
   useEffect(() => {
+    // Clear auth cookie whenever login page is accessed
+    if (environment.tokenCookieKey) {
+      deleteCookie(environment.tokenCookieKey);
+    }
     // let userToken = getCookie(environment.tokenCookieKey);
     // if (userToken) {
     //   validateUserToken({ token: userToken })
@@ -30,7 +34,7 @@ export default function Home() {
     //       deleteCookie(environment.tokenCookieKey);
     //     });
     // }
-  });
+  }, []);
 
   // useEffect(() => {
   //   const scriptExist = document.getElementById("recaptcha-key");
