@@ -11,30 +11,26 @@ export default function Home() {
   const router = useRouter();
   // const { redirect } = router.query;
 
-  useEffect(() => {
-    // Clear auth cookie whenever login page is accessed
-    if (environment.tokenCookieKey) {
-      deleteCookie(environment.tokenCookieKey);
-    }
-    // let userToken = getCookie(environment.tokenCookieKey);
-    // if (userToken) {
-    //   validateUserToken({ token: userToken })
-    //     .then((res) => {
-    //       if (res.status === 200) {
-    //         const redirectLocation =
-    //           redirect ||
-    //           process.env.NEXT_PUBLIC_MAIN_SITE ||
-    //           "https://www.hemocione.com.br/";
-    //         router.push(redirectLocation);
-    //         return;
-    //       }
-    //       deleteCookie(environment.tokenCookieKey);
-    //     })
-    //     .catch((_) => {
-    //       deleteCookie(environment.tokenCookieKey);
-    //     });
-    // }
-  }, []);
+  // useEffect(() => {
+  // let userToken = getCookie(environment.tokenCookieKey);
+  // if (userToken) {
+  //   validateUserToken({ token: userToken })
+  //     .then((res) => {
+  //       if (res.status === 200) {
+  //         const redirectLocation =
+  //           redirect ||
+  //           process.env.NEXT_PUBLIC_MAIN_SITE ||
+  //           "https://www.hemocione.com.br/";
+  //         router.push(redirectLocation);
+  //         return;
+  //       }
+  //       deleteCookie(environment.tokenCookieKey);
+  //     })
+  //     .catch((_) => {
+  //       deleteCookie(environment.tokenCookieKey);
+  //     });
+  // }
+  // }, []);
 
   // useEffect(() => {
   //   const scriptExist = document.getElementById("recaptcha-key");
@@ -46,5 +42,9 @@ export default function Home() {
   //     document.body.appendChild(script);
   //   }
   // }, []);
+  if (environment.tokenCookieKey) {
+    // delete cookie when login page is accessed (to avoid the user being logged in after a logout)
+    deleteCookie(environment.tokenCookieKey);
+  }
   return <LoginSection />;
 }

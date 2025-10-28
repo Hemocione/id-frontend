@@ -23,8 +23,10 @@ function getCookie(cname) {
 }
 
 function deleteCookie(name, domain = "hemocione.com.br") {
+  console.log("getting cookie", name, domain);
   if (!getCookie(name)) return;
   // delete cookie by setting the expiration date to a past date
+  console.log("deleting cookie", name, domain);
   const _domain = domain ? "domain=" + domain + ";" : "";
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; ${_domain}path=/`;
 }
