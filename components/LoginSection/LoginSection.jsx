@@ -3,7 +3,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
 import Image from "next/image";
-import { SimpleButton } from "..";
+import { SimpleButton, GoogleAuthButton } from "..";
 import { validateEmail } from "../../utils/validators";
 import { login, acceptTerms } from "../../utils/api";
 import { setCookie } from "../../utils/cookie";
@@ -99,6 +99,29 @@ const LoginSection = () => {
             "Ocorreu um erro inesperado. Por favor, tente novamente."
         );
       });
+  };
+
+  const handleGoogleLogin = (data) => {
+    setLoggedInToken(data.token);
+
+    if (data.requestNewTermsAcceptance) {
+      setTermsAcceptanceDrawer(true);
+      return;
+    }
+
+    finishLogin(data.token);
+  };
+
+  const handleGoogleSignupRequired = ({ credential, profile }) => {
+    sessionStorage.setItem(
+      "hemocioneGoogleSignup",
+      JSON.stringify({ credential, profile })
+    );
+    router.push(
+      encodedRedirect
+        ? `/signup?redirect=${encodedRedirect}&google=1`
+        : "/signup?google=1"
+    );
   };
 
   const handleEmailChange = (e) => {
@@ -238,6 +261,20 @@ const LoginSection = () => {
             >
               Entrar
             </SimpleButton>
+          )}
+          {environment.googleClientId && (
+            <>
+              <div className={styles.orDivider}>
+                <span>ou</span>
+              </div>
+              <div className={styles.googleButtonRow}>
+                <GoogleAuthButton
+                  onLogin={handleGoogleLogin}
+                  onSignupRequired={handleGoogleSignupRequired}
+                  onError={setErrorText}
+                />
+              </div>
+            </>
           )}
         </div>
       </form>
