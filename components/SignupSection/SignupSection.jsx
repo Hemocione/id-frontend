@@ -134,7 +134,9 @@ const SignupSection = () => {
     // account already exists: behave like a login
     setCookie(environment.tokenCookieKey, data.token, 15, "hemocione.com.br");
     const locationRedirect =
-      redirect || environment.mainFrontendUrl || "https://app.hemocione.com.br/";
+      redirect ||
+      environment.mainFrontendUrl ||
+      "https://app.hemocione.com.br/";
     const url = new URL(locationRedirect);
     if (
       url.hostname.endsWith("hemocione.com.br") ||
