@@ -3,6 +3,7 @@ const environment = {
   publicSiteKey: process.env.NEXT_PUBLIC_SITE_KEY,
   mainFrontendUrl: process.env.NEXT_PUBLIC_MAIN_FRONTEND_URL,
   tokenCookieKey: process.env.NEXT_PUBLIC_TOKEN_COOKIE_KEY,
+  googleClientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
   legal: {
     privacyPolicyUrl: process.env.NEXT_PUBLIC_LEGAL_PRIVACY_POLICY_URL,
     termsOfUse: process.env.NEXT_PUBLIC_LEGAL_TERMS_OF_USE_URL,
