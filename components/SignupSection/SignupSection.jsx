@@ -11,7 +11,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { ptBR } from "date-fns/locale";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   validateEmail,
@@ -33,7 +33,14 @@ import useDebounce from "../../utils/useDebounce";
 import environment from "../../environment";
 import { getDigitalStandRedirectUrl } from "../../utils/digitalStand";
 import { ptBR as DatePickerLocale } from "@mui/x-date-pickers/locales";
-import { SimpleButton, CepMask, PhoneMask, BloodType, CpfMask } from "..";
+import {
+  SimpleButton,
+  CepMask,
+  PhoneMask,
+  BloodType,
+  CpfMask,
+  GoogleAuthButton,
+} from "..";
 import _ from "lodash";
 import { mobileUrls } from "../../utils/mobile";
 
@@ -90,6 +97,59 @@ const SignupSection = () => {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [acceptedPrivacyPolicy, setAcceptedPrivacyPolicy] = useState(false);
   const [acceptedMarketingConsent, setAcceptedMarketingConsent] = useState(false);
+  const [googleSignup, setGoogleSignup] = useState(null);
+
+  const enterGoogleMode = ({ credential, profile }) => {
+    setGoogleSignup({ credential, profile });
+    setSignupData((current) => ({
+      ...current,
+      givenName: profile?.givenName || current.givenName,
+      surName: profile?.surName || current.surName,
+      email: profile?.email || current.email,
+      password: "",
+      passConfirmation: "",
+    }));
+  };
+
+  const exitGoogleMode = () => {
+    setGoogleSignup(null);
+    sessionStorage.removeItem("hemocioneGoogleSignup");
+  };
+
+  useEffect(() => {
+    if (!router.isReady || !router.query.google) return;
+    try {
+      const stored = sessionStorage.getItem("hemocioneGoogleSignup");
+      if (!stored) return;
+      const parsed = JSON.parse(stored);
+      if (!parsed?.credential) return;
+      enterGoogleMode(parsed);
+    } catch (error) {
+      console.error(error);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.isReady]);
+
+  const handleGoogleLogin = (data) => {
+    // account already exists: behave like a login
+    setCookie(environment.tokenCookieKey, data.token, 15, "hemocione.com.br");
+    const locationRedirect =
+      redirect || environment.mainFrontendUrl || "https://app.hemocione.com.br/";
+    const url = new URL(locationRedirect);
+    if (
+      url.hostname.endsWith("hemocione.com.br") ||
+      window.location.hostname.endsWith("id.d.hemocione.com.br") ||
+      mobileUrls.some((mobileUrl) => url.toString().startsWith(mobileUrl))
+    ) {
+      url.searchParams.append("token", data.token);
+    }
+    window.open(url.toString(), "_self");
+  };
+
+  const handleGoogleSignupRequired = (data) => {
+    sessionStorage.setItem("hemocioneGoogleSignup", JSON.stringify(data));
+    enterGoogleMode(data);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -127,10 +187,17 @@ const SignupSection = () => {
       marketingConsent: acceptedMarketingConsent,
     };
 
+    if (googleSignup) {
+      hydratedSignUpData.googleCredential = googleSignup.credential;
+      delete hydratedSignUpData.password;
+      delete hydratedSignUpData.passConfirmation;
+    }
+
     signUp(hydratedSignUpData, options)
       .then((response) => {
         setLoading(false);
         if ([200, 201].includes(response.status)) {
+          sessionStorage.removeItem("hemocioneGoogleSignup");
           if (response.data["token"]) {
             setCookie(
               environment.tokenCookieKey,
@@ -259,20 +326,24 @@ const SignupSection = () => {
 
   const validBloodSelection = unknownBloodType || signupData.bloodType;
 
+  const passwordOk = googleSignup
+    ? true
+    : signupData.password &&
+      signupData.passConfirmation &&
+      !passError &&
+      !passConfError;
+
   const disabledButton =
     !signupData.givenName ||
     !signupData.surName ||
     !validBloodSelection ||
     !signupData.email ||
-    !signupData.password ||
-    !signupData.passConfirmation ||
+    !passwordOk ||
     !signupData.gender ||
     !signupData.birthDate ||
     !signupData.address.cep ||
     !signupData.document ||
     cpfError ||
-    passConfError ||
-    passError ||
     emailError ||
     phoneError ||
     !acceptedTerms ||
@@ -293,6 +364,29 @@ const SignupSection = () => {
             Faça parte da Rede Hemocione de doadores e ajude a salvar vidas!
           </span> */}
         </div>
+        {environment.googleClientId && !googleSignup && (
+          <>
+            <div className={styles.googleButtonRow}>
+              <GoogleAuthButton
+                onLogin={handleGoogleLogin}
+                onSignupRequired={handleGoogleSignupRequired}
+                onError={setErrorText}
+              />
+            </div>
+            <div className={styles.orDivider}>
+              <span>ou</span>
+            </div>
+          </>
+        )}
+        {googleSignup && (
+          <div className={styles.googleSignupBanner}>
+            <span>
+              Cadastrando com a conta Google{" "}
+              <b>{googleSignup.profile?.email}</b> — sem necessidade de senha.
+            </span>
+            <a onClick={exitGoogleMode}>Prefiro usar email e senha</a>
+          </div>
+        )}
         <FormGroup onSubmit={handleSubmit}>
           <FormControl fullWidth sx={{ margin: "15px 0" }}>
             <TextField
@@ -328,6 +422,7 @@ const SignupSection = () => {
               name="email"
               variant="outlined"
               autoComplete="username"
+              disabled={Boolean(googleSignup)}
               required
             />
           </FormControl>
@@ -549,37 +644,41 @@ const SignupSection = () => {
             </FormControl>
           </div>
           <hr className={styles.divider} />
-          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-            <TextField
-              fullWidth
-              onChange={handleChange("password")}
-              value={signupData.password}
-              error={passError}
-              helperText={
-                passError && "A senha deve ter pelo menos 7 caracteres"
-              }
-              id="password"
-              name="password"
-              label="Senha"
-              type="password"
-              variant="outlined"
-              required
-            />
-          </FormControl>
-          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-            <TextField
-              fullWidth
-              onChange={handleChange("passConfirmation")}
-              error={passConfError}
-              value={signupData.passConfirmation}
-              id="password-confirmation"
-              name="password-confirmation"
-              label="Confirmar senha"
-              type="password"
-              variant="outlined"
-              required
-            />
-          </FormControl>
+          {!googleSignup && (
+            <>
+              <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+                <TextField
+                  fullWidth
+                  onChange={handleChange("password")}
+                  value={signupData.password}
+                  error={passError}
+                  helperText={
+                    passError && "A senha deve ter pelo menos 7 caracteres"
+                  }
+                  id="password"
+                  name="password"
+                  label="Senha"
+                  type="password"
+                  variant="outlined"
+                  required
+                />
+              </FormControl>
+              <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+                <TextField
+                  fullWidth
+                  onChange={handleChange("passConfirmation")}
+                  error={passConfError}
+                  value={signupData.passConfirmation}
+                  id="password-confirmation"
+                  name="password-confirmation"
+                  label="Confirmar senha"
+                  type="password"
+                  variant="outlined"
+                  required
+                />
+              </FormControl>
+            </>
+          )}
           <div className={styles.checkBoxRow}>
             <Checkbox
               checked={acceptedTerms}
