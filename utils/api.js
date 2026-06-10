@@ -16,6 +16,11 @@ const login = ({ email, password, captchaToken }) => {
     "g-recaptcha-response": captchaToken,
   });
 };
+const googleAuth = ({ credential }) => {
+  return apiClient.post(`/users/auth/google`, {
+    credential: credential,
+  });
+};
 const signUp = (signUpData, queryParams, captchaToken = "") => {
   return apiClient.post(
     `/users/register`,
@@ -67,4 +72,4 @@ const acceptTerms = ({ token }) => {
   });
 }
 
-export { login, signUp, validateUserToken, recoverPassword, resetPassword, acceptTerms };
+export { login, googleAuth, signUp, validateUserToken, recoverPassword, resetPassword, acceptTerms };

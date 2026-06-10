@@ -6,6 +6,7 @@ export { default as Navbar } from "./Navbar/Navbar";
 export { default as SimpleButton } from "./SimpleButton/SimpleButton";
 export { default as Background } from "./Background/Background";
 export { default as BloodType } from "./BloodType/BloodType";
+export { default as GoogleAuthButton } from "./GoogleAuthButton/GoogleAuthButton";
 export { default as PhoneMask } from "./common/PhoneMask/PhoneMask";
 export { default as CepMask } from "./common/CepMask/CepMask";
 export { default as CpfMask } from "./common/CpfMask/CpfMask";
