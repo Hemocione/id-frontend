@@ -137,6 +137,7 @@ const LoginSection = () => {
   const handleAcceptTerms = () => {
     setAcceptingTerms(true);
     if (!loggedInToken) {
+      setAcceptingTerms(false);
       return;
     }
 

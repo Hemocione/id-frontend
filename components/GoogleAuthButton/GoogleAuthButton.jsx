@@ -1,11 +1,16 @@
+import { useRef } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { googleAuth } from "../../utils/api";
 import environment from "../../environment";
 
 const GoogleAuthButton = ({ onLogin, onSignupRequired, onError }) => {
+  const pendingRef = useRef(false);
+
   if (!environment.googleClientId) return null;
 
   const handleSuccess = async (credentialResponse) => {
+    if (pendingRef.current) return;
+    pendingRef.current = true;
     try {
       const credential = credentialResponse.credential;
       const response = await googleAuth({ credential });
@@ -20,6 +25,8 @@ const GoogleAuthButton = ({ onLogin, onSignupRequired, onError }) => {
         error.response?.data?.message ||
           "Ocorreu um erro inesperado. Por favor, tente novamente."
       );
+    } finally {
+      pendingRef.current = false;
     }
   };
 

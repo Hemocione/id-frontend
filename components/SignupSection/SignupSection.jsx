@@ -128,7 +128,7 @@ const SignupSection = () => {
       console.error(error);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.isReady]);
+  }, [router.isReady, router.query.google]);
 
   const handleGoogleLogin = (data) => {
     // account already exists: behave like a login
