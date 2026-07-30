@@ -8,10 +8,28 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { ptBR } from "@mui/material/locale";
 import { ptBR as datePickerPtBR } from "@mui/x-date-pickers/locales";
 import { ptBR as dataGridPtBR } from "@mui/x-data-grid";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import environment from "../environment";
 
 const theme = createTheme({}, ptBR, datePickerPtBR, dataGridPtBR);
 
 function MyApp({ Component, pageProps }) {
+  const content = (
+    <ThemeProvider theme={theme}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "100vw",
+        }}
+      >
+        {/* <Navbar /> */}
+        <Component {...pageProps} />
+      </div>
+    </ThemeProvider>
+  );
+
   return (
     <>
       <Head>
@@ -45,19 +63,13 @@ function MyApp({ Component, pageProps }) {
         <meta name="msapplication-navbutton-color" content="#FF0000" />
         <meta name="apple-mobile-web-app-status-bar-style" content="#FF0000" />
       </Head>
-      <ThemeProvider theme={theme}>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            width: "100vw",
-          }}
-        >
-          {/* <Navbar /> */}
-          <Component {...pageProps} />
-        </div>
-      </ThemeProvider>
+      {environment.googleClientId ? (
+        <GoogleOAuthProvider clientId={environment.googleClientId}>
+          {content}
+        </GoogleOAuthProvider>
+      ) : (
+        content
+      )}
     </>
   );
 }
