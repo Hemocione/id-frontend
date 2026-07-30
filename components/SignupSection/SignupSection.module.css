@@ -178,7 +178,12 @@
   box-sizing: border-box;
 }
 
-.googleSignupBanner a {
+.googleSignupBannerAction {
+  align-self: flex-start;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
   color: #d1151a;
   font-weight: 700;
   cursor: pointer;
