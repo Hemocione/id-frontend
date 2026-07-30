@@ -1,7 +1,7 @@
 import { TextField, InputAdornment, IconButton } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { SimpleButton, GoogleAuthButton, TermsAcceptanceDrawer } from "..";
 import { validateEmail } from "../../utils/validators";
@@ -13,6 +13,11 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import environment from "../../environment";
 import { resolveAuthRedirect } from "../../utils/authRedirect";
+import {
+  GOOGLE_UNLOCK_STORAGE_KEY,
+  isGoogleAuthAvailable,
+  registerLogoTap,
+} from "../../utils/googleAuthFlag";
 
 const LoginSection = () => {
   const router = useRouter();
@@ -29,6 +34,40 @@ const LoginSection = () => {
     password: "",
   });
   const [termsAcceptanceDrawer, setTermsAcceptanceDrawer] = useState(false);
+  const [googleUnlocked, setGoogleUnlocked] = useState(false);
+  const logoTaps = useRef({ count: 0, lastTapAt: null });
+
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(GOOGLE_UNLOCK_STORAGE_KEY) === "true") {
+        setGoogleUnlocked(true);
+      }
+    } catch (error) {
+      // private mode can throw on localStorage access; stay locked
+    }
+  }, []);
+
+  // Reveals Google sign-in inside the native app after ten taps in a row.
+  const handleLogoTap = () => {
+    if (googleUnlocked) return;
+
+    const next = registerLogoTap({ ...logoTaps.current, now: Date.now() });
+    logoTaps.current = { count: next.count, lastTapAt: next.lastTapAt };
+    if (!next.unlocked) return;
+
+    setGoogleUnlocked(true);
+    try {
+      localStorage.setItem(GOOGLE_UNLOCK_STORAGE_KEY, "true");
+    } catch (error) {
+      // unlocked for this render either way
+    }
+  };
+
+  const googleAuthAvailable = isGoogleAuthAvailable({
+    clientId: environment.googleClientId,
+    redirect,
+    unlocked: googleUnlocked,
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -45,19 +84,14 @@ const LoginSection = () => {
     //     });
     // });
   };
-  const [loggedInToken, setLoggedInToken] = useState(null); 
+  const [loggedInToken, setLoggedInToken] = useState(null);
 
   const finishLogin = (token) => {
     if (!loggedInToken && !token) {
       return;
     }
     const userToken = token || loggedInToken;
-    setCookie(
-      environment.tokenCookieKey,
-      userToken,
-      15,
-      "hemocione.com.br"
-    );
+    setCookie(environment.tokenCookieKey, userToken, 15, "hemocione.com.br");
     // always allow token to be passed to hemocione.com.br in production. in dev mode, allow it to be passed to localhost as well
     window.open(
       resolveAuthRedirect({
@@ -68,7 +102,7 @@ const LoginSection = () => {
       }),
       "_self"
     );
-  }
+  };
 
   const apiLogin = (captchaToken) => {
     login({ ...loginData, captchaToken: captchaToken })
@@ -76,7 +110,7 @@ const LoginSection = () => {
         setLoading(false);
         if (response.status !== 200) {
           setErrorText(response.data.message);
-          return
+          return;
         }
 
         setLoggedInToken(response.data.token);
@@ -152,7 +186,8 @@ const LoginSection = () => {
           error.response?.data?.message ||
             "Ocorreu um erro inesperado. Por favor, tente novamente."
         );
-      }).finally(() => {
+      })
+      .finally(() => {
         setAcceptingTerms(false);
         setTermsAcceptanceDrawer(false);
       });
@@ -168,6 +203,7 @@ const LoginSection = () => {
               width={150}
               height={150}
               alt="Hemocione Logo"
+              onClick={handleLogoTap}
             />
           </div>
           <p className={styles.errorText}>{errorText}</p>
@@ -259,7 +295,7 @@ const LoginSection = () => {
               Entrar
             </SimpleButton>
           )}
-          {environment.googleClientId && (
+          {googleAuthAvailable && (
             <>
               <div className={styles.orDivider}>
                 <span>ou</span>

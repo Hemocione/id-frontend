@@ -31,6 +31,16 @@ const isHemocioneHost = (url) =>
   url.hostname.endsWith(".hemocione.com.br");
 
 /**
+ * Whether a redirect target is one of the native apps — the signal that this
+ * page is being shown inside the app's webview rather than a browser.
+ */
+export const isMobileAppRedirect = (candidate) => {
+  const url = candidate ? parseUrl(candidate) : null;
+
+  return Boolean(url && isApprovedMobileTarget(url));
+};
+
+/**
  * Allowlist, so anything unrecognised is refused by default — `javascript:`,
  * `data:` and unapproved custom schemes never reach a match.
  */

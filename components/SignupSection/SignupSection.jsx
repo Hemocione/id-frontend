@@ -22,6 +22,10 @@ import {
 import { signUp, acceptTerms } from "../../utils/api";
 import { getSignupBlockers } from "../../utils/signupBlockers";
 import { resolveAuthRedirect } from "../../utils/authRedirect";
+import {
+  GOOGLE_UNLOCK_STORAGE_KEY,
+  isGoogleAuthAvailable,
+} from "../../utils/googleAuthFlag";
 import styles from "./SignupSection.module.css";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -98,11 +102,31 @@ const SignupSection = () => {
   });
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [acceptedPrivacyPolicy, setAcceptedPrivacyPolicy] = useState(false);
-  const [acceptedMarketingConsent, setAcceptedMarketingConsent] = useState(false);
+  const [acceptedMarketingConsent, setAcceptedMarketingConsent] =
+    useState(false);
   const [googleSignup, setGoogleSignup] = useState(null);
   const [loggedInToken, setLoggedInToken] = useState(null);
   const [termsAcceptanceDrawer, setTermsAcceptanceDrawer] = useState(false);
   const [acceptingTerms, setAcceptingTerms] = useState(false);
+  // Unlocked by tapping the logo ten times on the login page; only the
+  // native app is gated, so the web is unaffected.
+  const [googleUnlocked, setGoogleUnlocked] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(GOOGLE_UNLOCK_STORAGE_KEY) === "true") {
+        setGoogleUnlocked(true);
+      }
+    } catch (error) {
+      // private mode can throw on localStorage access; stay locked
+    }
+  }, []);
+
+  const googleAuthAvailable = isGoogleAuthAvailable({
+    clientId: environment.googleClientId,
+    redirect,
+    unlocked: googleUnlocked,
+  });
 
   const enterGoogleMode = ({ credential, profile }) => {
     setGoogleSignup({ credential, profile });
@@ -426,7 +450,7 @@ const SignupSection = () => {
             Faça parte da Rede Hemocione de doadores e ajude a salvar vidas!
           </span> */}
         </div>
-        {environment.googleClientId && !googleSignup && (
+        {googleAuthAvailable && !googleSignup && (
           <>
             <div className={styles.googleButtonRow}>
               <GoogleAuthButton
@@ -791,7 +815,8 @@ const SignupSection = () => {
               }}
             />
             <span style={{ fontSize: "0.7rem" }}>
-              Eu aceito receber comunicações de marketing, promoções e ofertas personalizadas do Hemocione e seus parceiros.
+              Eu aceito receber comunicações de marketing, promoções e ofertas
+              personalizadas do Hemocione e seus parceiros.
             </span>
           </div>
           <SimpleButton
