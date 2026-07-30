@@ -54,3 +54,26 @@
       box-shadow: none;
   }
 }
+.orDivider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin: 16px 0 12px;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.orDivider::before,
+.orDivider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: #ddd;
+}
+
+.googleButtonRow {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}

@@ -1,0 +1,17 @@
+.container {
+  width: 100%;
+  /* Google's button is 40px tall at its largest, against 48px for the primary
+     button. Reserving the taller box keeps the row from shifting once the
+     measured button mounts, and centres it in the same rhythm. */
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The rendered button carries Google's own styling; only the corner radius is
+   nudged to match the primary button's 10px. */
+.container > div {
+  border-radius: 10px;
+  overflow: hidden;
+}

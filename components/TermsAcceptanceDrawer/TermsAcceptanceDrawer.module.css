@@ -1,0 +1,9 @@
+.termsDrawer {
+  padding: 1rem;
+}
+
+.legalDocumentLink {
+  color: #d1151a;
+  cursor: pointer;
+  font-weight: bold;
+}

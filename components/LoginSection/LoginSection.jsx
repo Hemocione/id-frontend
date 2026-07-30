@@ -1,9 +1,9 @@
 import { TextField, InputAdornment, IconButton } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { SimpleButton } from "..";
+import { SimpleButton, GoogleAuthButton, TermsAcceptanceDrawer } from "..";
 import { validateEmail } from "../../utils/validators";
 import { login, acceptTerms } from "../../utils/api";
 import { setCookie } from "../../utils/cookie";
@@ -12,8 +12,12 @@ import styles from "./LoginSection.module.css";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import environment from "../../environment";
-import Drawer from '@mui/material/Drawer';
-import { mobileUrls } from "../../utils/mobile";
+import { resolveAuthRedirect } from "../../utils/authRedirect";
+import {
+  GOOGLE_UNLOCK_STORAGE_KEY,
+  isGoogleAuthAvailable,
+  registerLogoTap,
+} from "../../utils/googleAuthFlag";
 
 const LoginSection = () => {
   const router = useRouter();
@@ -30,6 +34,40 @@ const LoginSection = () => {
     password: "",
   });
   const [termsAcceptanceDrawer, setTermsAcceptanceDrawer] = useState(false);
+  const [googleUnlocked, setGoogleUnlocked] = useState(false);
+  const logoTaps = useRef({ count: 0, lastTapAt: null });
+
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(GOOGLE_UNLOCK_STORAGE_KEY) === "true") {
+        setGoogleUnlocked(true);
+      }
+    } catch (error) {
+      // private mode can throw on localStorage access; stay locked
+    }
+  }, []);
+
+  // Reveals Google sign-in inside the native app after ten taps in a row.
+  const handleLogoTap = () => {
+    if (googleUnlocked) return;
+
+    const next = registerLogoTap({ ...logoTaps.current, now: Date.now() });
+    logoTaps.current = { count: next.count, lastTapAt: next.lastTapAt };
+    if (!next.unlocked) return;
+
+    setGoogleUnlocked(true);
+    try {
+      localStorage.setItem(GOOGLE_UNLOCK_STORAGE_KEY, "true");
+    } catch (error) {
+      // unlocked for this render either way
+    }
+  };
+
+  const googleAuthAvailable = isGoogleAuthAvailable({
+    clientId: environment.googleClientId,
+    redirect,
+    unlocked: googleUnlocked,
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -46,33 +84,25 @@ const LoginSection = () => {
     //     });
     // });
   };
-  const [loggedInToken, setLoggedInToken] = useState(null); 
+  const [loggedInToken, setLoggedInToken] = useState(null);
 
   const finishLogin = (token) => {
     if (!loggedInToken && !token) {
       return;
     }
     const userToken = token || loggedInToken;
-    setCookie(
-      environment.tokenCookieKey,
-      userToken,
-      15,
-      "hemocione.com.br"
-    );
-    const locationRedirect =
-      redirect ||
-      process.env.NEXT_PUBLIC_MAIN_SITE ||
-      "https://app.hemocione.com.br/";
-
-    const url = new URL(locationRedirect);
+    setCookie(environment.tokenCookieKey, userToken, 15, "hemocione.com.br");
     // always allow token to be passed to hemocione.com.br in production. in dev mode, allow it to be passed to localhost as well
-    if (url.hostname.endsWith("hemocione.com.br") || window.location.hostname.endsWith("id.d.hemocione.com.br") || mobileUrls.some((mobileUrl) => url.toString().startsWith(mobileUrl))) {
-      url.searchParams.append("token", userToken);
-    }
-    const newLocationRedirect = url.toString();
-
-    window.open(newLocationRedirect, "_self");
-  }
+    window.open(
+      resolveAuthRedirect({
+        candidate: redirect,
+        fallback: process.env.NEXT_PUBLIC_MAIN_SITE,
+        currentHostname: window.location.hostname,
+        token: userToken,
+      }),
+      "_self"
+    );
+  };
 
   const apiLogin = (captchaToken) => {
     login({ ...loginData, captchaToken: captchaToken })
@@ -80,7 +110,7 @@ const LoginSection = () => {
         setLoading(false);
         if (response.status !== 200) {
           setErrorText(response.data.message);
-          return
+          return;
         }
 
         setLoggedInToken(response.data.token);
@@ -101,6 +131,29 @@ const LoginSection = () => {
       });
   };
 
+  const handleGoogleLogin = (data) => {
+    setLoggedInToken(data.token);
+
+    if (data.requestNewTermsAcceptance) {
+      setTermsAcceptanceDrawer(true);
+      return;
+    }
+
+    finishLogin(data.token);
+  };
+
+  const handleGoogleSignupRequired = ({ credential, profile }) => {
+    sessionStorage.setItem(
+      "hemocioneGoogleSignup",
+      JSON.stringify({ credential, profile })
+    );
+    router.push(
+      encodedRedirect
+        ? `/signup?redirect=${encodedRedirect}&google=1`
+        : "/signup?google=1"
+    );
+  };
+
   const handleEmailChange = (e) => {
     setloginData({ ...loginData, email: e.target.value });
   };
@@ -114,6 +167,7 @@ const LoginSection = () => {
   const handleAcceptTerms = () => {
     setAcceptingTerms(true);
     if (!loggedInToken) {
+      setAcceptingTerms(false);
       return;
     }
 
@@ -132,7 +186,8 @@ const LoginSection = () => {
           error.response?.data?.message ||
             "Ocorreu um erro inesperado. Por favor, tente novamente."
         );
-      }).finally(() => {
+      })
+      .finally(() => {
         setAcceptingTerms(false);
         setTermsAcceptanceDrawer(false);
       });
@@ -148,6 +203,7 @@ const LoginSection = () => {
               width={150}
               height={150}
               alt="Hemocione Logo"
+              onClick={handleLogoTap}
             />
           </div>
           <p className={styles.errorText}>{errorText}</p>
@@ -239,37 +295,27 @@ const LoginSection = () => {
               Entrar
             </SimpleButton>
           )}
+          {googleAuthAvailable && (
+            <>
+              <div className={styles.orDivider}>
+                <span>ou</span>
+              </div>
+              <div className={styles.googleButtonRow}>
+                <GoogleAuthButton
+                  onLogin={handleGoogleLogin}
+                  onSignupRequired={handleGoogleSignupRequired}
+                  onError={setErrorText}
+                />
+              </div>
+            </>
+          )}
         </div>
       </form>
-      <Drawer
-        anchor="bottom"
+      <TermsAcceptanceDrawer
         open={termsAcceptanceDrawer}
-      >
-        <div className={styles.termsDrawer}>
-          <h2>Atualização nos Termos e Políticas</h2>
-          <p>
-            Para continuar usando o Hemocione, você precisa revisar e aceitar os novos <a
-              href={environment.legal.termsOfUse}
-              rel="noreferrer"
-              target="_blank"
-              className={styles.legalDocumentLink}
-            >
-              Termos de Uso
-            </a> e <a
-              href={environment.legal.privacyPolicyUrl}
-              rel="noreferrer"
-              target="_blank"
-              className={styles.legalDocumentLink}
-            >
-              Política de Privacidade
-            </a>
-          </p>
-          <p>Leia atentamente antes de prosseguir.</p>
-          <SimpleButton loading={acceptingTerms} onClick={handleAcceptTerms} passStyle={{ width: '100%' }}>
-            Aceitar ambos e continuar
-          </SimpleButton>
-        </div>
-      </Drawer>
+        loading={acceptingTerms}
+        onAccept={handleAcceptTerms}
+      />
     </div>
   );
 };
