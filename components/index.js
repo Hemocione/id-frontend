@@ -7,6 +7,7 @@ export { default as SimpleButton } from "./SimpleButton/SimpleButton";
 export { default as Background } from "./Background/Background";
 export { default as BloodType } from "./BloodType/BloodType";
 export { default as GoogleAuthButton } from "./GoogleAuthButton/GoogleAuthButton";
+export { default as GoogleGlyph } from "./GoogleGlyph/GoogleGlyph";
 export { default as TermsAcceptanceDrawer } from "./TermsAcceptanceDrawer/TermsAcceptanceDrawer";
 export { default as PhoneMask } from "./common/PhoneMask/PhoneMask";
 export { default as CepMask } from "./common/CepMask/CepMask";
