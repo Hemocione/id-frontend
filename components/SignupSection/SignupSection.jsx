@@ -46,6 +46,7 @@ import {
   BloodType,
   CpfMask,
   GoogleAuthButton,
+  GoogleGlyph,
   TermsAcceptanceDrawer,
 } from "..";
 import _ from "lodash";
@@ -81,7 +82,9 @@ const SignupSection = () => {
     bloodType: "",
     gender: "O",
     phone: "",
-    birthDate: "",
+    // null, not "": the DatePicker reads an empty string as an invalid date and
+    // paints the field red before the user has touched it.
+    birthDate: null,
     email: "",
     password: "",
     passConfirmation: "",
@@ -128,6 +131,10 @@ const SignupSection = () => {
     unlocked: googleUnlocked,
   });
 
+  const showNameFields =
+    !googleSignup ||
+    !(googleSignup.profile?.givenName && googleSignup.profile?.surName);
+
   const enterGoogleMode = ({ credential, profile }) => {
     setGoogleSignup({ credential, profile });
     setSignupData((current) => ({
@@ -138,11 +145,6 @@ const SignupSection = () => {
       password: "",
       passConfirmation: "",
     }));
-  };
-
-  const exitGoogleMode = () => {
-    setGoogleSignup(null);
-    sessionStorage.removeItem("hemocioneGoogleSignup");
   };
 
   useEffect(() => {
@@ -445,10 +447,14 @@ const SignupSection = () => {
             height={150}
             alt="Hemocione Logo"
           />
-          <h2 className={styles.title}>Cadastre-se agora!</h2>
-          {/* <span className={styles.subsectionTitleExplanation}>
-            Faça parte da Rede Hemocione de doadores e ajude a salvar vidas!
-          </span> */}
+          <h2 className={styles.title}>
+            {googleSignup ? "Complete seu cadastro" : "Cadastre-se agora!"}
+          </h2>
+          {googleSignup && (
+            <p className={styles.titleSupport}>
+              Só faltam alguns dados para você entrar na Rede Hemocione.
+            </p>
+          )}
         </div>
         {googleAuthAvailable && !googleSignup && (
           <>
@@ -466,58 +472,64 @@ const SignupSection = () => {
         )}
         {googleSignup && (
           <div className={styles.googleSignupBanner}>
-            <span>
-              Cadastrando com a conta Google{" "}
-              <b>{googleSignup.profile?.email}</b> — sem necessidade de senha.
-            </span>
-            <button
-              type="button"
-              className={styles.googleSignupBannerAction}
-              onClick={exitGoogleMode}
-            >
-              Prefiro usar email e senha
-            </button>
+            <div className={styles.googleSignupAccount}>
+              <GoogleGlyph className={styles.googleSignupGlyph} />
+              <div className={styles.googleSignupIdentity}>
+                <span className={styles.googleSignupLabel}>Conta Google</span>
+                <span className={styles.googleSignupEmail}>
+                  {googleSignup.profile?.email}
+                </span>
+              </div>
+            </div>
           </div>
         )}
         <FormGroup onSubmit={handleSubmit}>
-          <FormControl fullWidth sx={{ margin: "15px 0" }}>
-            <TextField
-              fullWidth
-              onChange={handleChange("givenName")}
-              value={signupData.givenName}
-              id="Nome"
-              label="Nome"
-              variant="outlined"
-              required
-            />
-          </FormControl>
-          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-            <TextField
-              fullWidth
-              onChange={handleChange("surName")}
-              value={signupData.surName}
-              id="Sobrenome"
-              label="Sobrenome"
-              name="surName"
-              variant="outlined"
-              required
-            />
-          </FormControl>
-          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-            <TextField
-              fullWidth
-              onChange={handleChange("email")}
-              value={signupData.email}
-              error={emailError}
-              id="email"
-              label="Email"
-              name="email"
-              variant="outlined"
-              autoComplete="username"
-              disabled={Boolean(googleSignup)}
-              required
-            />
-          </FormControl>
+          {/* Google already gave us these, so asking again is noise. Shown only
+              if the profile came without a name, which would otherwise leave the
+              submit button disabled with nothing on screen explaining why. */}
+          {showNameFields && (
+            <>
+              <FormControl fullWidth sx={{ margin: "15px 0" }}>
+                <TextField
+                  fullWidth
+                  onChange={handleChange("givenName")}
+                  value={signupData.givenName}
+                  id="Nome"
+                  label="Nome"
+                  variant="outlined"
+                  required
+                />
+              </FormControl>
+              <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+                <TextField
+                  fullWidth
+                  onChange={handleChange("surName")}
+                  value={signupData.surName}
+                  id="Sobrenome"
+                  label="Sobrenome"
+                  name="surName"
+                  variant="outlined"
+                  required
+                />
+              </FormControl>
+            </>
+          )}
+          {!googleSignup && (
+            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+              <TextField
+                fullWidth
+                onChange={handleChange("email")}
+                value={signupData.email}
+                error={emailError}
+                id="email"
+                label="Email"
+                name="email"
+                variant="outlined"
+                autoComplete="username"
+                required
+              />
+            </FormControl>
+          )}
           {!googleSignup && (
             <FormControl fullWidth sx={{ marginBottom: "15px" }}>
               <TextField
@@ -568,9 +580,11 @@ const SignupSection = () => {
               <span>Não sei meu tipo sanguíneo ou não quero informá-lo 😔</span>
             </div>
           </FormControl>
-          <hr className={styles.divider} />
+          {/* In Google mode the section this divider used to head (gender +
+              address) is gone, so it would separate nothing. */}
+          {!googleSignup && <hr className={styles.divider} />}
           {googleSignup ? (
-            birthDateField
+            <div className={styles.googleFieldStack}>{birthDateField}</div>
           ) : (
             <div className={styles.twoColumns}>
               <FormControl fullWidth sx={{ marginBottom: "15px" }}>
@@ -830,7 +844,7 @@ const SignupSection = () => {
               marginTop: "16px",
             }}
           >
-            {loading ? "" : "Criar conta"}
+            {loading ? "" : googleSignup ? "Concluir cadastro" : "Criar conta"}
           </SimpleButton>
           <SimpleButton
             loading={loading}
@@ -842,7 +856,7 @@ const SignupSection = () => {
               display: "var(--display-signup-button-normal)",
             }}
           >
-            {loading ? "" : "Criar conta"}
+            {loading ? "" : googleSignup ? "Concluir cadastro" : "Criar conta"}
           </SimpleButton>
           {leadId && uuid ? null : (
             <p style={{ textAlign: "center", margin: 0, marginTop: "10px" }}>
