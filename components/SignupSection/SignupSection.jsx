@@ -19,7 +19,7 @@ import {
   validateCEP,
   validateCPF,
 } from "../../utils/validators";
-import { signUp } from "../../utils/api";
+import { signUp, acceptTerms } from "../../utils/api";
 import { getSignupBlockers } from "../../utils/signupBlockers";
 import { resolveAuthRedirect } from "../../utils/authRedirect";
 import styles from "./SignupSection.module.css";
@@ -42,6 +42,7 @@ import {
   BloodType,
   CpfMask,
   GoogleAuthButton,
+  TermsAcceptanceDrawer,
 } from "..";
 import _ from "lodash";
 
@@ -99,6 +100,9 @@ const SignupSection = () => {
   const [acceptedPrivacyPolicy, setAcceptedPrivacyPolicy] = useState(false);
   const [acceptedMarketingConsent, setAcceptedMarketingConsent] = useState(false);
   const [googleSignup, setGoogleSignup] = useState(null);
+  const [loggedInToken, setLoggedInToken] = useState(null);
+  const [termsAcceptanceDrawer, setTermsAcceptanceDrawer] = useState(false);
+  const [acceptingTerms, setAcceptingTerms] = useState(false);
 
   const enterGoogleMode = ({ credential, profile }) => {
     setGoogleSignup({ credential, profile });
@@ -131,18 +135,56 @@ const SignupSection = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady, router.query.google]);
 
-  const handleGoogleLogin = (data) => {
-    // account already exists: behave like a login
-    setCookie(environment.tokenCookieKey, data.token, 15, "hemocione.com.br");
+  const finishGoogleLogin = (token) => {
+    setCookie(environment.tokenCookieKey, token, 15, "hemocione.com.br");
     window.open(
       resolveAuthRedirect({
         candidate: redirect,
         fallback: environment.mainFrontendUrl,
         currentHostname: window.location.hostname,
-        token: data.token,
+        token,
       }),
       "_self"
     );
+  };
+
+  const handleGoogleLogin = (data) => {
+    // account already exists: behave like a login, including the terms gate —
+    // otherwise this page would be a way around accepting updated terms.
+    setLoggedInToken(data.token);
+
+    if (data.requestNewTermsAcceptance) {
+      setTermsAcceptanceDrawer(true);
+      return;
+    }
+
+    finishGoogleLogin(data.token);
+  };
+
+  const handleAcceptTerms = () => {
+    if (!loggedInToken) return;
+
+    setAcceptingTerms(true);
+    acceptTerms({ token: loggedInToken })
+      .then((response) => {
+        if (response.status !== 200) {
+          setErrorText(response.data?.message || "Erro ao aceitar os termos.");
+          return;
+        }
+
+        finishGoogleLogin(loggedInToken);
+      })
+      .catch((error) => {
+        console.error(error);
+        setErrorText(
+          error.response?.data?.message ||
+            "Ocorreu um erro inesperado. Por favor, tente novamente."
+        );
+      })
+      .finally(() => {
+        setAcceptingTerms(false);
+        setTermsAcceptanceDrawer(false);
+      });
   };
 
   const handleGoogleSignupRequired = (data) => {
@@ -797,6 +839,11 @@ const SignupSection = () => {
           <p className={styles.errorText}>{errorText}</p>
         </FormGroup>
       </div>
+      <TermsAcceptanceDrawer
+        open={termsAcceptanceDrawer}
+        loading={acceptingTerms}
+        onAccept={handleAcceptTerms}
+      />
     </div>
   );
 };

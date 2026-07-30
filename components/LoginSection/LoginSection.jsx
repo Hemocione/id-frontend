@@ -3,7 +3,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
 import Image from "next/image";
-import { SimpleButton, GoogleAuthButton } from "..";
+import { SimpleButton, GoogleAuthButton, TermsAcceptanceDrawer } from "..";
 import { validateEmail } from "../../utils/validators";
 import { login, acceptTerms } from "../../utils/api";
 import { setCookie } from "../../utils/cookie";
@@ -12,7 +12,6 @@ import styles from "./LoginSection.module.css";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import environment from "../../environment";
-import Drawer from '@mui/material/Drawer';
 import { resolveAuthRedirect } from "../../utils/authRedirect";
 
 const LoginSection = () => {
@@ -276,35 +275,11 @@ const LoginSection = () => {
           )}
         </div>
       </form>
-      <Drawer
-        anchor="bottom"
+      <TermsAcceptanceDrawer
         open={termsAcceptanceDrawer}
-      >
-        <div className={styles.termsDrawer}>
-          <h2>Atualização nos Termos e Políticas</h2>
-          <p>
-            Para continuar usando o Hemocione, você precisa revisar e aceitar os novos <a
-              href={environment.legal.termsOfUse}
-              rel="noreferrer"
-              target="_blank"
-              className={styles.legalDocumentLink}
-            >
-              Termos de Uso
-            </a> e <a
-              href={environment.legal.privacyPolicyUrl}
-              rel="noreferrer"
-              target="_blank"
-              className={styles.legalDocumentLink}
-            >
-              Política de Privacidade
-            </a>
-          </p>
-          <p>Leia atentamente antes de prosseguir.</p>
-          <SimpleButton loading={acceptingTerms} onClick={handleAcceptTerms} passStyle={{ width: '100%' }}>
-            Aceitar ambos e continuar
-          </SimpleButton>
-        </div>
-      </Drawer>
+        loading={acceptingTerms}
+        onAccept={handleAcceptTerms}
+      />
     </div>
   );
 };
