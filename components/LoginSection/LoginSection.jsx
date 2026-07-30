@@ -1,7 +1,7 @@
 import { TextField, InputAdornment, IconButton } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { SimpleButton, GoogleAuthButton, TermsAcceptanceDrawer } from "..";
 import { validateEmail } from "../../utils/validators";
@@ -13,11 +13,6 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import environment from "../../environment";
 import { resolveAuthRedirect } from "../../utils/authRedirect";
-import {
-  GOOGLE_UNLOCK_STORAGE_KEY,
-  isGoogleAuthAvailable,
-  registerLogoTap,
-} from "../../utils/googleAuthFlag";
 
 const LoginSection = () => {
   const router = useRouter();
@@ -34,41 +29,6 @@ const LoginSection = () => {
     password: "",
   });
   const [termsAcceptanceDrawer, setTermsAcceptanceDrawer] = useState(false);
-  const [googleUnlocked, setGoogleUnlocked] = useState(false);
-  const logoTaps = useRef({ count: 0, lastTapAt: null });
-
-  useEffect(() => {
-    try {
-      if (localStorage.getItem(GOOGLE_UNLOCK_STORAGE_KEY) === "true") {
-        setGoogleUnlocked(true);
-      }
-    } catch (error) {
-      // private mode can throw on localStorage access; stay locked
-    }
-  }, []);
-
-  // Reveals Google sign-in inside the native app after ten taps in a row.
-  const handleLogoTap = () => {
-    if (googleUnlocked) return;
-
-    const next = registerLogoTap({ ...logoTaps.current, now: Date.now() });
-    logoTaps.current = { count: next.count, lastTapAt: next.lastTapAt };
-    if (!next.unlocked) return;
-
-    setGoogleUnlocked(true);
-    try {
-      localStorage.setItem(GOOGLE_UNLOCK_STORAGE_KEY, "true");
-    } catch (error) {
-      // unlocked for this render either way
-    }
-  };
-
-  const googleAuthAvailable = isGoogleAuthAvailable({
-    clientId: environment.googleClientId,
-    redirect,
-    unlocked: googleUnlocked,
-  });
-
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
@@ -203,7 +163,6 @@ const LoginSection = () => {
               width={150}
               height={150}
               alt="Hemocione Logo"
-              onClick={handleLogoTap}
             />
           </div>
           <p className={styles.errorText}>{errorText}</p>
@@ -295,7 +254,7 @@ const LoginSection = () => {
               Entrar
             </SimpleButton>
           )}
-          {googleAuthAvailable && (
+          {environment.googleClientId && (
             <>
               <div className={styles.orDivider}>
                 <span>ou</span>
