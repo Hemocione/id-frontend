@@ -20,6 +20,7 @@ import {
   validateCPF,
 } from "../../utils/validators";
 import { signUp } from "../../utils/api";
+import { getSignupBlockers } from "../../utils/signupBlockers";
 import styles from "./SignupSection.module.css";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -193,6 +194,14 @@ const SignupSection = () => {
       hydratedSignUpData.googleCredential = googleSignup.credential;
       delete hydratedSignUpData.password;
       delete hydratedSignUpData.passConfirmation;
+      // These three are not rendered in Google mode, and hiding them is not
+      // enough: gender defaults to "O" in state (which would silently record
+      // "prefer not to say" and hide the pending field from the app's nudge),
+      // and address is an object of empty strings the backend would otherwise
+      // try to persist. All three are completed later in the app.
+      delete hydratedSignUpData.gender;
+      delete hydratedSignUpData.document;
+      delete hydratedSignUpData.address;
     }
 
     signUp(hydratedSignUpData, options)
@@ -326,30 +335,47 @@ const SignupSection = () => {
   const cepError =
     signupData.address.cep != "" && !validateCEP(signupData.address.cep);
 
-  const validBloodSelection = unknownBloodType || signupData.bloodType;
-
-  const passwordOk = googleSignup
-    ? true
-    : signupData.password &&
-      signupData.passConfirmation &&
-      !passError &&
-      !passConfError;
+  // Rendered on its own in Google mode, and paired with the gender select in
+  // the two-column grid otherwise — a lone child would leave half the row empty.
+  const birthDateField = (
+    <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+      <LocalizationProvider
+        fullWidth
+        dateAdapter={AdapterDateFns}
+        localeText={
+          DatePickerLocale.components.MuiLocalizationProvider.defaultProps
+            .localeText
+        }
+        adapterLocale={ptBR}
+      >
+        <DatePicker
+          label="Data de nascimento *"
+          value={signupData.birthDate}
+          name="birthDate"
+          onChange={(value) => handleChange("birthDate")({ target: { value } })}
+          inputFormat="dd/MM/yyyy"
+          renderInput={(params) => <TextField {...params} />}
+        />
+      </LocalizationProvider>
+    </FormControl>
+  );
 
   const disabledButton =
-    !signupData.givenName ||
-    !signupData.surName ||
-    !validBloodSelection ||
-    !signupData.email ||
-    !passwordOk ||
-    !signupData.gender ||
-    !signupData.birthDate ||
-    !signupData.address.cep ||
-    !signupData.document ||
-    cpfError ||
-    emailError ||
-    phoneError ||
-    !acceptedTerms ||
-    !acceptedPrivacyPolicy;
+    getSignupBlockers({
+      signupData,
+      unknownBloodType,
+      googleSignup,
+      acceptedTerms,
+      acceptedPrivacyPolicy,
+      errors: {
+        email: emailError,
+        pass: passError,
+        passConfirmation: passConfError,
+        phone: phoneError,
+        cpf: cpfError,
+        cep: cepError,
+      },
+    }).length > 0;
 
   return (
     <div className={styles.loginSection}>
@@ -428,23 +454,25 @@ const SignupSection = () => {
               required
             />
           </FormControl>
-          <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-            <TextField
-              fullWidth
-              onChange={handleChange("document")}
-              value={eventRef ? String(eventRef) : signupData.document}
-              error={cpfError}
-              id="cpf"
-              label="CPF"
-              variant="outlined"
-              name="cpf"
-              disabled={eventRef ? true : false}
-              InputProps={{
-                inputComponent: CpfMask,
-              }}
-              required
-            />
-          </FormControl>
+          {!googleSignup && (
+            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+              <TextField
+                fullWidth
+                onChange={handleChange("document")}
+                value={eventRef ? String(eventRef) : signupData.document}
+                error={cpfError}
+                id="cpf"
+                label="CPF"
+                variant="outlined"
+                name="cpf"
+                disabled={eventRef ? true : false}
+                InputProps={{
+                  inputComponent: CpfMask,
+                }}
+                required
+              />
+            </FormControl>
+          )}
           <hr className={styles.divider} />
           <FormControl fullWidth sx={{ marginBottom: "15px" }}>
             <h4 className={styles.subsectionTitle}>
@@ -477,50 +505,33 @@ const SignupSection = () => {
             </div>
           </FormControl>
           <hr className={styles.divider} />
-          <div className={styles.twoColumns}>
-            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-              <InputLabel id="gender" required>
-                Gênero
-              </InputLabel>
-              <Select
-                labelId="gender"
-                id="gender"
-                placeholder="Gênero"
-                label="Gênero"
-                onChange={handleChange("gender")}
-                name="gender"
-                fullWidth
-              >
-                {genders.map((g) => (
-                  <MenuItem key={g} value={g}>
-                    {genderMapping[g]}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-              <LocalizationProvider
-                fullWidth
-                dateAdapter={AdapterDateFns}
-                localeText={
-                  DatePickerLocale.components.MuiLocalizationProvider
-                    .defaultProps.localeText
-                }
-                adapterLocale={ptBR}
-              >
-                <DatePicker
-                  label="Data de nascimento *"
-                  value={signupData.birthDate}
-                  name="birthDate"
-                  onChange={(value) =>
-                    handleChange("birthDate")({ target: { value } })
-                  }
-                  inputFormat="dd/MM/yyyy"
-                  renderInput={(params) => <TextField {...params} />}
-                />
-              </LocalizationProvider>
-            </FormControl>
-          </div>
+          {googleSignup ? (
+            birthDateField
+          ) : (
+            <div className={styles.twoColumns}>
+              <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+                <InputLabel id="gender" required>
+                  Gênero
+                </InputLabel>
+                <Select
+                  labelId="gender"
+                  id="gender"
+                  placeholder="Gênero"
+                  label="Gênero"
+                  onChange={handleChange("gender")}
+                  name="gender"
+                  fullWidth
+                >
+                  {genders.map((g) => (
+                    <MenuItem key={g} value={g}>
+                      {genderMapping[g]}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              {birthDateField}
+            </div>
+          )}
           <FormControl fullWidth sx={{ marginBottom: "15px" }}>
             <TextField
               fullWidth
@@ -538,113 +549,117 @@ const SignupSection = () => {
               required
             />
           </FormControl>
-          <hr className={styles.divider} />
-          <h4 className={styles.subsectionTitle}>
-            Qual o seu endereço?{" "}
-            {/* <span className={styles.subsectionTitleExplanation}>
-              Precisamos disso para encontrar bancos de sangue próximos à sua região e avisar sobre campanhas de doação no futuro!
-            </span> */}
-          </h4>
-          <div className={styles.twoColumns}>
-            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-              <TextField
-                fullWidth
-                onChange={handleCEPChange}
-                value={signupData.address.cep}
-                error={cepError}
-                label="CEP"
-                id="cep"
-                name="cep"
-                variant="outlined"
-                InputProps={{
-                  inputComponent: CepMask,
-                }}
-                required
-              />
-            </FormControl>
-            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-              <InputLabel id="state" required>
-                Estado
-              </InputLabel>
-              <Select
-                labelId="state"
-                id="state"
-                placeholder="Estado"
-                label="Estado"
-                value={signupData.address.state}
-                onChange={handleChange("address.state")}
-                name="state"
-                disabled={!attemptToCEPSearch}
-                fullWidth
-              >
-                {estados.map((estado) => (
-                  <MenuItem key={estado} value={estado}>
-                    {getEstadoLabel(estado)}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-              <TextField
-                disabled={!attemptToCEPSearch}
-                fullWidth
-                onChange={handleChange("address.city")}
-                value={signupData.address.city}
-                required
-                label="Cidade"
-                placeholder="Cidade"
-                id="city"
-                name="city"
-                variant="outlined"
-              />
-            </FormControl>
-            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-              <TextField
-                disabled={!computedAddress}
-                fullWidth
-                onChange={handleChange("address.neighborhood")}
-                value={signupData.address.neighborhood}
-                label="Bairro"
-                id="neighborhood"
-                name="neighborhood"
-                variant="outlined"
-              />
-            </FormControl>
-            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-              <TextField
-                disabled={!computedAddress}
-                fullWidth
-                onChange={handleChange("address.street")}
-                value={signupData.address.street}
-                label="Rua"
-                id="street"
-                name="street"
-                variant="outlined"
-              />
-            </FormControl>
-            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-              <TextField
-                fullWidth
-                onChange={handleChange("address.number")}
-                value={signupData.address.number}
-                label="Número"
-                id="address-number"
-                name="address-number"
-                variant="outlined"
-              />
-            </FormControl>
-            <FormControl fullWidth sx={{ marginBottom: "15px" }}>
-              <TextField
-                fullWidth
-                onChange={handleChange("address.complement")}
-                value={signupData.address.complement}
-                label="Complemento"
-                id="complement"
-                name="complement"
-                variant="outlined"
-              />
-            </FormControl>
-          </div>
+          {!googleSignup && (
+            <>
+              <hr className={styles.divider} />
+              <h4 className={styles.subsectionTitle}>
+                Qual o seu endereço?{" "}
+                {/* <span className={styles.subsectionTitleExplanation}>
+                  Precisamos disso para encontrar bancos de sangue próximos à sua região e avisar sobre campanhas de doação no futuro!
+                </span> */}
+              </h4>
+              <div className={styles.twoColumns}>
+                <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+                  <TextField
+                    fullWidth
+                    onChange={handleCEPChange}
+                    value={signupData.address.cep}
+                    error={cepError}
+                    label="CEP"
+                    id="cep"
+                    name="cep"
+                    variant="outlined"
+                    InputProps={{
+                      inputComponent: CepMask,
+                    }}
+                    required
+                  />
+                </FormControl>
+                <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+                  <InputLabel id="state" required>
+                    Estado
+                  </InputLabel>
+                  <Select
+                    labelId="state"
+                    id="state"
+                    placeholder="Estado"
+                    label="Estado"
+                    value={signupData.address.state}
+                    onChange={handleChange("address.state")}
+                    name="state"
+                    disabled={!attemptToCEPSearch}
+                    fullWidth
+                  >
+                    {estados.map((estado) => (
+                      <MenuItem key={estado} value={estado}>
+                        {getEstadoLabel(estado)}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+                  <TextField
+                    disabled={!attemptToCEPSearch}
+                    fullWidth
+                    onChange={handleChange("address.city")}
+                    value={signupData.address.city}
+                    required
+                    label="Cidade"
+                    placeholder="Cidade"
+                    id="city"
+                    name="city"
+                    variant="outlined"
+                  />
+                </FormControl>
+                <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+                  <TextField
+                    disabled={!computedAddress}
+                    fullWidth
+                    onChange={handleChange("address.neighborhood")}
+                    value={signupData.address.neighborhood}
+                    label="Bairro"
+                    id="neighborhood"
+                    name="neighborhood"
+                    variant="outlined"
+                  />
+                </FormControl>
+                <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+                  <TextField
+                    disabled={!computedAddress}
+                    fullWidth
+                    onChange={handleChange("address.street")}
+                    value={signupData.address.street}
+                    label="Rua"
+                    id="street"
+                    name="street"
+                    variant="outlined"
+                  />
+                </FormControl>
+                <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+                  <TextField
+                    fullWidth
+                    onChange={handleChange("address.number")}
+                    value={signupData.address.number}
+                    label="Número"
+                    id="address-number"
+                    name="address-number"
+                    variant="outlined"
+                  />
+                </FormControl>
+                <FormControl fullWidth sx={{ marginBottom: "15px" }}>
+                  <TextField
+                    fullWidth
+                    onChange={handleChange("address.complement")}
+                    value={signupData.address.complement}
+                    label="Complemento"
+                    id="complement"
+                    name="complement"
+                    variant="outlined"
+                  />
+                </FormControl>
+              </div>
+            </>
+          )}
           <hr className={styles.divider} />
           {!googleSignup && (
             <>
