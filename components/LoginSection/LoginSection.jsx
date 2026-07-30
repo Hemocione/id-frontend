@@ -13,7 +13,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import environment from "../../environment";
 import Drawer from '@mui/material/Drawer';
-import { mobileUrls } from "../../utils/mobile";
+import { resolveAuthRedirect } from "../../utils/authRedirect";
 
 const LoginSection = () => {
   const router = useRouter();
@@ -59,19 +59,16 @@ const LoginSection = () => {
       15,
       "hemocione.com.br"
     );
-    const locationRedirect =
-      redirect ||
-      process.env.NEXT_PUBLIC_MAIN_SITE ||
-      "https://app.hemocione.com.br/";
-
-    const url = new URL(locationRedirect);
     // always allow token to be passed to hemocione.com.br in production. in dev mode, allow it to be passed to localhost as well
-    if (url.hostname.endsWith("hemocione.com.br") || window.location.hostname.endsWith("id.d.hemocione.com.br") || mobileUrls.some((mobileUrl) => url.toString().startsWith(mobileUrl))) {
-      url.searchParams.append("token", userToken);
-    }
-    const newLocationRedirect = url.toString();
-
-    window.open(newLocationRedirect, "_self");
+    window.open(
+      resolveAuthRedirect({
+        candidate: redirect,
+        fallback: process.env.NEXT_PUBLIC_MAIN_SITE,
+        currentHostname: window.location.hostname,
+        token: userToken,
+      }),
+      "_self"
+    );
   }
 
   const apiLogin = (captchaToken) => {

@@ -21,6 +21,7 @@ import {
 } from "../../utils/validators";
 import { signUp } from "../../utils/api";
 import { getSignupBlockers } from "../../utils/signupBlockers";
+import { resolveAuthRedirect } from "../../utils/authRedirect";
 import styles from "./SignupSection.module.css";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -43,7 +44,6 @@ import {
   GoogleAuthButton,
 } from "..";
 import _ from "lodash";
-import { mobileUrls } from "../../utils/mobile";
 
 const bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const genders = ["M", "F", "O"];
@@ -134,19 +134,15 @@ const SignupSection = () => {
   const handleGoogleLogin = (data) => {
     // account already exists: behave like a login
     setCookie(environment.tokenCookieKey, data.token, 15, "hemocione.com.br");
-    const locationRedirect =
-      redirect ||
-      environment.mainFrontendUrl ||
-      "https://app.hemocione.com.br/";
-    const url = new URL(locationRedirect);
-    if (
-      url.hostname.endsWith("hemocione.com.br") ||
-      window.location.hostname.endsWith("id.d.hemocione.com.br") ||
-      mobileUrls.some((mobileUrl) => url.toString().startsWith(mobileUrl))
-    ) {
-      url.searchParams.append("token", data.token);
-    }
-    window.open(url.toString(), "_self");
+    window.open(
+      resolveAuthRedirect({
+        candidate: redirect,
+        fallback: environment.mainFrontendUrl,
+        currentHostname: window.location.hostname,
+        token: data.token,
+      }),
+      "_self"
+    );
   };
 
   const handleGoogleSignupRequired = (data) => {
@@ -223,19 +219,15 @@ const SignupSection = () => {
               ? getDigitalStandRedirectUrl(String(leadId), String(uuid))
               : null;
 
-          const locationRedirect =
-            digitalStandRedirect ||
-            redirect ||
-            environment.mainFrontendUrl ||
-            "https://app.hemocione.com.br/";
-
-          const url = new URL(locationRedirect);
-          if (url.hostname.endsWith("hemocione.com.br") || window.location.hostname.endsWith("id.d.hemocione.com.br") || mobileUrls.some((mobileUrl) => url.toString().startsWith(mobileUrl))) {
-            url.searchParams.append("token", response.data.token);
-          }
-          const newLocationRedirect = url.toString();
-
-          window.open(newLocationRedirect, "_self");
+          window.open(
+            resolveAuthRedirect({
+              candidate: digitalStandRedirect || redirect,
+              fallback: environment.mainFrontendUrl,
+              currentHostname: window.location.hostname,
+              token: response.data.token,
+            }),
+            "_self"
+          );
           return;
         }
         setErrorText(response.data.message);
@@ -412,7 +404,13 @@ const SignupSection = () => {
               Cadastrando com a conta Google{" "}
               <b>{googleSignup.profile?.email}</b> — sem necessidade de senha.
             </span>
-            <a onClick={exitGoogleMode}>Prefiro usar email e senha</a>
+            <button
+              type="button"
+              className={styles.googleSignupBannerAction}
+              onClick={exitGoogleMode}
+            >
+              Prefiro usar email e senha
+            </button>
           </div>
         )}
         <FormGroup onSubmit={handleSubmit}>
