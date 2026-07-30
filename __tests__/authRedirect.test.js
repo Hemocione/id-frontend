@@ -13,7 +13,9 @@ const resolve = (overrides = {}) =>
 
 describe("resolveAuthRedirect - trusted destinations", () => {
   it("keeps a hemocione.com.br destination and appends the token", () => {
-    const url = resolve({ candidate: "https://app.hemocione.com.br/donations" });
+    const url = resolve({
+      candidate: "https://app.hemocione.com.br/donations",
+    });
     expect(url).toBe("https://app.hemocione.com.br/donations?token=jwt-token");
   });
 
@@ -38,6 +40,39 @@ describe("resolveAuthRedirect - trusted destinations", () => {
 
   it("falls back to the default when there is no candidate", () => {
     expect(resolve()).toBe(`${FALLBACK}?token=jwt-token`);
+  });
+});
+
+describe("resolveAuthRedirect - the token never leaves a safe destination", () => {
+  it("refuses plain http in production, so the JWT is not sent in the clear", () => {
+    const url = resolve({ candidate: "http://app.hemocione.com.br/donations" });
+    expect(url).toBe(`${FALLBACK}?token=jwt-token`);
+  });
+
+  it("refuses a mobile deep link lookalike host", () => {
+    const url = resolve({
+      candidate: "br.com.hemocione.app://app.hemocione.com.br.evil.com",
+    });
+    expect(url).not.toContain("evil.com");
+  });
+
+  it("refuses a mobile deep link lookalike path", () => {
+    const url = resolve({ candidate: "apphemocione:authEVIL" });
+    expect(url).not.toContain("authEVIL");
+  });
+
+  it("refuses an unapproved custom protocol, even from the dev host", () => {
+    const url = resolve({
+      candidate: "evilapp://app.hemocione.com.br",
+      currentHostname: "id.d.hemocione.com.br",
+    });
+    expect(url).not.toContain("evilapp");
+  });
+
+  it("keeps a query string on an approved deep link", () => {
+    const url = resolve({ candidate: "apphemocione:auth?ref=campanha" });
+    expect(url).toContain("ref=campanha");
+    expect(url).toContain("token=jwt-token");
   });
 });
 

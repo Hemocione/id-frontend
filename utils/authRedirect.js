@@ -1,10 +1,7 @@
 import { mobileUrls } from "./mobile";
 
 const DEFAULT_REDIRECT = "https://app.hemocione.com.br/";
-
-// Blocked regardless of host, including on the dev host where any destination is
-// otherwise trusted — a javascript: or data: redirect is script execution.
-const DANGEROUS_PROTOCOLS = ["javascript:", "data:", "vbscript:", "blob:"];
+const DEV_HOST_SUFFIX = "id.d.hemocione.com.br";
 
 const parseUrl = (value) => {
   try {
@@ -14,15 +11,40 @@ const parseUrl = (value) => {
   }
 };
 
-const isTrusted = (url, currentHostname) => {
-  if (DANGEROUS_PROTOCOLS.includes(url.protocol)) return false;
+// Parsed from utils/mobile so the approved deep links stay defined in one place.
+const mobileTargets = mobileUrls.map(parseUrl).filter(Boolean);
 
-  return (
-    url.hostname === "hemocione.com.br" ||
-    url.hostname.endsWith(".hemocione.com.br") ||
-    currentHostname.endsWith("id.d.hemocione.com.br") ||
-    mobileUrls.some((mobileUrl) => url.toString().startsWith(mobileUrl))
+// Structural match, not startsWith: "apphemocione:auth" must not also approve
+// "apphemocione:authEVIL", and the Android link must not approve
+// "br.com.hemocione.app://app.hemocione.com.br.evil.com". A query string is
+// still allowed, since only the target is being pinned.
+const isApprovedMobileTarget = (url) =>
+  mobileTargets.some(
+    (target) =>
+      target.protocol === url.protocol &&
+      target.hostname === url.hostname &&
+      target.pathname === url.pathname
   );
+
+const isHemocioneHost = (url) =>
+  url.hostname === "hemocione.com.br" ||
+  url.hostname.endsWith(".hemocione.com.br");
+
+/**
+ * Allowlist, so anything unrecognised is refused by default — `javascript:`,
+ * `data:` and unapproved custom schemes never reach a match.
+ */
+const isTrusted = (url, currentHostname) => {
+  if (isApprovedMobileTarget(url)) return true;
+
+  const isDevHost = currentHostname.endsWith(DEV_HOST_SUFFIX);
+
+  // Plain http would put the JWT on the wire in the clear, so it is confined to
+  // the dev host, where it is what makes localhost redirects work.
+  if (url.protocol === "http:") return isDevHost;
+  if (url.protocol === "https:") return isHemocioneHost(url) || isDevHost;
+
+  return false;
 };
 
 /**
@@ -30,10 +52,7 @@ const isTrusted = (url, currentHostname) => {
  *
  * `candidate` is user-controlled (the `redirect` query param), so an untrusted
  * destination is replaced by the fallback instead of followed — otherwise the
- * page is an open redirect. The token only ever travels to a trusted host.
- *
- * Custom mobile schemes (`apphemocione:`, `br.com.hemocione.app://`) are valid
- * destinations, so this cannot simply require http/https.
+ * page is an open redirect. The token only ever travels to a trusted target.
  */
 export const resolveAuthRedirect = ({
   candidate,
@@ -41,8 +60,8 @@ export const resolveAuthRedirect = ({
   currentHostname,
   token,
 }) => {
-  const safeFallback = parseUrl(fallback || DEFAULT_REDIRECT) ||
-    parseUrl(DEFAULT_REDIRECT);
+  const safeFallback =
+    parseUrl(fallback || DEFAULT_REDIRECT) || parseUrl(DEFAULT_REDIRECT);
 
   const requested = candidate ? parseUrl(candidate) : null;
   const url =
