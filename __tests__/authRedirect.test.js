@@ -1,4 +1,4 @@
-import { resolveAuthRedirect } from "../utils/authRedirect";
+import { resolveAuthRedirect, isAppDestination } from "../utils/authRedirect";
 
 const FALLBACK = "https://app.hemocione.com.br/";
 
@@ -161,5 +161,66 @@ describe("resolveAuthRedirect - edge cases", () => {
     });
     expect(url).toContain("ref=campanha");
     expect(url).toContain("token=jwt-token");
+  });
+});
+
+describe("isAppDestination", () => {
+  const destination = (candidate) =>
+    isAppDestination({
+      candidate,
+      fallback: FALLBACK,
+      currentHostname: "id.hemocione.com.br",
+    });
+
+  it("is the app when there is no candidate", () => {
+    expect(destination(null)).toBe(true);
+  });
+
+  it("is the app for the main frontend URL", () => {
+    expect(destination("https://app.hemocione.com.br/donations")).toBe(true);
+  });
+
+  it("is the app for the iOS deep link", () => {
+    expect(destination("apphemocione:auth")).toBe(true);
+  });
+
+  it("is the app for the Android deep link", () => {
+    expect(destination("br.com.hemocione.app://app.hemocione.com.br")).toBe(
+      true
+    );
+  });
+
+  it("is the app for the Android deep link with a trailing slash (what the app actually sends)", () => {
+    expect(destination("br.com.hemocione.app://app.hemocione.com.br/")).toBe(
+      true
+    );
+  });
+
+  it("is external for a different trusted hemocione.com.br subdomain", () => {
+    expect(destination("https://eventos.hemocione.com.br/callback")).toBe(
+      false
+    );
+  });
+
+  it("is external for the copa subdomain", () => {
+    expect(destination("https://copa.hemocione.com.br/callback")).toBe(false);
+  });
+
+  it("is the app when the candidate is untrusted (falls back to the app)", () => {
+    expect(destination("https://evil.com/steal")).toBe(true);
+  });
+
+  it("is the app when the candidate is malformed", () => {
+    expect(destination("not a url at all")).toBe(true);
+  });
+
+  it("is the app when the fallback is empty (uses DEFAULT_REDIRECT)", () => {
+    expect(
+      isAppDestination({
+        candidate: null,
+        fallback: "",
+        currentHostname: "id.hemocione.com.br",
+      })
+    ).toBe(true);
   });
 });

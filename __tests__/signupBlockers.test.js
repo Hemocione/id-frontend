@@ -27,6 +27,7 @@ const base = {
   signupData: filledForm,
   unknownBloodType: false,
   googleSignup: null,
+  requireFullProfile: true,
   acceptedTerms: true,
   acceptedPrivacyPolicy: true,
   errors: noErrors,
@@ -102,7 +103,12 @@ describe("getSignupBlockers - Google signup", () => {
     address: { cep: "" },
   };
 
-  const googleBase = { ...base, signupData: googleForm, googleSignup };
+  const googleBase = {
+    ...base,
+    signupData: googleForm,
+    googleSignup,
+    requireFullProfile: false,
+  };
 
   it("has no blockers without CPF, gender or address", () => {
     expect(getSignupBlockers(googleBase)).toEqual([]);
@@ -152,5 +158,97 @@ describe("getSignupBlockers - Google signup", () => {
 
   it("does not ask for a password", () => {
     expect(getSignupBlockers(googleBase)).not.toContain("password");
+  });
+});
+
+describe("getSignupBlockers - Google signup, app destination", () => {
+  const googleSignup = {
+    credential: "token",
+    profile: { email: "ana@example.com" },
+  };
+
+  const googleAppBase = {
+    ...base,
+    signupData: filledForm,
+    googleSignup,
+    requireFullProfile: true,
+  };
+
+  it("has no blockers when the full form is filled in, even via Google", () => {
+    expect(getSignupBlockers(googleAppBase)).toEqual([]);
+  });
+
+  it("blocks on missing CPF", () => {
+    const signupData = { ...filledForm, document: "" };
+    expect(getSignupBlockers({ ...googleAppBase, signupData })).toContain(
+      "document"
+    );
+  });
+
+  it("blocks on missing gender", () => {
+    const signupData = { ...filledForm, gender: "" };
+    expect(getSignupBlockers({ ...googleAppBase, signupData })).toContain(
+      "gender"
+    );
+  });
+
+  it("blocks on missing CEP", () => {
+    const signupData = { ...filledForm, address: { cep: "" } };
+    expect(getSignupBlockers({ ...googleAppBase, signupData })).toContain(
+      "cep"
+    );
+  });
+
+  it("still does not ask for a password", () => {
+    expect(getSignupBlockers(googleAppBase)).not.toContain("password");
+  });
+});
+
+describe("getSignupBlockers - email/password signup, external destination", () => {
+  const externalForm = {
+    ...filledForm,
+    document: "",
+    gender: "",
+    address: { cep: "" },
+  };
+
+  const externalBase = {
+    ...base,
+    signupData: externalForm,
+    requireFullProfile: false,
+  };
+
+  it("has no blockers without CPF, gender or address", () => {
+    expect(getSignupBlockers(externalBase)).toEqual([]);
+  });
+
+  it("ignores CPF and CEP validation errors that cannot be triggered", () => {
+    const errors = { ...noErrors, cpf: true, cep: true };
+    expect(getSignupBlockers({ ...externalBase, errors })).toEqual([]);
+  });
+
+  it("still requires a password", () => {
+    const signupData = {
+      ...externalForm,
+      password: "",
+      passConfirmation: "",
+    };
+    expect(getSignupBlockers({ ...externalBase, signupData })).toContain(
+      "password"
+    );
+  });
+
+  it("still blocks on missing phone", () => {
+    const signupData = { ...externalForm, phone: "" };
+    expect(getSignupBlockers({ ...externalBase, signupData })).toContain(
+      "phone"
+    );
+  });
+
+  it("still blocks on missing blood type", () => {
+    const signupData = { ...externalForm, bloodType: "" };
+    expect(getSignupBlockers({ ...externalBase, signupData })).toContain(
+      "bloodType"
+    );
   });
 });
