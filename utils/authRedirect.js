@@ -30,6 +30,9 @@ const isHemocioneHost = (url) =>
   url.hostname === "hemocione.com.br" ||
   url.hostname.endsWith(".hemocione.com.br");
 
+const resolveFallbackUrl = (fallback) =>
+  parseUrl(fallback || DEFAULT_REDIRECT) || parseUrl(DEFAULT_REDIRECT);
+
 /**
  * Allowlist, so anything unrecognised is refused by default — `javascript:`,
  * `data:` and unapproved custom schemes never reach a match.
@@ -60,8 +63,7 @@ export const resolveAuthRedirect = ({
   currentHostname,
   token,
 }) => {
-  const safeFallback =
-    parseUrl(fallback || DEFAULT_REDIRECT) || parseUrl(DEFAULT_REDIRECT);
+  const safeFallback = resolveFallbackUrl(fallback);
 
   const requested = candidate ? parseUrl(candidate) : null;
   const url =
@@ -72,4 +74,21 @@ export const resolveAuthRedirect = ({
   if (token) url.searchParams.set("token", token);
 
   return url.toString();
+};
+
+/**
+ * Whether the person will actually land on the Hemocione app itself, as
+ * opposed to some other system (events, competitions, ondedoar, a partner's
+ * digital stand). Asks resolveAuthRedirect where the browser is really going
+ * — so an untrusted or absent candidate, which falls back to the app, counts
+ * as the app too — and only then checks if that destination is the app.
+ */
+export const isAppDestination = ({ candidate, fallback, currentHostname }) => {
+  const resolved = parseUrl(
+    resolveAuthRedirect({ candidate, fallback, currentHostname })
+  );
+  if (isApprovedMobileTarget(resolved)) return true;
+
+  const appUrl = resolveFallbackUrl(fallback);
+  return Boolean(appUrl && resolved.hostname === appUrl.hostname);
 };

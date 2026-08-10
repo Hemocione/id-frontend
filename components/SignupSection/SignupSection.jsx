@@ -21,7 +21,10 @@ import {
 } from "../../utils/validators";
 import { signUp, acceptTerms } from "../../utils/api";
 import { getSignupBlockers } from "../../utils/signupBlockers";
-import { resolveAuthRedirect } from "../../utils/authRedirect";
+import {
+  resolveAuthRedirect,
+  isAppDestination,
+} from "../../utils/authRedirect";
 import styles from "./SignupSection.module.css";
 import { useRouter } from "next/router";
 import Image from "next/image";
@@ -104,6 +107,7 @@ const SignupSection = () => {
   const [acceptedMarketingConsent, setAcceptedMarketingConsent] =
     useState(false);
   const [googleSignup, setGoogleSignup] = useState(null);
+  const [requireFullProfile, setRequireFullProfile] = useState(true);
   const [loggedInToken, setLoggedInToken] = useState(null);
   const [termsAcceptanceDrawer, setTermsAcceptanceDrawer] = useState(false);
   const [acceptingTerms, setAcceptingTerms] = useState(false);
@@ -136,6 +140,18 @@ const SignupSection = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.isReady, router.query.google]);
+
+  useEffect(() => {
+    if (!router.isReady) return;
+    setRequireFullProfile(
+      isAppDestination({
+        candidate: redirect,
+        fallback: environment.mainFrontendUrl,
+        currentHostname: window.location.hostname,
+      })
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.isReady, redirect]);
 
   const finishGoogleLogin = (token) => {
     setCookie(environment.tokenCookieKey, token, 15, "hemocione.com.br");
@@ -234,14 +250,19 @@ const SignupSection = () => {
       hydratedSignUpData.googleCredential = googleSignup.credential;
       delete hydratedSignUpData.password;
       delete hydratedSignUpData.passConfirmation;
-      // These three are not rendered in Google mode, and hiding them is not
+    }
+
+    if (!requireFullProfile) {
+      // Not rendered when the destination is external, and hiding them is not
       // enough: gender defaults to "O" in state (which would silently record
       // "prefer not to say" and hide the pending field from the app's nudge),
       // and address is an object of empty strings the backend would otherwise
-      // try to persist. All three are completed later in the app.
+      // try to persist. All three are completed later, when the person converts
+      // to the app.
       delete hydratedSignUpData.gender;
       delete hydratedSignUpData.document;
       delete hydratedSignUpData.address;
+      hydratedSignUpData.allowIncompleteProfile = true;
     }
 
     signUp(hydratedSignUpData, options)
@@ -401,6 +422,7 @@ const SignupSection = () => {
       signupData,
       unknownBloodType,
       googleSignup,
+      requireFullProfile,
       acceptedTerms,
       acceptedPrivacyPolicy,
       errors: {
@@ -506,7 +528,7 @@ const SignupSection = () => {
               />
             </FormControl>
           )}
-          {!googleSignup && (
+          {requireFullProfile && (
             <FormControl fullWidth sx={{ marginBottom: "15px" }}>
               <TextField
                 fullWidth
@@ -556,12 +578,10 @@ const SignupSection = () => {
               <span>Não sei meu tipo sanguíneo ou não quero informá-lo 😔</span>
             </div>
           </FormControl>
-          {/* In Google mode the section this divider used to head (gender +
-              address) is gone, so it would separate nothing. */}
-          {!googleSignup && <hr className={styles.divider} />}
-          {googleSignup ? (
-            <div className={styles.googleFieldStack}>{birthDateField}</div>
-          ) : (
+          {/* Hidden when gender + address are not required, so it would separate
+              nothing. */}
+          {requireFullProfile && <hr className={styles.divider} />}
+          {requireFullProfile ? (
             <div className={styles.twoColumns}>
               <FormControl fullWidth sx={{ marginBottom: "15px" }}>
                 <InputLabel id="gender" required>
@@ -585,6 +605,8 @@ const SignupSection = () => {
               </FormControl>
               {birthDateField}
             </div>
+          ) : (
+            <div className={styles.googleFieldStack}>{birthDateField}</div>
           )}
           <FormControl fullWidth sx={{ marginBottom: "15px" }}>
             <TextField
@@ -603,7 +625,7 @@ const SignupSection = () => {
               required
             />
           </FormControl>
-          {!googleSignup && (
+          {requireFullProfile && (
             <>
               <hr className={styles.divider} />
               <h4 className={styles.subsectionTitle}>
