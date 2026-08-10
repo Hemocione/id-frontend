@@ -73,3 +73,20 @@ export const resolveAuthRedirect = ({
 
   return url.toString();
 };
+
+/**
+ * Whether the person will actually land on the Hemocione app itself, as
+ * opposed to some other system (events, competitions, ondedoar, a partner's
+ * digital stand). Asks resolveAuthRedirect where the browser is really going
+ * — so an untrusted or absent candidate, which falls back to the app, counts
+ * as the app too — and only then checks if that destination is the app.
+ */
+export const isAppDestination = ({ candidate, fallback, currentHostname }) => {
+  const resolved = parseUrl(
+    resolveAuthRedirect({ candidate, fallback, currentHostname })
+  );
+  if (isApprovedMobileTarget(resolved)) return true;
+
+  const appUrl = parseUrl(fallback);
+  return Boolean(appUrl && resolved.hostname === appUrl.hostname);
+};
