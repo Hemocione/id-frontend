@@ -21,7 +21,10 @@ import {
 } from "../../utils/validators";
 import { signUp, acceptTerms } from "../../utils/api";
 import { getSignupBlockers } from "../../utils/signupBlockers";
-import { resolveAuthRedirect, isAppDestination } from "../../utils/authRedirect";
+import {
+  resolveAuthRedirect,
+  isAppDestination,
+} from "../../utils/authRedirect";
 import styles from "./SignupSection.module.css";
 import { useRouter } from "next/router";
 import Image from "next/image";

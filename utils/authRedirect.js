@@ -30,6 +30,9 @@ const isHemocioneHost = (url) =>
   url.hostname === "hemocione.com.br" ||
   url.hostname.endsWith(".hemocione.com.br");
 
+const resolveFallbackUrl = (fallback) =>
+  parseUrl(fallback || DEFAULT_REDIRECT) || parseUrl(DEFAULT_REDIRECT);
+
 /**
  * Allowlist, so anything unrecognised is refused by default — `javascript:`,
  * `data:` and unapproved custom schemes never reach a match.
@@ -60,8 +63,7 @@ export const resolveAuthRedirect = ({
   currentHostname,
   token,
 }) => {
-  const safeFallback =
-    parseUrl(fallback || DEFAULT_REDIRECT) || parseUrl(DEFAULT_REDIRECT);
+  const safeFallback = resolveFallbackUrl(fallback);
 
   const requested = candidate ? parseUrl(candidate) : null;
   const url =
@@ -87,6 +89,6 @@ export const isAppDestination = ({ candidate, fallback, currentHostname }) => {
   );
   if (isApprovedMobileTarget(resolved)) return true;
 
-  const appUrl = parseUrl(fallback || DEFAULT_REDIRECT) || parseUrl(DEFAULT_REDIRECT);
+  const appUrl = resolveFallbackUrl(fallback);
   return Boolean(appUrl && resolved.hostname === appUrl.hostname);
 };

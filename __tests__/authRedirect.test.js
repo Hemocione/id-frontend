@@ -190,6 +190,12 @@ describe("isAppDestination", () => {
     );
   });
 
+  it("is the app for the Android deep link with a trailing slash (what the app actually sends)", () => {
+    expect(destination("br.com.hemocione.app://app.hemocione.com.br/")).toBe(
+      true
+    );
+  });
+
   it("is external for a different trusted hemocione.com.br subdomain", () => {
     expect(destination("https://eventos.hemocione.com.br/callback")).toBe(
       false
