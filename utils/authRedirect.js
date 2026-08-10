@@ -14,6 +14,12 @@ const parseUrl = (value) => {
 // Parsed from utils/mobile so the approved deep links stay defined in one place.
 const mobileTargets = mobileUrls.map(parseUrl).filter(Boolean);
 
+// The app's production host, parsed once — isAppDestination treats it as the
+// app regardless of what the configured fallback resolves to, since a
+// misconfigured fallback (e.g. pointing at the bare hemocione.com.br host)
+// must never make the real app URL look external.
+const canonicalAppUrl = parseUrl(DEFAULT_REDIRECT);
+
 // Structural match, not startsWith: "apphemocione:auth" must not also approve
 // "apphemocione:authEVIL", and the Android link must not approve
 // "br.com.hemocione.app://app.hemocione.com.br.evil.com". A query string is
@@ -90,5 +96,8 @@ export const isAppDestination = ({ candidate, fallback, currentHostname }) => {
   if (isApprovedMobileTarget(resolved)) return true;
 
   const appUrl = resolveFallbackUrl(fallback);
-  return Boolean(appUrl && resolved.hostname === appUrl.hostname);
+  return Boolean(
+    (appUrl && resolved.hostname === appUrl.hostname) ||
+      (canonicalAppUrl && resolved.hostname === canonicalAppUrl.hostname)
+  );
 };
