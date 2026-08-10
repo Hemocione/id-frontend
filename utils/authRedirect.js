@@ -87,6 +87,6 @@ export const isAppDestination = ({ candidate, fallback, currentHostname }) => {
   );
   if (isApprovedMobileTarget(resolved)) return true;
 
-  const appUrl = parseUrl(fallback);
+  const appUrl = parseUrl(fallback || DEFAULT_REDIRECT) || parseUrl(DEFAULT_REDIRECT);
   return Boolean(appUrl && resolved.hostname === appUrl.hostname);
 };

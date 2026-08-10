@@ -207,4 +207,14 @@ describe("isAppDestination", () => {
   it("is the app when the candidate is malformed", () => {
     expect(destination("not a url at all")).toBe(true);
   });
+
+  it("is the app when the fallback is empty (uses DEFAULT_REDIRECT)", () => {
+    expect(
+      isAppDestination({
+        candidate: null,
+        fallback: "",
+        currentHostname: "id.hemocione.com.br",
+      })
+    ).toBe(true);
+  });
 });
