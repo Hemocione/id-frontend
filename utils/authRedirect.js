@@ -90,5 +90,9 @@ export const isAppDestination = ({ candidate, fallback, currentHostname }) => {
   if (isApprovedMobileTarget(resolved)) return true;
 
   const appUrl = resolveFallbackUrl(fallback);
-  return Boolean(appUrl && resolved.hostname === appUrl.hostname);
+  const canonicalAppUrl = parseUrl(DEFAULT_REDIRECT);
+  return Boolean(
+    (appUrl && resolved.hostname === appUrl.hostname) ||
+      (canonicalAppUrl && resolved.hostname === canonicalAppUrl.hostname)
+  );
 };
