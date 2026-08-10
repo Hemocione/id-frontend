@@ -223,4 +223,14 @@ describe("isAppDestination", () => {
       })
     ).toBe(true);
   });
+
+  it("is the app for the canonical app.hemocione.com.br host even when fallback resolves elsewhere", () => {
+    expect(
+      isAppDestination({
+        candidate: "https://app.hemocione.com.br/",
+        fallback: "https://hemocione.com.br/",
+        currentHostname: "id.hemocione.com.br",
+      })
+    ).toBe(true);
+  });
 });
